@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un produit - DEANNA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Définition des variables CSS pour les couleurs */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-hover: #E0CBA3;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        /* Styles de base pour la page */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.25rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            background-color: var(--color-primary);
+            color: var(--color-bg-light);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .global-error {
+            color: var(--color-error);
+            background-color: #ffe8e8;
+            border: 1px solid var(--color-error);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Ajouter un nouveau produit</h1>
+
+        {% if error_message %}
+            <div class="global-error">{{ error_message }}</div>
+        {% endif %}
+
+        <!-- Le formulaire doit avoir un attribut enctype pour envoyer des fichiers -->
+        <form id="addProductForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="name">Nom du produit :</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description :</label>
+                <textarea id="description" name="description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Prix (CFA) :</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="stock">Stock :</label>
+                <input type="number" id="stock" name="stock" required>
+            </div>
+            <div class="form-group">
+                <label for="images">Images du produit (plusieurs fichiers) :</label>
+                <input type="file" id="images" name="images" multiple accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="videos">Vidéos du produit (plusieurs fichiers) :</label>
+                <input type="file" id="videos" name="videos" multiple accept="video/*">
+            </div>
+
+            <button type="submit" class="btn-submit">Ajouter le produit</button>
+        </form>
+    </div>
+
+</body>
+</html>

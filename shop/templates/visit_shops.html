@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visiter les boutiques - DEANNA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Styles CSS pour la page */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            margin: 0;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-secondary);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--color-text);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 1.5rem;
+        }
+
+        .product-details h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem;
+            color: var(--color-primary);
+        }
+
+        .product-details p {
+            margin: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .product-details .price {
+            font-weight: 600;
+            color: var(--color-accent);
+            font-size: 1.1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--color-primary);
+            transition: color 0.3s;
+        }
+
+        .home-link:hover {
+            color: var(--color-accent);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="header-title">Explorer les boutiques</h1>
+        <p class="header-subtitle">Découvrez des produits de commerçants du monde entier</p>
+    </header>
+    
+    <main>
+        <div class="product-grid">
+            {% for product in products %}
+                <a href="{% url 'product_detail' product.id %}" class="product-card">
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x200.png?text=Pas+d'image" alt="Pas d'image" class="product-image">
+                    {% endif %}
+                    <div class="product-details">
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">{{ product.price }} CFA</p>
+                        <p>De la boutique : {{ product.shop.name }}</p>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="empty-state">
+                    <p>Aucun produit n'est disponible pour l'instant. Revenez plus tard !</p>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <a href="{% url 'index' %}" class="home-link">Retour à la page d'accueil</a>
+
+</body>
+</html>

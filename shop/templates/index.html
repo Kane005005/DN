@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEANNA - Mon commerce en un clic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Définition de la palette de couleurs et des polices */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .logo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .slogan {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text-secondary);
+            margin: 0.5rem 0 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 400px;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .option-card {
+            background-color: #fff;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            color: var(--color-text);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            margin-top: 0;
+        }
+
+        .option-card p {
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0;
+        }
+
+        /* Styles pour les écrans plus grands */
+        @media (min-width: 768px) {
+            .options {
+                flex-direction: row;
+                justify-content: center;
+                max-width: 900px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1 class="logo-name">DEANNA</h1>
+        <p class="slogan">Mon commerce en un clic, Vendez plus, stressez moins</p>
+    </header>
+
+    <section class="options">
+        <a href="{% url 'login_view' %}" class="option-card">
+            <h3>Accéder à ma boutique</h3>
+            <p>Connectez-vous pour gérer votre commerce en ligne.</p>
+        </a>
+        <a href="{% url 'create_shop' %}" class="option-card">
+            <h3>Créer une boutique</h3>
+            <p>Lancez votre propre boutique en quelques minutes.</p>
+        </a>
+        <a href="{% url 'visit_shops' %}" class="option-card">
+            <h3>Visiter des boutiques</h3>
+            <p>Découvrez et explorez les produits de tous nos commerçants.</p>
+        </a>
+    </section>
+
+</body>
+</html>

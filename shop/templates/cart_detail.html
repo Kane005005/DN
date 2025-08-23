@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon panier - DEANNA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Styles CSS pour la page du panier */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            margin: 0;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+        }
+
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem;
+        }
+
+        .item-details p {
+            margin: 0;
+            color: var(--color-text-secondary);
+        }
+        
+        .item-price {
+            font-weight: 600;
+            color: var(--color-accent);
+            white-space: nowrap;
+        }
+        
+        .cart-summary {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--color-primary);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cart-total {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+        
+        .checkout-btn {
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            text-decoration: none;
+            border-radius: 0.75rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .checkout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mon panier</h1>
+        
+        {% if cart and cart.items.all %}
+            <ul class="cart-items">
+                {% for item in cart.items.all %}
+                    <li class="cart-item">
+                        {% if item.product.images.first %}
+                            <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="item-image">
+                        {% else %}
+                            <img src="https://via.placeholder.com/80x80.png?text=Pas+d'image" alt="Pas d'image" class="item-image">
+                        {% endif %}
+                        <div class="item-details">
+                            <h3>{{ item.product.name }}</h3>
+                            <p>Quantité : {{ item.quantity }}</p>
+                            <p>Boutique : {{ item.product.shop.name }}</p>
+                        </div>
+                        <div class="item-actions">
+                            <span class="item-price">{{ item.total_cost }} CFA</span>
+                            <form action="{% url 'remove_from_cart' item.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="remove-btn">X</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            
+            <div class="cart-summary">
+                <span class="cart-total">Total : {% with total=0 %}
+                                            {% for item in cart.items.all %}
+                                                {% with total=total|add:item.total_cost %} {% endwith %}
+                                            {% endfor %}
+                                            {{ total }}
+                                        {% endwith %} CFA</span>
+                <a href="{% url 'checkout_view' %}" class="checkout-btn">Passer la commande</a>
+            </div>
+            
+        {% else %}
+            <div class="empty-cart">
+                <p>Votre panier est vide.</p>
+                <a href="{% url 'visit_shops' %}" class="checkout-btn" style="background-color: var(--color-primary); color: #fff;">Continuer vos achats</a>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

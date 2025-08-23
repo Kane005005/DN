@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accéder à ma boutique - DEANNA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Définition des variables CSS pour les couleurs */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-hover: #E0CBA3;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        /* Styles de base pour la page */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 450px;
+            width: 100%;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        /* Titre de la page */
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.25rem;
+            color: var(--color-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .global-error {
+            color: var(--color-error);
+            background-color: #ffe8e8;
+            border: 1px solid var(--color-error);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Style des champs de formulaire */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--color-text);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        /* Style du bouton de soumission */
+        .btn-submit {
+            width: 100%;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Accéder à ma boutique</h1>
+        
+        {% if error_message %}
+            <div class="global-error">{{ error_message }}</div>
+        {% endif %}
+
+        <form id="loginForm" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur :</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">Se connecter</button>
+        </form>
+    </div>
+</body>
+</html>
