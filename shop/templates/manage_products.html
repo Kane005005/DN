@@ -1,0 +1,109 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Gestion des produits{% endblock %}
+
+{% block content %}
+    <style>
+        .products-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background-color: #F8F8F8;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .product-details {
+            padding: 1rem;
+        }
+
+        .product-details h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin: 0 0 0.5rem;
+        }
+        
+        .product-details p {
+            margin: 0;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+        
+        .product-actions {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .edit-btn, .delete-btn {
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: opacity 0.2s;
+        }
+        
+        .edit-btn {
+            background-color: var(--color-primary);
+            color: #fff;
+        }
+        
+        .delete-btn {
+            background-color: var(--color-alert);
+            color: #fff;
+        }
+        
+        .edit-btn:hover, .delete-btn:hover {
+            opacity: 0.8;
+        }
+    </style>
+
+    <div class="header-content">
+        <h1>Gestion des produits</h1>
+        <a href="{% url 'add_product' %}" class="cta-btn">Ajouter un produit</a>
+    </div>
+
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x200.png?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="product-details">
+                        <h3>{{ product.name }}</h3>
+                        <p>{{ product.price }} CFA</p>
+                        <div class="product-actions">
+                            <a href="{% url 'edit_product' product.id %}" class="edit-btn">Modifier</a>
+                            <a href="{% url 'delete_product' product.id %}" class="delete-btn">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align: center; color: var(--color-text-secondary); padding: 2rem;">Vous n'avez pas encore de produits. Commencez par en ajouter un !</p>
+    {% endif %}
+
+{% endblock %}

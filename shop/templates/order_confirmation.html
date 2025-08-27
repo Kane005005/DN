@@ -1,0 +1,124 @@
+<!-- Fichier : shop/templates/manage_orders.html -->
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Gestion des commandes{% endblock %}
+
+{% block content %}
+    <style>
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin: 0;
+        }
+        
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .orders-table th {
+            background-color: var(--color-primary);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .orders-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .status-badge.pending { background-color: #FFC107; color: #333; }
+        .status-badge.completed { background-color: #28a745; }
+        .status-badge.shipped { background-color: #007bff; }
+        .status-badge.canceled { background-color: var(--color-alert); }
+
+        .order-details-link {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .order-details-link:hover {
+            color: var(--color-accent);
+        }
+
+    </style>
+
+    <div class="header-content">
+        <h1>Gestion des commandes</h1>
+    </div>
+
+    {% if orders %}
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>ID de commande</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Client</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.created_at|date:"d M Y" }}</td>
+                        <td>{{ order.total_price }} CFA</td>
+                        <td>
+                            <span class="status-badge {{ order.status|lower }}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ order.customer_name }}</td>
+                        <td>
+                            <a href="#" class="order-details-link">Voir les détails</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="text-align: center; color: var(--color-text-secondary);">Vous n'avez pas encore de commandes. Revenez bientôt !</p>
+    {% endif %}
+
+{% endblock %}

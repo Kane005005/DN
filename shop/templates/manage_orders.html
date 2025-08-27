@@ -1,0 +1,48 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Gestion des commandes - DEANNA{% endblock %}
+
+{% block content %}
+<div class="p-8">
+    <h1 class="text-4xl font-serif text-gray-800 mb-6">Gestion des commandes</h1>
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <table class="w-full text-left table-auto">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">ID Commande</th>
+                    <th class="py-3 px-6 text-left">Client</th>
+                    <th class="py-3 px-6 text-left">Date</th>
+                    <th class="py-3 px-6 text-left">Statut</th>
+                    <th class="py-3 px-6 text-left">Total</th>
+                    <th class="py-3 px-6 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for order in orders %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 whitespace-nowrap">{{ order.id }}</td>
+                    <td class="py-3 px-6">{{ order.user.username }}</td>
+                    <td class="py-3 px-6">{{ order.date_ordered|date:"d M Y" }}</td>
+                    <td class="py-3 px-6">
+                        {% if order.complete %}
+                        <span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">Terminée</span>
+                        {% else %}
+                        <span class="bg-yellow-200 text-yellow-600 py-1 px-3 rounded-full text-xs">En attente</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-6">{{ order.get_cart_total|floatformat:2 }} CFA</td>
+                    <td class="py-3 px-6">
+                        <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">Détails</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="py-4 text-center text-gray-500">Vous n'avez pas encore de commandes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

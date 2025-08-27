@@ -1,0 +1,114 @@
+<!-- Fichier : shop/templates/order_detail.html -->
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Détails de la commande #{{ order.id }}{% endblock %}
+
+{% block content %}
+    <style>
+        .order-detail-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 900px;
+            margin: auto;
+        }
+        
+        .order-detail-container h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .order-summary, .customer-info, .order-items {
+            margin-bottom: 2rem;
+        }
+
+        .order-summary h2, .customer-info h2, .order-items h2 {
+            font-size: 1.5rem;
+            color: var(--color-text);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .order-summary p, .customer-info p {
+            margin: 0.5rem 0;
+            color: var(--color-text-secondary);
+        }
+        
+        .order-summary .total {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-accent);
+        }
+
+        .order-items table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-items th, .order-items td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .order-items th {
+            background-color: #f0f0ee;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="order-detail-container">
+        <h1>Détails de la commande #{{ order.id }}</h1>
+
+        <div class="order-summary">
+            <h2>Résumé de la commande</h2>
+            <p><strong>Date de la commande :</strong> {{ order.date_ordered|date:"d M Y" }}</p>
+            <p><strong>Statut :</strong> 
+                {% if order.complete %}
+                    <span style="color: #4caf50; font-weight: 600;">Complétée</span>
+                {% else %}
+                    <span style="color: #ff9800; font-weight: 600;">En attente</span>
+                {% endif %}
+            </p>
+            <p class="total"><strong>Total de la commande :</strong> {{ order.get_cart_total }} CFA</p>
+        </div>
+
+        <div class="customer-info">
+            <h2>Informations du client</h2>
+            <p><strong>Nom complet :</strong> {{ order.full_name }}</p>
+            <p><strong>Adresse :</strong> {{ order.address }}</p>
+            <p><strong>Ville :</strong> {{ order.city }}</p>
+            <p><strong>Téléphone :</strong> {{ order.phone }}</p>
+        </div>
+
+        <div class="order-items">
+            <h2>Articles commandés</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.price }} CFA</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.total_price }} CFA</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

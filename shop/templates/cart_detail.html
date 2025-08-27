@@ -93,6 +93,28 @@
             white-space: nowrap;
         }
         
+        .item-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .remove-btn {
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .remove-btn:hover {
+            background-color: #a00030;
+        }
+        
         .cart-summary {
             margin-top: 2rem;
             padding-top: 1rem;
@@ -117,6 +139,8 @@
             text-decoration: none;
             border-radius: 0.75rem;
             transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
         }
         
         .checkout-btn:hover {
@@ -129,6 +153,44 @@
             padding: 4rem 1rem;
             color: var(--color-text-secondary);
             font-style: italic;
+        }
+        
+        .continue-shopping {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            background-color: var(--color-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            transition: background-color 0.2s;
+        }
+        
+        .continue-shopping:hover {
+            background-color: #1a3b57;
+        }
+        
+        .quantity-form {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .quantity-input {
+            width: 60px;
+            padding: 0.25rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            text-align: center;
+        }
+        
+        .update-btn {
+            padding: 0.25rem 0.5rem;
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -148,11 +210,18 @@
                         {% endif %}
                         <div class="item-details">
                             <h3>{{ item.product.name }}</h3>
-                            <p>Quantité : {{ item.quantity }}</p>
-                            <p>Boutique : {{ item.product.shop.name }}</p>
+                            <p>Prix unitaire : {{ item.product.price }} CFA</p>
+                            <p>Boutique : {{ item.product.shop.merchant.first_name }} {{ item.product.shop.merchant.last_name }}</p>
+                            
+                            <form action="{% url 'update_cart_item' item.id %}" method="post" class="quantity-form">
+                                {% csrf_token %}
+                                <label for="quantity-{{ item.id }}">Quantité :</label>
+                                <input type="number" id="quantity-{{ item.id }}" name="quantity" value="{{ item.quantity }}" min="1" class="quantity-input">
+                                <button type="submit" class="update-btn">Mettre à jour</button>
+                            </form>
                         </div>
                         <div class="item-actions">
-                            <span class="item-price">{{ item.total_cost }} CFA</span>
+                            <span class="item-price">{{ item.get_total }} CFA</span>
                             <form action="{% url 'remove_from_cart' item.id %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="remove-btn">X</button>
@@ -163,19 +232,14 @@
             </ul>
             
             <div class="cart-summary">
-                <span class="cart-total">Total : {% with total=0 %}
-                                            {% for item in cart.items.all %}
-                                                {% with total=total|add:item.total_cost %} {% endwith %}
-                                            {% endfor %}
-                                            {{ total }}
-                                        {% endwith %} CFA</span>
+                <span class="cart-total">Total : {{ total_cost }} CFA</span>
                 <a href="{% url 'checkout_view' %}" class="checkout-btn">Passer la commande</a>
             </div>
             
         {% else %}
             <div class="empty-cart">
                 <p>Votre panier est vide.</p>
-                <a href="{% url 'visit_shops' %}" class="checkout-btn" style="background-color: var(--color-primary); color: #fff;">Continuer vos achats</a>
+                <a href="{% url 'visit_shops' %}" class="continue-shopping">Continuer vos achats</a>
             </div>
         {% endif %}
     </div>

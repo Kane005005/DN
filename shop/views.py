@@ -5,9 +5,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Sum, F
 from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem
 from django.core.files.storage import FileSystemStorage
 from decimal import Decimal, InvalidOperation
+import json
+from datetime import date, timedelta
+from django.views.decorators.http import require_POST
+from django.db.models.functions import TruncDay
 
 
 def index(request):
@@ -73,27 +78,139 @@ def login_view(request):
 @login_required(login_url='login_view')
 def dashboard(request):
     """
-    Cette vue affiche le tableau de bord du commerçant.
-    Elle récupère et affiche les produits de la boutique.
+    Vue principale du tableau de bord d'un commerçant.
+    """
+    merchant = get_object_or_404(Merchant, user=request.user)
+    shop = Shop.objects.filter(merchant=merchant).first()
+
+    if not shop:
+        context = {'shop': None}
+        return render(request, 'dashboard_home.html', context)
+
+    # Récupère le nombre total de produits
+    total_products = Product.objects.filter(shop=shop).count()
+    
+    # Récupère le nombre total de commandes pour la boutique
+    total_orders = Order.objects.filter(orderitem__product__shop=shop).distinct().count()
+    
+    # Calcule le chiffre d'affaires total
+    total_revenue_result = OrderItem.objects.filter(
+        product__shop=shop,
+        order__complete=True
+    ).aggregate(total_revenue=Sum(F('quantity') * F('product__price')))
+    total_revenue = total_revenue_result['total_revenue'] or 0
+    
+    # Récupère les données de revenus pour les 30 derniers jours
+    today = date.today()
+    last_30_days = today - timedelta(days=30)
+    
+    revenue_by_day = OrderItem.objects.filter(
+        order__date_ordered__date__gte=last_30_days,
+        product__shop=shop
+    ).annotate(
+        day=TruncDay('order__date_ordered')
+    ).values('day').annotate(
+        revenue=Sum(F('quantity') * F('product__price'))
+    ).order_by('day')
+    
+    # Convertit les dates en chaînes pour la sérialisation JSON
+    revenue_data = [{'day': item['day'].strftime('%Y-%m-%d'), 'revenue': float(item['revenue'])} for item in revenue_by_day]
+    
+    # Récupère les 5 produits les plus vendus
+    top_products = OrderItem.objects.filter(
+        product__shop=shop
+    ).values('product__name').annotate(
+        quantity=Sum('quantity')
+    ).order_by('-quantity')[:5]
+
+    top_products_data = [{'name': item['product__name'], 'quantity': item['quantity']} for item in top_products]
+
+    context = {
+        'shop': shop,
+        'total_products': total_products,
+        'total_orders': total_orders,
+        'total_revenue': total_revenue,
+        'revenue_data_json': json.dumps(revenue_data),
+        'top_products_data_json': json.dumps(top_products_data),
+    }
+
+    return render(request, 'dashboard_home.html', context)
+
+@login_required(login_url='login_view')
+def manage_shop(request):
+    """
+    Vue pour gérer et mettre à jour les informations de la boutique.
+    """
+    merchant = get_object_or_404(Merchant, user=request.user)
+    shop = get_object_or_404(Shop, merchant=merchant)
+
+    if request.method == 'POST':
+        # Mettre à jour les champs de la boutique
+        shop.category = request.POST.get('category')
+        shop.description = request.POST.get('description')
+        shop.save()
+        return redirect('manage_shop')  # Rediriger vers la même page après la sauvegarde
+    
+    context = {
+        'shop': shop
+    }
+    return render(request, 'manage_shop.html', context)
+
+
+@login_required(login_url='login_view')
+def manage_products(request):
+    """
+    Vue pour gérer les produits de la boutique du commerçant.
     """
     try:
-        # Récupère le commerçant connecté et sa boutique
-        merchant = request.user.merchant
+        merchant = Merchant.objects.get(user=request.user)
+    except Merchant.DoesNotExist:
+        return redirect('create_shop')
+
+    try:
+        shop = Shop.objects.get(merchant=merchant)
+    except Shop.DoesNotExist:
+        return redirect('dashboard') # Redirige vers le tableau de bord si la boutique n'existe pas
+
+    products = Product.objects.filter(shop=shop)
+
+    context = {
+        'merchant': merchant,
+        'shop': shop,
+        'products': products
+    }
+    
+    return render(request, 'manage_products.html', context)
+
+@login_required(login_url='login_view')
+def manage_orders(request):
+    """
+    Vue pour gérer les commandes du commerçant.
+    Affiche une liste de toutes les commandes pour les produits de la boutique du commerçant connecté.
+    """
+    try:
+        merchant = Merchant.objects.get(user=request.user)
         shop = merchant.shop
-
-        # Récupère tous les produits de cette boutique
-        products = Product.objects.filter(shop=shop).order_by('-created_at')
-
-        # Passe les données au template
-        context = {
-            'products': products,
-            'shop': shop,
-        }
-        return render(request, 'dashboard.html', context)
     except (Merchant.DoesNotExist, Shop.DoesNotExist):
-        # Gère le cas où l'utilisateur n'est pas lié à un commerçant ou une boutique
-        # Cela pourrait arriver si les modèles n'ont pas été créés correctement
-        return render(request, 'dashboard.html', {'error_message': 'Votre boutique n\'a pas pu être trouvée. Veuillez contacter le support.'})
+        # Rediriger si la boutique n'existe pas
+        return redirect('create_shop')
+    
+    # On récupère les commandes qui contiennent au moins un article de notre boutique.
+    # On utilise .distinct() pour éviter les doublons si une commande contient plusieurs produits de la même boutique.
+    orders = Order.objects.filter(orderitem__product__shop=shop).distinct().order_by('-date_ordered')
+
+    # On pré-calcule le total de chaque commande pour le template
+    for order in orders:
+        # On s'assure que get_cart_total est une méthode sur le modèle Order
+        # qui calcule le total en fonction des OrderItems.
+        order.get_cart_total = sum(item.total_price for item in order.orderitem_set.all())
+
+    context = {
+        'shop': shop,
+        'orders': orders,
+    }
+
+    return render(request, 'manage_orders.html', context)
 
 def logout_view(request):
     """
@@ -292,15 +409,23 @@ def add_to_cart(request, product_id):
 @login_required(login_url='login_view')
 def cart_detail(request):
     """
-    This view displays the contents of the user's cart.
+    Cette vue affiche le contenu du panier de l'utilisateur.
     """
     cart = None
+    total_cost = 0
+    
     try:
         cart = Cart.objects.get(user=request.user)
+        # Calcule le coût total
+        for item in cart.items.all():
+            total_cost += item.get_total
     except Cart.DoesNotExist:
-        pass # The cart does not exist yet, which is fine
+        pass # Le panier n'existe pas encore, ce qui est normal
         
-    return render(request, 'cart_detail.html', {'cart': cart})
+    return render(request, 'cart_detail.html', {
+        'cart': cart,
+        'total_cost': total_cost
+    })
 
 
 @login_required(login_url='login_view')
@@ -408,3 +533,127 @@ def order_confirmation(request, order_id):
     }
     
     return render(request, 'order_confirmation.html', context)
+
+
+@login_required(login_url='login_view')
+def manage_orders(request):
+    """
+    Vue pour afficher toutes les commandes d'un commerçant.
+    """
+    merchant = get_object_or_404(Merchant, user=request.user)
+    
+    # Récupère toutes les commandes liées aux produits de la boutique du commerçant
+    # On utilise .distinct() pour s'assurer qu'une commande n'est pas affichée plusieurs fois
+    orders = Order.objects.filter(
+        orderitem__product__shop__merchant=merchant
+    ).distinct().order_by('-date_ordered')
+
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'manage_orders.html', context)
+
+
+@login_required(login_url='login_view')
+def order_detail(request, order_id):
+    """
+    Vue pour afficher les détails d'une commande spécifique.
+    Le commerçant peut voir les informations du client et les articles commandés.
+    """
+    try:
+        # Récupère l'objet commande ou renvoie une erreur 404 s'il n'existe pas.
+        # On s'assure que la commande appartient à la boutique du commerçant connecté.
+        order = get_object_or_404(
+            Order,
+            pk=order_id,
+            orderitem__product__shop__merchant__user=request.user
+        )
+    except Exception as e:
+        print(f"Erreur lors de la récupération de la commande : {e}")
+        return redirect('manage_orders')
+        
+    # Récupère tous les articles liés à cette commande
+    items = order.orderitem_set.all()
+
+    context = {
+        'order': order,
+        'items': items,
+    }
+
+    return render(request, 'order_detail.html', context)
+
+# NOUVELLES VUES POUR LE CHAT DE NÉGOCIATION
+@login_required(login_url='login_view')
+def negotiation_chat_view(request, product_id):
+    """
+    Cette vue gère l'affichage du chat de négociation.
+    Elle est accessible à la fois par le client et le commerçant.
+    """
+    product = get_object_or_404(Product, pk=product_id)
+    
+    # On vérifie si l'utilisateur est le commerçant de la boutique
+    is_merchant = False
+    try:
+        merchant = Merchant.objects.get(user=request.user)
+        if product.shop.merchant == merchant:
+            is_merchant = True
+    except Merchant.DoesNotExist:
+        pass
+
+    # On trouve ou on crée la conversation
+    if is_merchant:
+        # Le commerçant ne démarre pas la conversation, il la rejoint
+        # Il peut rejoindre n'importe quelle conversation liée à son produit
+        conversation = get_object_or_404(Conversation, product=product)
+    else:
+        # Le client démarre ou rejoint sa propre conversation
+        conversation, created = Conversation.objects.get_or_create(
+            product=product,
+            client=request.user,
+            merchant=product.shop.merchant # Le commerçant est celui du produit
+        )
+
+    if request.method == 'POST':
+        # Gérer l'envoi d'un nouveau message via une requête AJAX
+        try:
+            data = json.loads(request.body)
+            message_text = data.get('message_text')
+            if message_text:
+                new_message = Message.objects.create(
+                    conversation=conversation,
+                    sender=request.user,
+                    text=message_text
+                )
+                # Retourne le nouveau message au format JSON pour la mise à jour côté client
+                return JsonResponse({
+                    'id': new_message.id,
+                    'text': new_message.text,
+                    'sender': new_message.sender.username,
+                    'is_me': new_message.sender == request.user,
+                    'timestamp': new_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    # Gérer l'affichage initial de la page ou les requêtes GET pour rafraîchir le chat
+    messages = conversation.messages.order_by('timestamp')
+
+    # Prépare les messages pour le rendu du template
+    # Ajoute un indicateur 'is_me' pour différencier les messages de l'utilisateur
+    formatted_messages = []
+    for message in messages:
+        formatted_messages.append({
+            'text': message.text,
+            'sender': message.sender.username,
+            'is_me': message.sender == request.user,
+            'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        })
+
+    context = {
+        'conversation': conversation,
+        'product': product,
+        'messages': formatted_messages,
+        'is_merchant': is_merchant,
+    }
+    
+    return render(request, 'negotiation_chat.html', context)

@@ -1,0 +1,133 @@
+<!-- Fichier : shop/templates/_sidebar.html -->
+
+<style>
+    /* Styles de la barre latérale (Sidebar) */
+    .sidebar {
+        width: 250px;
+        background-color: var(--color-primary);
+        color: #fff;
+        padding: 2rem 1.5rem;
+        position: fixed;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        transition: width 0.3s ease-in-out;
+        overflow: hidden;
+    }
+
+    .sidebar.collapsed {
+        width: 80px;
+    }
+
+    .sidebar .logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 1rem;
+        white-space: nowrap; /* Empêche le texte de sauter à la ligne */
+    }
+    
+    .sidebar.collapsed .logo {
+        font-size: 1.5rem;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu li {
+        margin-bottom: 0.75rem;
+    }
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        color: #fff;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        transition: background-color 0.2s, transform 0.2s;
+        white-space: nowrap;
+    }
+    
+    .sidebar-menu a i {
+        width: 20px;
+        margin-right: 1rem;
+    }
+
+    .sidebar-menu a:hover {
+        background-color: var(--color-accent);
+        color: var(--color-primary);
+        transform: translateX(5px);
+    }
+    
+    .sidebar.collapsed .sidebar-menu a span {
+        display: none;
+    }
+    
+    .sidebar.collapsed .sidebar-menu a i {
+        margin-right: 0;
+    }
+    
+    .sidebar-toggle-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        margin-top: -1rem;
+        margin-bottom: 2rem;
+        align-self: flex-start;
+        transition: transform 0.3s;
+    }
+    
+    /* Réactivité pour les petits écrans */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 80px;
+            padding: 1.5rem 0.5rem;
+        }
+        .sidebar .logo {
+            display: none;
+        }
+        .sidebar-toggle-btn {
+            align-self: center;
+        }
+        .sidebar-menu a span {
+            display: none;
+        }
+        .sidebar-menu a i {
+            margin-right: 0;
+        }
+        .sidebar.collapsed {
+            width: 250px;
+        }
+        .sidebar.collapsed .logo {
+            display: block;
+        }
+        .sidebar.collapsed .sidebar-menu a span {
+            display: inline;
+        }
+        .sidebar.collapsed .sidebar-menu a i {
+            margin-right: 1rem;
+        }
+    }
+</style>
+
+<div class="sidebar" id="sidebar">
+    <button class="sidebar-toggle-btn" id="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+    <div class="logo">DEANNA</div>
+    <ul class="sidebar-menu">
+        <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i><span>Tableau de bord</span></a></li>
+        <li><a href="{% url 'manage_products' %}"><i class="fas fa-box-open"></i><span>Gestion des produits</span></a></li>
+        <li><a href="{% url 'manage_orders' %}"><i class="fas fa-clipboard-list"></i><span>Commandes</span></a></li>
+    </ul>
+    <div style="margin-top: auto;">
+        <a href="{% url 'logout_view' %}" class="cta-btn" style="background-color: #ccc; color: var(--color-text);">Déconnexion</a>
+    </div>
+</div>

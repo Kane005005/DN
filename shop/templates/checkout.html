@@ -98,7 +98,6 @@
         .summary-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 0.5rem 0;
             border-bottom: 1px solid #eee;
         }
@@ -147,7 +146,8 @@
         <div class="checkout-details">
             <div class="form-section">
                 <h2>Informations de livraison</h2>
-                <form method="post">
+                <!-- NOTE: Le formulaire a été mis à jour pour envoyer les données à la vue process_order -->
+                <form id="payment-form" method="post" action="{% url 'process_order' %}">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="full_name">Nom complet</label>
@@ -180,6 +180,7 @@
                     <span>Total :</span>
                     <span>{{ total_cost }} CFA</span>
                 </div>
+                <!-- Le bouton fait référence au formulaire par son ID -->
                 <button type="submit" form="payment-form" class="submit-btn">Confirmer la commande</button>
             </div>
         </div>

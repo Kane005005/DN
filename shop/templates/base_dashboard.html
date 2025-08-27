@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tableau de bord - DEANNA{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-alert: #800020;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-primary);
+            color: #fff;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .logo-text,
+        .sidebar.collapsed .sidebar-nav li span,
+        .sidebar.collapsed .cta-btn {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-nav li a {
+            justify-content: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 1.5rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin-right: 1rem;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .cta-btn {
+            display: block;
+            text-align: center;
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .cta-btn:hover {
+            background-color: #d8c29b;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.collapsed-margin {
+            margin-left: 80px;
+        }
+
+        .top-bar {
+            background-color: var(--color-bg-light);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .top-bar .welcome-text {
+            color: var(--color-text);
+            font-size: 1rem;
+        }
+
+        #sidebar-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        #sidebar-toggle-btn:hover {
+            background-color: var(--color-border);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+            }
+            .main-content {
+                margin-left: 80px;
+            }
+            .sidebar .logo-text, .sidebar .sidebar-nav li span, .sidebar .cta-btn {
+                display: none;
+            }
+            .sidebar .sidebar-nav li a {
+                justify-content: center;
+            }
+            .main-content.collapsed-margin {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <i class="fas fa-store logo-icon"></i>
+            <span class="logo-text">DEANNA</span>
+        </div>
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'dashboard' %}" class="{% if request.path == '/tableau-de-bord/' %}active{% endif %}"><i class="fas fa-tachometer-alt"></i><span>Tableau de bord</span></a></li>
+            <li><a href="{% url 'manage_shop' %}" class="{% if request.path == '/tableau-de-bord/boutique/' %}active{% endif %}"><i class="fas fa-store"></i><span>Gérer ma boutique</span></a></li>
+            <li><a href="{% url 'manage_products' %}" class="{% if request.path == '/tableau-de-bord/produits/' %}active{% endif %}"><i class="fas fa-box-open"></i><span>Gestion des produits</span></a></li>
+            <li><a href="{% url 'manage_orders' %}" class="{% if request.path == '/tableau-de-bord/commandes/' %}active{% endif %}"><i class="fas fa-clipboard-list"></i><span>Commandes</span></a></li>
+        </ul>
+        <div style="margin-top: auto;">
+            <a href="{% url 'logout_view' %}" class="cta-btn" style="background-color: #ccc; color: var(--color-text);">Déconnexion</a>
+        </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="main-content" id="main-content">
+        <button id="sidebar-toggle-btn"><i class="fas fa-bars"></i></button>
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('collapsed-margin');
+        });
+        
+        function checkScreenWidth() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('collapsed-margin');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('collapsed-margin');
+            }
+        }
+        
+        window.addEventListener('load', checkScreenWidth);
+        window.addEventListener('resize', checkScreenWidth);
+    </script>
+</body>
+</html>

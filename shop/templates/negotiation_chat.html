@@ -1,0 +1,309 @@
+<!-- Fichier : shop/templates/negotiation_chat.html -->
+{% extends 'base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Chat de négociation - {{ product.name }}{% endblock %}
+
+{% block content %}
+    <style>
+        /* Styles de la fiche de design DEANNA */
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-alert: #800020;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-height: calc(100vh - 120px); /* Ajuste la hauteur pour éviter le débordement */
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .chat-header {
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse; /* Les nouveaux messages apparaissent en bas */
+            padding-right: 1rem;
+            -webkit-overflow-scrolling: touch; /* Améliore le défilement sur iOS */
+            height: 1px; /* Permet à flex-grow de fonctionner */
+            padding-bottom: 1rem;
+        }
+
+        .message-box {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: flex-end;
+        }
+
+        .message-box.me {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .message-box.me .message-content {
+            background-color: var(--color-primary);
+            color: #fff;
+            border-bottom-right-radius: 0.2rem;
+        }
+
+        .message-box.other .message-content {
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            border-bottom-left-radius: 0.2rem;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+            color: var(--color-text-secondary);
+        }
+        
+        .message-timestamp {
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chat-form {
+            display: flex;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .chat-form textarea {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-border);
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            margin-right: 1rem;
+        }
+
+        .chat-form button {
+            background-color: var(--color-primary);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-form button:hover {
+            background-color: #1a3b57;
+        }
+        
+        .back-button {
+            text-decoration: none;
+            color: var(--color-primary);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--color-accent);
+        }
+        
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+    </style>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <a href="{% if is_merchant %}{% url 'manage_products' %}{% else %}{% url 'product_detail' product.id %}{% endif %}" class="back-button">
+                 <i class="fas fa-arrow-left"></i>Retour
+            </a>
+            <h1>Chat de négociation</h1>
+            <div></div> <!-- Espace de remplissage -->
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            {% for message in messages %}
+                <div class="message-box {% if message.is_me %}me{% else %}other{% endif %}">
+                    <div class="message-content">
+                        <div class="message-sender">{{ message.sender }}</div>
+                        <div class="message-text">{{ message.text }}</div>
+                        <div class="message-timestamp">{{ message.timestamp }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align: center; color: var(--color-text-secondary); margin-top: auto; margin-bottom: auto;">
+                    Commencez la conversation ! Proposez un prix ou posez une question.
+                </p>
+            {% endfor %}
+        </div>
+
+        <form class="chat-form" id="chat-form">
+            {% csrf_token %}
+            <textarea id="message-input" placeholder="Tapez votre message..." rows="2"></textarea>
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const chatMessagesContainer = document.getElementById('chat-messages');
+
+            // Fonction pour faire défiler les messages vers le bas
+            function scrollToBottom() {
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+            }
+
+            // Affiche un message de chargement initial
+            function showLoadingMessage() {
+                const loadingMessage = document.createElement('div');
+                loadingMessage.id = 'loading-message';
+                loadingMessage.style.textAlign = 'center';
+                loadingMessage.style.color = 'var(--color-text-secondary)';
+                loadingMessage.innerText = 'Chargement des messages...';
+                chatMessagesContainer.appendChild(loadingMessage);
+            }
+            
+            // Masque le message de chargement
+            function hideLoadingMessage() {
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+            }
+
+            // Fonction pour ajouter un message à l'interface
+            function addMessage(message) {
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('message-box');
+                messageBox.classList.add(message.is_me ? 'me' : 'other');
+                
+                const messageContent = document.createElement('div');
+                messageContent.classList.add('message-content');
+
+                const messageSender = document.createElement('div');
+                messageSender.classList.add('message-sender');
+                messageSender.innerText = message.sender;
+
+                const messageText = document.createElement('div');
+                messageText.classList.add('message-text');
+                messageText.innerText = message.text;
+                
+                const messageTimestamp = document.createElement('div');
+                messageTimestamp.classList.add('message-timestamp');
+                messageTimestamp.innerText = message.timestamp;
+
+                messageContent.appendChild(messageSender);
+                messageContent.appendChild(messageText);
+                messageContent.appendChild(messageTimestamp);
+                messageBox.appendChild(messageContent);
+                
+                // Insère le nouveau message en haut du conteneur (mode reverse)
+                chatMessagesContainer.prepend(messageBox);
+            }
+
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const messageText = messageInput.value.trim();
+                
+                if (messageText) {
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                    const url = "{% url 'negotiation_chat' product.id %}";
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ message_text: messageText })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Erreur lors de l\'envoi du message:', data.error);
+                            // Affiche un message d'erreur à l'utilisateur si nécessaire
+                        } else {
+                            // Le message a été envoyé, l'interface se mettra à jour via l'intervalle de rafraîchissement
+                            messageInput.value = '';
+                            fetchMessages(); // Force un rafraîchissement après l'envoi
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur réseau:', error);
+                    });
+                }
+            });
+
+            function fetchMessages() {
+                // On utilise la même vue pour récupérer les messages
+                const url = "{% url 'negotiation_chat' product.id %}";
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Supprime tous les messages existants avant de les re-créer
+                        chatMessagesContainer.innerHTML = ''; 
+                        
+                        data.messages.forEach(message => {
+                            addMessage(message);
+                        });
+                        // Fait défiler vers le bas après le chargement des messages
+                        scrollToBottom(); 
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération des messages:', error);
+                    });
+            }
+
+            // Exécute la fonction une première fois au chargement de la page
+            showLoadingMessage();
+            fetchMessages();
+
+            // Rafraîchit les messages toutes les 3 secondes pour un effet "temps réel"
+            setInterval(fetchMessages, 3000); 
+        });
+    </script>
+{% endblock %}

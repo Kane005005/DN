@@ -1,10 +1,9 @@
-# shop/models.py
+# Fichier : shop/models.py
 
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from decimal import Decimal
-
+from decimal import Decimal, InvalidOperation
 
 # Le modèle Merchant (Commerçant)
 class Merchant(models.Model):
@@ -33,64 +32,57 @@ class Shop(models.Model):
 
 # Le modèle Product (Produit)
 class Product(models.Model):
-    # Chaque produit appartient à une boutique. 
-    # Si la boutique est supprimée, ses produits le sont aussi.
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     
     name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     description = models.TextField(blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2) # Prix avec 2 décimales
-    stock = models.IntegerField(default=0) # Quantité en stock
-    created_at = models.DateTimeField(auto_now_add=True) # Date de création automatique
-    updated_at = models.DateTimeField(auto_now=True) # Date de mise à jour automatique
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
 
-# Le nouveau modèle ProductImage (Image de produit)
 class ProductImage(models.Model):
-    # Clé étrangère vers le modèle Product. 
-    # Un produit peut avoir plusieurs images.
-    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='product_images/')
-
-# Le nouveau modèle ProductVideo (Vidéo de produit)
+    
 class ProductVideo(models.Model):
-    # Clé étrangère vers le modèle Product. 
-    # Un produit peut avoir plusieurs vidéos.
-    product = models.ForeignKey(Product, related_name='videos', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='videos')
     video = models.FileField(upload_to='product_videos/')
 
-# Modèle pour le panier
+# Le modèle Cart (Panier)
 class Cart(models.Model):
-    # Un panier est lié à un utilisateur. Un utilisateur non authentifié aura un panier temporaire.
-    # Pour l'instant, on lie le panier à un utilisateur, nous gérerons les utilisateurs non authentifiés plus tard.
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"Panier de {self.user.username}"
-
-# Modèle pour les articles dans le panier
+        
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    quantity = models.IntegerField(default=1)
     
     def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
+        return f"{self.product.name} ({self.quantity})"
     
-    # Propriété pour calculer le coût total de l'article
+    @property
+    def get_total(self):
+        """
+        Calcule le prix total pour cet article du panier.
+        """
+        return self.product.price * self.quantity
+    
+    # Ajoutez cette propriété pour correspondre à ce que le template attend
     @property
     def total_cost(self):
-        return self.quantity * self.product.price
+        """
+        Alias pour get_total pour correspondre à l'attente du template.
+        """
+        return self.get_total
 
-
+# Le modèle Order (Commande)
 class Order(models.Model):
-    """
-    Modèle de commande.
-    Représente une commande passée par un client.
-    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
@@ -104,12 +96,18 @@ class Order(models.Model):
 
     @property
     def get_cart_total(self):
+        """
+        Calcule le prix total de la commande en sommant tous les articles.
+        """
         orderitems = self.orderitem_set.all()
         total = sum([item.get_total for item in orderitems])
         return total
 
     @property
     def get_cart_items(self):
+        """
+        Calcule le nombre total d'articles dans la commande.
+        """
         orderitems = self.orderitem_set.all()
         total = sum([item.quantity for item in orderitems])
         return total
@@ -126,12 +124,45 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
-
+    
     @property
     def get_total(self):
+        """
+        Calcule le prix total pour cet article de commande.
+        """
+        # Assurez-vous que le produit existe avant d'accéder à son prix
         if self.product:
             return self.product.price * self.quantity
-        return Decimal(0)
+        return 0
+    
+    def __str__(self):
+        return self.product.name
+
+# NOUVEAUX MODÈLES pour le chat et la négociation
+
+class Conversation(models.Model):
+    """
+    Modèle de conversation de négociation.
+    Chaque conversation est liée à un produit spécifique, un client (l'utilisateur)
+    et un commerçant (via la boutique).
+    """
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='negotiation_conversations')
+    merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
+        return f"Conversation sur '{self.product.name}' entre {self.client.username} et {self.merchant.user.username}"
+
+
+class Message(models.Model):
+    """
+    Modèle pour les messages individuels d'une conversation.
+    """
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message de {self.sender.username} dans la conversation {self.conversation.id}"

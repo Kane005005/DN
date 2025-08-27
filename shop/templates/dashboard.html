@@ -1,175 +1,48 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableau de bord - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<!-- Fichier : shop/templates/dashboard_home.html -->
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Tableau de bord principal{% endblock %}
+
+{% block content %}
     <style>
-        /* Les styles CSS du tableau de bord restent les mêmes */
-        :root {
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-hover: #E0CBA3;
-            --color-border: #1A3B57;
-            --color-error: #800020;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem;
-            box-sizing: border-box;
-            min-height: 100vh;
-        }
-
-        .header {
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1rem;
             margin-bottom: 2rem;
         }
-        
-        .header h1 {
+
+        .header-content h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.25rem;
+            font-size: 2.5rem;
             color: var(--color-primary);
             margin: 0;
         }
 
-        .header .user-info {
-            font-weight: 600;
-            color: var(--color-text);
-        }
-
-        .header .btn-logout {
-            padding: 0.5rem 1rem;
-            background-color: transparent;
-            border: 1px solid var(--color-text);
-            color: var(--color-text);
-            border-radius: 0.5rem;
-            text-decoration: none;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .header .btn-logout:hover {
-            background-color: var(--color-text);
-            color: #fff;
-        }
-
-        .btn-add-product {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            font-weight: 600;
-            text-decoration: none;
-            border-radius: 0.5rem;
-            display: inline-block;
-            margin-bottom: 2rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-add-product:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        .product-card {
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 300px;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-info h3 {
+        h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--color-primary);
-            margin: 0 0 0.5rem;
-        }
-
-        .product-info p {
-            font-size: 0.9rem;
-            color: var(--color-text-secondary);
-            margin: 0;
+            margin-top: 2rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.5rem;
         }
     </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Tableau de bord</h1>
-        <div class="user-info">
-            {% if user.is_authenticated %}
-                Bonjour, {{ user.first_name }}
-            {% endif %}
-            <a href="{% url 'logout_view' %}" class="btn-logout">Déconnexion</a>
-        </div>
+
+    <div class="header-content">
+        <h1>Tableau de bord principal</h1>
     </div>
+    
+    {% if shop %}
+        <h2>Statistiques et aperçus</h2>
+        <!-- Ici, nous afficherons les statistiques et les graphiques -->
+        <p>Cet espace est en cours de développement. Bientôt, vous verrez ici les statistiques de votre boutique !</p>
+    {% else %}
+        <p style="text-align: center; color: var(--color-text-secondary);">
+            Vous n'avez pas de boutique. <a href="{% url 'create_shop' %}">Créez-en une !</a>
+        </p>
+    {% endif %}
 
-    <a href="{% url 'add_product' %}" class="btn-add-product">Ajouter un produit</a>
-
-    <div class="product-list">
-        {% for product in products %}
-            <div class="product-card">
-                <!-- Lien de modification -->
-                <a href="{% url 'edit_product' product.id %}" class="edit-link">
-                    <!-- Contenu de la carte -->
-                    {% if product.images.first %}
-                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
-                    {% else %}
-                        <img src="https://via.placeholder.com/300x200.png?text=Pas+d'image" alt="Pas d'image" class="product-image">
-                    {% endif %}
-                    <div class="product-info">
-                        <h3>{{ product.name }}</h3>
-                        <p>{{ product.description|truncatechars:100 }}</p>
-                        <p><strong>Prix :</strong> {{ product.price }} CFA</p>
-                        <p><strong>Stock :</strong> {{ product.stock }}</p>
-                    </div>
-                </a>
-
-                <!-- Formulaire de suppression -->
-                <form action="{% url 'delete_product' product.id %}" method="post" class="delete-form">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-button" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');">
-                        Supprimer
-                    </button>
-                </form>
-            </div>
-        {% empty %}
-            <p>Aucun produit n'a été ajouté à votre boutique pour l'instant.</p>
-        {% endfor %}
-    </div>
-</body>
-</html>
+{% endblock %}
