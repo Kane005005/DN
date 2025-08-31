@@ -29,11 +29,14 @@ DEBUG = True
 
 # Sécurité
 CSRF_TRUSTED_ORIGINS = [
-    'https://8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev'
+    'https://8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
+    # Ajoute la nouvelle URL ici
+    'https://8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev'
 ]
 
 ALLOWED_HOSTS = [
     '8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
+    '8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev',
     '127.0.0.1' # Ajoute cette ligne
 ]
 
@@ -141,3 +144,13 @@ import os # S'assure que la bibliothèque 'os' est importée en haut du fichier
 # Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+import os
+from dotenv import load_dotenv
+
+# Charge les variables d'environnement depuis le fichier .env
+load_dotenv()
+
+# Récupère la clé d'API
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")

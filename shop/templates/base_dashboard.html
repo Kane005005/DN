@@ -207,6 +207,8 @@
             <li><a href="{% url 'manage_shop' %}" class="{% if request.path == '/tableau-de-bord/boutique/' %}active{% endif %}"><i class="fas fa-store"></i><span>Gérer ma boutique</span></a></li>
             <li><a href="{% url 'manage_products' %}" class="{% if request.path == '/tableau-de-bord/produits/' %}active{% endif %}"><i class="fas fa-box-open"></i><span>Gestion des produits</span></a></li>
             <li><a href="{% url 'manage_orders' %}" class="{% if request.path == '/tableau-de-bord/commandes/' %}active{% endif %}"><i class="fas fa-clipboard-list"></i><span>Commandes</span></a></li>
+            <li><a href="{% url 'list_conversations' %}" class="{% if request.path == '/mes-conversations/' %}active{% endif %}"><i class="fas fa-comments"></i><span>Conversations</span></a></li>
+            <li><a href="{% url 'configure_negotiation' %}" class="{% if request.path == '/tableau-de-bord/negociation/' %}active{% endif %}"><i class="fas fa-robot"></i><span>Négociation IA</span></a></li>
         </ul>
         <div style="margin-top: auto;">
             <a href="{% url 'logout_view' %}" class="cta-btn" style="background-color: #ccc; color: var(--color-text);">Déconnexion</a>

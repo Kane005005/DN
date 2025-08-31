@@ -126,6 +126,7 @@
         <li><a href="{% url 'dashboard' %}"><i class="fas fa-chart-line"></i><span>Tableau de bord</span></a></li>
         <li><a href="{% url 'manage_products' %}"><i class="fas fa-box-open"></i><span>Gestion des produits</span></a></li>
         <li><a href="{% url 'manage_orders' %}"><i class="fas fa-clipboard-list"></i><span>Commandes</span></a></li>
+        <li><a href="{% url 'list_conversations' %}" class="{% if request.path == '/mes-conversations/' %}active{% endif %}"><i class="fas fa-comments"></i><span>Conversations</span></a></li>
     </ul>
     <div style="margin-top: auto;">
         <a href="{% url 'logout_view' %}" class="cta-btn" style="background-color: #ccc; color: var(--color-text);">Déconnexion</a>

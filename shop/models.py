@@ -138,31 +138,62 @@ class OrderItem(models.Model):
     def __str__(self):
         return self.product.name
 
-# NOUVEAUX MODÈLES pour le chat et la négociation
+# Fichier : shop/models.py
+# ... (le reste de ton code)
+
+# Fichier : shop/models.py
+from django.db import models
+from django.contrib.auth.models import User
 
 class Conversation(models.Model):
     """
-    Modèle de conversation de négociation.
-    Chaque conversation est liée à un produit spécifique, un client (l'utilisateur)
-    et un commerçant (via la boutique).
+    Représente une conversation de négociation entre un client et un commerçant.
     """
+    # L'utilisateur client qui a initié la conversation.
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='client_conversations')
+    # Le commerçant de la boutique du produit concerné.
+    merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE, related_name='merchant_conversations')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='negotiation_conversations')
-    merchant = models.ForeignKey(Merchant, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True) # Ajout pour marquer les conversations terminées
 
     def __str__(self):
         return f"Conversation sur '{self.product.name}' entre {self.client.username} et {self.merchant.user.username}"
 
 
+# Le modèle Message
 class Message(models.Model):
     """
-    Modèle pour les messages individuels d'une conversation.
+    Représente un message individuel au sein d'une conversation.
     """
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    # Ajout d'un champ pour identifier les messages générés par l'IA
+    is_ai_response = models.BooleanField(default=False) 
 
     def __str__(self):
         return f"Message de {self.sender.username} dans la conversation {self.conversation.id}"
+
+
+
+# Fichier : shop/models.py
+# ... (tes autres modèles existants)
+from decimal import Decimal
+
+# Modèle pour les paramètres de négociation
+class NegotiationSettings(models.Model):
+    """
+    Paramètres de l'IA de négociation pour une boutique.
+    """
+    shop = models.OneToOneField(Shop, on_delete=models.CASCADE, related_name='negotiation_settings')
+    is_active = models.BooleanField(default=False)
+    # Le prix minimum pour tous les produits de la boutique
+    min_price_threshold = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    # La réduction maximale que l'IA peut offrir (en pourcentage)
+    max_discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('10.00'))
+    
+    def __str__(self):
+        return f"Paramètres de négociation pour la boutique de {self.shop.merchant.user.username}"

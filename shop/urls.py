@@ -14,7 +14,8 @@ urlpatterns = [
     path('tableau-de-bord/produits/', views.manage_products, name='manage_products'),
     path('tableau-de-bord/commandes/', views.manage_orders, name='manage_orders'),
     path('tableau-de-bord/commandes/<int:order_id>/', views.order_detail, name='order_detail'),
-        path('tableau-de-bord/boutique/', views.manage_shop, name='manage_shop'),
+    path('tableau-de-bord/boutique/', views.manage_shop, name='manage_shop'),
+    path('tableau-de-bord/negociation/', views.configure_negotiation, name='configure_negotiation'),
 
 
     # Anciennes URLs de gestion de produits
@@ -33,5 +34,9 @@ urlpatterns = [
     path('paiement/traiter/', views.process_order, name='process_order'),
     path('commande-confirmee/<int:order_id>/', views.order_confirmation, name='order_confirmation'),
     # Nouvelles URLs pour le chat
-    path('chat/<int:product_id>/', views.negotiation_chat_view, name='negotiation_chat'),
+    path('chat/<int:product_id>/demarrer/', views.start_negotiation_view, name='start_negotiation'),
+    path('chat/<int:conversation_id>/', views.negotiation_chat_view, name='negotiation_chat'),
+    path('mes-conversations/', views.list_conversations, name='list_conversations'),
+        # URL de la négociation (AJOUTÉ)
+    path('chat/<int:conversation_id>/', views.negotiation_chat_view, name='negotiation_chat_view'),
 ]

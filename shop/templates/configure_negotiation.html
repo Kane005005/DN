@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Paramètres de Négociation IA</title>
+</head>
+<body>
+    <h1>Paramètres de Négociation IA</h1>
+    <p>Configurez les règles de l'IA de négociation pour votre boutique.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <label for="is_active">Activer la négociation IA :</label>
+        <input type="checkbox" id="is_active" name="is_active" {% if settings.is_active %}checked{% endif %}>
+        
+        <br><br>
+        
+        <label for="min_price_threshold">Prix minimum autorisé (en CFA) :</label>
+        <input type="number" step="0.01" id="min_price_threshold" name="min_price_threshold" value="{{ settings.min_price_threshold }}" required>
+        
+        <br><br>
+
+        <label for="max_discount_percentage">Réduction maximale (%) :</label>
+        <input type="number" step="0.01" id="max_discount_percentage" name="max_discount_percentage" value="{{ settings.max_discount_percentage }}" required>
+        
+        <br><br>
+        
+        <button type="submit">Sauvegarder les paramètres</button>
+    </form>
+    
+    <p><a href="{% url 'dashboard' %}">Retour au tableau de bord</a></p>
+</body>
+</html>

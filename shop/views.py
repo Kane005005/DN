@@ -1,5 +1,9 @@
 # shop/views.py
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Product, Conversation, Message, Merchant
+from django.http import JsonResponse
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -582,78 +586,233 @@ def order_detail(request, order_id):
 
     return render(request, 'order_detail.html', context)
 
-# NOUVELLES VUES POUR LE CHAT DE NÉGOCIATION
+# Fichier : shop/views.py
+
+# ... (Assure-toi que les imports suivants sont bien présents en haut du fichier)
+from .models import Product, Conversation, Merchant, Message 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+import json
+
+# ... (le reste de tes vues)
+
 @login_required(login_url='login_view')
-def negotiation_chat_view(request, product_id):
+def start_negotiation_view(request, product_id):
     """
-    Cette vue gère l'affichage du chat de négociation.
-    Elle est accessible à la fois par le client et le commerçant.
+    Vue pour démarrer ou rediriger vers une conversation de négociation existante.
     """
     product = get_object_or_404(Product, pk=product_id)
     
-    # On vérifie si l'utilisateur est le commerçant de la boutique
+    if not product.shop or not product.shop.merchant:
+        # Gère l'erreur si le produit n'est pas lié à un commerçant
+        return redirect('product_detail', product_id=product.id)
+    
+    merchant = product.shop.merchant
+
+    # Tente de trouver une conversation existante pour ce client et ce produit
+    try:
+        conversation = Conversation.objects.get(client=request.user, product=product)
+        # Si une conversation existe, redirige l'utilisateur vers celle-ci
+        return redirect('negotiation_chat', conversation_id=conversation.id)
+    except Conversation.DoesNotExist:
+        # Si aucune conversation n'existe, on en crée une nouvelle
+        conversation = Conversation.objects.create(
+            client=request.user,
+            merchant=merchant,
+            product=product
+        )
+        # Redirige vers la nouvelle conversation
+        return redirect('negotiation_chat', conversation_id=conversation.id)
+
+# Fichier : shop/views.py
+# ... (tes imports existants)
+from .services import get_ai_negotiation_response
+import re
+from decimal import Decimal
+
+# ... (le reste de tes vues)
+
+# Fichier : shop/views.py
+# ... (tes imports existants)
+from .services import get_ai_negotiation_response
+import re
+from decimal import Decimal
+
+# ... (le reste de tes vues)
+
+import json
+import re
+from decimal import Decimal
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib import messages as django_messages
+from .models import Conversation, Message, Merchant
+
+@login_required(login_url='login_view')
+def negotiation_chat_view(request, conversation_id):
+    conversation = get_object_or_404(Conversation, pk=conversation_id)
+    
     is_merchant = False
     try:
-        merchant = Merchant.objects.get(user=request.user)
-        if product.shop.merchant == merchant:
+        merchant = request.user.merchant
+        if conversation.merchant == merchant:
             is_merchant = True
     except Merchant.DoesNotExist:
         pass
+        
+    if not is_merchant and conversation.client != request.user:
+        return redirect('index')
 
-    # On trouve ou on crée la conversation
-    if is_merchant:
-        # Le commerçant ne démarre pas la conversation, il la rejoint
-        # Il peut rejoindre n'importe quelle conversation liée à son produit
-        conversation = get_object_or_404(Conversation, product=product)
-    else:
-        # Le client démarre ou rejoint sa propre conversation
-        conversation, created = Conversation.objects.get_or_create(
-            product=product,
-            client=request.user,
-            merchant=product.shop.merchant # Le commerçant est celui du produit
-        )
+    # Vérifier si c'est une requête AJAX/JSON
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    is_json = request.content_type == 'application/json'
 
     if request.method == 'POST':
-        # Gérer l'envoi d'un nouveau message via une requête AJAX
+        message_text = None
+        
         try:
-            data = json.loads(request.body)
-            message_text = data.get('message_text')
-            if message_text:
-                new_message = Message.objects.create(
-                    conversation=conversation,
-                    sender=request.user,
-                    text=message_text
-                )
-                # Retourne le nouveau message au format JSON pour la mise à jour côté client
-                return JsonResponse({
-                    'id': new_message.id,
-                    'text': new_message.text,
-                    'sender': new_message.sender.username,
-                    'is_me': new_message.sender == request.user,
-                    'timestamp': new_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                })
+            # Gestion des données JSON
+            if is_json or is_ajax:
+                try:
+                    data = json.loads(request.body)
+                    message_text = data.get('message_text', '').strip()
+                except json.JSONDecodeError:
+                    return JsonResponse({'error': 'Données JSON invalides'}, status=400)
+            else:
+                # Gestion des données de formulaire standard
+                message_text = request.POST.get('message_text', '').strip()
+            
+            if not message_text:
+                return JsonResponse({'error': 'Le message ne peut pas être vide.'}, status=400)
+
+            # Créer le message
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                text=message_text,
+                is_ai_response=False
+            )
+
+            # Générer une réponse IA si nécessaire
+            ai_response_text = None
+            if not is_merchant and conversation.merchant.shop.negotiation_settings.is_active:
+                match = re.search(r'\d+', message_text)
+                if match:
+                    try:
+                        price_offer = Decimal(match.group(0))
+                        ai_response_text = get_ai_negotiation_response(
+                            conversation.product, price_offer, conversation
+                        )
+                        
+                        Message.objects.create(
+                            conversation=conversation,
+                            sender=conversation.merchant.user, 
+                            text=ai_response_text,
+                            is_ai_response=True
+                        )
+                    except (ValueError, Exception) as e:
+                        print(f"Erreur de traitement de l'offre de prix ou de l'API : {e}")
+                        # Continuer même en cas d'erreur IA
+
+            # Préparer la réponse
+            if is_ajax or is_json:
+                updated_messages = conversation.messages.order_by('timestamp')
+                
+                formatted_messages = []
+                for message in updated_messages:
+                    formatted_messages.append({
+                        'id': message.id,
+                        'sender': message.sender.username,
+                        'text': message.text,
+                        'is_me': message.sender == request.user,
+                        'is_ai': message.is_ai_response,
+                        'timestamp': message.timestamp.strftime("%H:%M")
+                    })
+                
+                response_data = {
+                    'success': True, 
+                    'messages': formatted_messages
+                }
+                
+                if ai_response_text:
+                    response_data['ai_response'] = ai_response_text
+                
+                return JsonResponse(response_data)
+            else:
+                # Redirection pour les requêtes non-AJAX
+                return redirect('negotiation_chat_view', conversation_id=conversation.id)
+                
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            print(f"Erreur inattendue: {e}")
+            if is_ajax or is_json:
+                return JsonResponse({'error': 'Une erreur s\'est produite'}, status=500)
+            else:
+                # Gérer l'erreur pour les requêtes standard
+                django_messages.error(request, 'Une erreur s\'est produite lors de l\'envoi du message.')
+                return redirect('negotiation_chat_view', conversation_id=conversation.id)
 
-    # Gérer l'affichage initial de la page ou les requêtes GET pour rafraîchir le chat
-    messages = conversation.messages.order_by('timestamp')
-
-    # Prépare les messages pour le rendu du template
-    # Ajoute un indicateur 'is_me' pour différencier les messages de l'utilisateur
-    formatted_messages = []
-    for message in messages:
-        formatted_messages.append({
-            'text': message.text,
-            'sender': message.sender.username,
-            'is_me': message.sender == request.user,
-            'timestamp': message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        })
-
+    # GET request - afficher la page
+    messages_list = conversation.messages.order_by('timestamp')
     context = {
         'conversation': conversation,
-        'product': product,
-        'messages': formatted_messages,
+        'product': conversation.product,
+        'messages': messages_list,
         'is_merchant': is_merchant,
     }
     
     return render(request, 'negotiation_chat.html', context)
+
+@login_required(login_url='login_view')
+def list_conversations(request):
+    """
+    Vue qui liste toutes les conversations de l'utilisateur (client ou commerçant).
+    """
+    is_merchant = False
+    try:
+        merchant = Merchant.objects.get(user=request.user)
+        conversations = Conversation.objects.filter(merchant=merchant)
+        is_merchant = True
+    except Merchant.DoesNotExist:
+        conversations = Conversation.objects.filter(client=request.user)
+    
+    context = {
+        'conversations': conversations,
+        'is_merchant': is_merchant
+    }
+    return render(request, 'list_conversations.html', context)
+
+# Fichier : shop/views.py
+# ... (Ajoute les imports en haut du fichier si nécessaire)
+from .models import NegotiationSettings
+
+# ... (le reste de tes vues)
+
+@login_required(login_url='login_view')
+def configure_negotiation(request):
+    """
+    Permet au commerçant de configurer les paramètres de négociation de l'IA.
+    """
+    # On vérifie que l'utilisateur est bien un commerçant
+    try:
+        merchant = request.user.merchant
+        # On tente de récupérer les paramètres existants ou on en crée de nouveaux
+        settings, created = NegotiationSettings.objects.get_or_create(shop=merchant.shop)
+    except (Merchant.DoesNotExist, Shop.DoesNotExist):
+        # Redirection si l'utilisateur n'est pas un commerçant ou n'a pas de boutique
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        settings.is_active = request.POST.get('is_active') == 'on'
+        settings.min_price_threshold = request.POST.get('min_price_threshold')
+        settings.max_discount_percentage = request.POST.get('max_discount_percentage')
+        settings.save()
+        # Rediriger pour éviter la soumission multiple du formulaire
+        return redirect('configure_negotiation')
+
+    context = {
+        'settings': settings
+    }
+    return render(request, 'configure_negotiation.html', context)

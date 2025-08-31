@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styles CSS pour la page de détail du produit */
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Utilisation des couleurs fournies par l'utilisateur */
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
             --color-bg-light: #FAF9F6;
@@ -19,160 +22,191 @@
             --color-error: #800020;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            box-sizing: border-box;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-        }
-        
-        .product-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .product-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--color-primary);
-            margin: 0;
-        }
-
-        .cart-link {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--color-primary);
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--color-primary);
-            border-radius: 0.5rem;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .cart-link:hover {
+        .bg-color-primary {
             background-color: var(--color-primary);
-            color: #fff;
         }
 
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        
-        @media (min-width: 768px) {
-            .product-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .product-media {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .product-media img, .product-media video {
-            width: 100%;
-            height: auto;
-            border-radius: 1rem;
-        }
-        
-        .product-info h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+        .text-color-primary {
             color: var(--color-primary);
-            margin-top: 0;
         }
-        
-        .product-price {
-            font-size: 1.8rem;
-            font-weight: 700;
+
+        .bg-color-accent {
+            background-color: var(--color-accent);
+        }
+
+        .text-color-accent {
             color: var(--color-accent);
-            margin-bottom: 1rem;
         }
-        
-        .product-description p {
-            line-height: 1.6;
+
+        .bg-color-bg-light {
+            background-color: var(--color-bg-light);
+        }
+
+        .text-color-bg-light {
+            color: var(--color-bg-light);
+        }
+
+        .text-color-text {
             color: var(--color-text);
         }
-        
-        .buy-btn {
-            padding: 0.75rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            text-decoration: none;
-            border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 1rem;
-        }
 
-        .buy-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        .text-color-text-secondary {
+            color: var(--color-text-secondary);
         }
     </style>
 </head>
-<body>
 
-    <div class="container">
-        <div class="product-header">
-            <h1>{{ product.name }}</h1>
-            <a href="{% url 'cart_detail' %}" class="cart-link">Mon Panier</a>
-        </div>
-        
-        <div class="product-grid">
-            <div class="product-media">
-                {% if product.images.all %}
-                    {% for image in product.images.all %}
-                        <img src="{{ image.image.url }}" alt="{{ product.name }}">
-                    {% endfor %}
-                {% else %}
-                    <img src="https://via.placeholder.com/600x400.png?text=Pas+d'image+disponible" alt="Pas d'image">
-                {% endif %}
-                
-                {% if product.videos.all %}
-                    {% for video in product.videos.all %}
-                        <video controls>
-                            <source src="{{ video.video.url }}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    {% endfor %}
-                {% endif %}
+<body class="bg-color-bg-light text-color-text">
+
+    <!-- En-tête avec barre de navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo ou nom du site -->
+            <a href="{% url 'index' %}" class="text-2xl font-bold text-color-primary">DEANNA</a>
+
+            <!-- Liens de navigation -->
+            <div class="hidden md:flex space-x-6">
+                <a href="{% url 'visit_shops' %}"
+                    class="text-color-text-secondary hover:text-color-primary font-medium transition-colors">Retour aux
+                    boutiques</a>
             </div>
-            <div class="product-info">
-                <span class="product-price">{{ product.price }} CFA</span>
-                <div class="product-description">
-                    <p>{{ product.description }}</p>
+
+            <!-- Boutons d'action -->
+            <div class="flex items-center space-x-4">
+                <button class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <a href="{% url 'cart_detail' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </button>
+                <a href="#" class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A11.968 11.968 0 0112 15c2.72 0 5.303.743 7.18 2.155m-7.18-2.155L12 15m0 0a6 6 0 100-12 6 6 0 000 12z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu de la page de détails du produit -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-20">
+        <div class="md:flex md:space-x-8">
+            <!-- Colonne de gauche: Images et vidéos -->
+            <div class="md:w-1/2 rounded-xl overflow-hidden shadow-lg mb-8 md:mb-0">
+                <div class="w-full h-96 bg-gray-200 flex items-center justify-center relative">
+                    <!-- Conteneur pour l'image ou la vidéo principale -->
+                    <div id="main-media-container" class="w-full h-full">
+                        {% if product.images.first %}
+                        <img id="main-product-image" src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover">
+                        {% else %}
+                        <img id="main-product-image" src="https://placehold.co/600x400/F1F5F9/94A3B8?text=Pas+d'image"
+                            alt="Pas d'image" class="w-full h-full object-cover">
+                        {% endif %}
+                        <video id="main-product-video" class="w-full h-full object-cover absolute top-0 left-0 hidden"
+                            controls autoplay muted></video>
+                    </div>
                 </div>
-                
-                <form action="{% url 'add_to_cart' product.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="buy-btn">Ajouter au panier</button>
-                </form>
+
+                <!-- Vignetttes pour les images et vidéos -->
+                <div class="mt-4 flex flex-wrap gap-2">
+                    {% for image in product.images.all %}
+                    <img src="{{ image.image.url }}" alt="Vignette"
+                        class="h-20 w-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-color-accent transition-colors thumbnail"
+                        data-media-type="image" data-media-url="{{ image.image.url }}">
+                    {% endfor %}
+                    {% for video in product.videos.all %}
+                    <div class="relative h-20 w-20 rounded-md cursor-pointer border-2 border-transparent hover:border-color-accent transition-colors thumbnail"
+                        data-media-type="video" data-media-url="{{ video.video.url }}">
+                        <img src="https://placehold.co/80x80/2C2C2C/6C6C6C?text=Vidéo" alt="Vignette vidéo"
+                            class="w-full h-full object-cover rounded-md">
+                        <svg class="absolute inset-0 m-auto h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Colonne de droite: Infos et actions -->
+            <div class="md:w-1/2">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h1 class="text-4xl font-bold text-color-primary mb-2">{{ product.name }}</h1>
+                    <p class="text-lg text-color-text-secondary mb-4">Par <span class="font-medium text-color-text">{{
+                            product.shop.name }}</span></p>
+
+                    <div class="flex items-center space-x-2 mb-4">
+                        <p class="text-2xl font-bold text-color-primary">{{ product.price }} CFA</p>
+                    </div>
+
+                    <p class="text-color-text leading-relaxed mb-6">{{ product.description }}</p>
+
+                    <form action="{% url 'add_to_cart' product.id %}" method="post" class="mb-4">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="w-full bg-color-accent text-color-bg-light text-center py-3 rounded-full text-lg font-semibold hover:bg-opacity-80 transition-colors duration-300 transform hover:scale-105">
+                            Ajouter au panier
+                        </button>
+                    </form>
+
+                    <form action="{% url 'start_negotiation' product.id %}" method="get">
+                        <button type="submit"
+                            class="w-full bg-color-primary text-color-bg-light text-center py-3 rounded-full text-lg font-semibold hover:bg-opacity-80 transition-colors duration-300 transform hover:scale-105">
+                            Négocier le prix
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-6 mt-10">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            const mainImage = document.getElementById('main-product-image');
+            const mainVideo = document.getElementById('main-product-video');
+
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function () {
+                    const mediaType = this.getAttribute('data-media-type');
+                    const mediaUrl = this.getAttribute('data-media-url');
+
+                    if (mediaType === 'image') {
+                        mainImage.src = mediaUrl;
+                        mainImage.classList.remove('hidden');
+                        mainVideo.classList.add('hidden');
+                        mainVideo.pause();
+                    } else if (mediaType === 'video') {
+                        mainVideo.src = mediaUrl;
+                        mainImage.classList.add('hidden');
+                        mainVideo.classList.remove('hidden');
+                        mainVideo.play();
+                    }
+                });
+            });
+
+            // Gère l'affichage initial au chargement de la page
+            const initialVideo = document.querySelector('.thumbnail[data-media-type="video"]');
+            if (initialVideo) {
+                mainImage.classList.add('hidden');
+                mainVideo.classList.remove('hidden');
+                mainVideo.src = initialVideo.getAttribute('data-media-url');
+            }
+        });
+    </script>
 </body>
+
 </html>

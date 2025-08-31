@@ -3,46 +3,150 @@
 {% block title %}Gestion des commandes - DEANNA{% endblock %}
 
 {% block content %}
-<div class="p-8">
-    <h1 class="text-4xl font-serif text-gray-800 mb-6">Gestion des commandes</h1>
+<style>
+    :root {
+        --color-primary: #0B1C2A;
+        --color-accent: #CFAF70;
+        --color-bg-light: #FAF9F6;
+        --color-text: #2C2C2C;
+        --color-text-secondary: #6C6C6C;
+        --color-border: #1A3B57;
+        --color-alert: #800020;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .header-content {
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-content h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--color-primary);
+        margin: 0;
+    }
+
+    .table-container {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+    }
+
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .order-table th, .order-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .order-table th {
+        background-color: #f9fafb;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #4b5563;
+        text-transform: uppercase;
+    }
+
+    .order-table tr:hover {
+        background-color: #f3f4f6;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .status-complete {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-pending {
+        background-color: #fffbeb;
+        color: #92400e;
+    }
+
+    .btn-details {
+        background-color: var(--color-primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+    }
     
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <table class="w-full text-left table-auto">
+    .btn-details:hover {
+        background-color: #1a3b57;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--color-text-secondary);
+    }
+</style>
+
+<div class="header-content">
+    <h1>Gestion des commandes</h1>
+</div>
+
+{% if orders %}
+    <div class="table-container">
+        <table class="order-table">
             <thead>
-                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                    <th class="py-3 px-6 text-left">ID Commande</th>
-                    <th class="py-3 px-6 text-left">Client</th>
-                    <th class="py-3 px-6 text-left">Date</th>
-                    <th class="py-3 px-6 text-left">Statut</th>
-                    <th class="py-3 px-6 text-left">Total</th>
-                    <th class="py-3 px-6 text-left">Actions</th>
+                <tr>
+                    <th>ID Commande</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Total</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
-            <tbody class="text-gray-600 text-sm font-light">
+            <tbody>
                 {% for order in orders %}
-                <tr class="border-b border-gray-200 hover:bg-gray-100">
-                    <td class="py-3 px-6 whitespace-nowrap">{{ order.id }}</td>
-                    <td class="py-3 px-6">{{ order.user.username }}</td>
-                    <td class="py-3 px-6">{{ order.date_ordered|date:"d M Y" }}</td>
-                    <td class="py-3 px-6">
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.date_ordered|date:"d M Y" }}</td>
+                    <td>
                         {% if order.complete %}
-                        <span class="bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs">Terminée</span>
+                        <span class="status-badge status-complete">Terminée</span>
                         {% else %}
-                        <span class="bg-yellow-200 text-yellow-600 py-1 px-3 rounded-full text-xs">En attente</span>
+                        <span class="status-badge status-pending">En attente</span>
                         {% endif %}
                     </td>
-                    <td class="py-3 px-6">{{ order.get_cart_total|floatformat:2 }} CFA</td>
-                    <td class="py-3 px-6">
-                        <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">Détails</a>
+                    <td>{{ order.get_cart_total|floatformat:2 }} CFA</td>
+                    <td>
+                        <a href="{% url 'order_detail' order.id %}" class="btn-details">Détails</a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="py-4 text-center text-gray-500">Vous n'avez pas encore de commandes.</td>
+                    <td colspan="6" class="empty-state">Vous n'avez pas encore de commandes.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
+{% else %}
+    <div class="empty-state">
+        <p>Vous n'avez pas encore de commandes.</p>
+    </div>
+{% endif %}
 {% endblock %}

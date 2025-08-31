@@ -4,125 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEANNA - Mon commerce en un clic</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Définition de la palette de couleurs et des polices */
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Utilisation des couleurs fournies par l'utilisateur */
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
             --color-bg-light: #FAF9F6;
             --color-text: #2C2C2C;
             --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
         }
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .text-color-text { color: var(--color-text); }
+        .text-color-text-secondary { color: var(--color-text-secondary); }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        /* Animation pour le slogan */
+        .slogan-animated {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInAndSlideUp 1s forwards;
         }
-
-        .header {
-            text-align: center;
-            padding: 2rem 1rem;
-        }
-
-        .logo-name {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            margin: 0;
-        }
-
-        .slogan {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-text-secondary);
-            margin: 0.5rem 0 2rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            width: 100%;
-            max-width: 400px;
-            padding: 0 1.5rem;
-            box-sizing: border-box;
-        }
-
-        .option-card {
-            background-color: #fff;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            text-decoration: none;
-            color: var(--color-text);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .option-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            margin-top: 0;
-        }
-
-        .option-card p {
-            font-size: 1rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 0;
-        }
-
-        /* Styles pour les écrans plus grands */
-        @media (min-width: 768px) {
-            .options {
-                flex-direction: row;
-                justify-content: center;
-                max-width: 900px;
+        @keyframes fadeInAndSlideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
-<body>
+<body class="bg-color-bg-light text-color-text min-h-screen flex flex-col">
 
-    <header class="header">
-        <h1 class="logo-name">DEANNA</h1>
-        <p class="slogan">Mon commerce en un clic, Vendez plus, stressez moins</p>
-    </header>
+    <!-- En-tête avec barre de navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo ou nom du site -->
+            <a href="{% url 'index' %}" class="text-2xl font-bold text-color-primary">DEANNA</a>
 
-    <section class="options">
-        <a href="{% url 'login_view' %}" class="option-card">
-            <h3>Accéder à ma boutique</h3>
-            <p>Connectez-vous pour gérer votre commerce en ligne.</p>
-        </a>
-        <a href="{% url 'create_shop' %}" class="option-card">
-            <h3>Créer une boutique</h3>
-            <p>Lancez votre propre boutique en quelques minutes.</p>
-        </a>
-        <a href="{% url 'visit_shops' %}" class="option-card">
-            <h3>Visiter des boutiques</h3>
-            <p>Découvrez et explorez les produits de tous nos commerçants.</p>
-        </a>
-    </section>
+            <!-- Boutons d'action -->
+            <div class="flex items-center space-x-4">
+                <a href="{% url 'login_view' %}" class="px-4 py-2 text-sm md:text-base font-semibold text-color-primary border border-color-primary rounded-full hover:bg-color-primary hover:text-white transition-colors duration-300">
+                    Se connecter
+                </a>
+                <a href="{% url 'create_shop' %}" class="px-4 py-2 text-sm md:text-base font-semibold text-white bg-color-accent rounded-full hover:bg-opacity-80 transition-colors duration-300">
+                    Créer une boutique
+                </a>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Section principale "Hero" -->
+    <main class="flex-grow flex items-center justify-center text-center p-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 id="slogan-title" class="text-4xl md:text-6xl font-extrabold text-color-primary leading-tight mb-4 slogan-animated">
+                Mon commerce en un clic, Vendez plus, stressez moins
+            </h1>
+            <p id="slogan-text" class="text-lg md:text-xl text-color-text-secondary max-w-2xl mx-auto mt-6 opacity-0 animate-fadeIn delay-500ms">
+                Lancez votre boutique en ligne avec facilité. Gérez vos produits, vos commandes et vos clients en toute simplicité.
+            </p>
+            <div class="mt-8">
+                <a href="{% url 'visit_shops' %}" class="inline-block px-6 py-3 text-base font-semibold text-color-bg-light bg-color-accent rounded-full hover:bg-opacity-80 transition-transform duration-300 transform hover:scale-105">
+                    Visiter les boutiques
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Effet d'animation simple au chargement de la page
+        window.addEventListener('load', () => {
+            const sloganTitle = document.getElementById('slogan-title');
+            const sloganText = document.getElementById('slogan-text');
+            
+            sloganTitle.style.opacity = '1';
+            sloganTitle.style.transform = 'translateY(0)';
+
+            sloganText.style.animation = 'fadeIn 1s forwards';
+            sloganText.style.animationDelay = '0.5s';
+        });
+
+        // Définition de l'animation pour le texte du slogan
+        const styleSheet = document.styleSheets[document.styleSheets.length - 1];
+        styleSheet.insertRule(`
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `, styleSheet.cssRules.length);
+    </script>
 </body>
 </html>

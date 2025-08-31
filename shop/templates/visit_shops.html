@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visiter les boutiques - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Explorer les boutiques</title>
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styles CSS pour la page */
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Utilisation des nouvelles couleurs */
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
             --color-bg-light: #FAF9F6;
@@ -18,137 +19,97 @@
             --color-border: #1A3B57;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            box-sizing: border-box;
-        }
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .hover\:bg-color-accent-darker:hover { background-color: #A3965E; } /* Une version un peu plus foncée pour le survol */
+        .text-color-text { color: var(--color-text); }
+        .text-color-text-secondary { color: var(--color-text-secondary); }
 
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .header-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .header-subtitle {
-            font-size: 1.2rem;
-            color: var(--color-text-secondary);
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            padding: 0 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .product-card {
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            text-decoration: none;
-            color: var(--color-text);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .product-details {
-            padding: 1.5rem;
-        }
-
-        .product-details h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            margin: 0 0 0.5rem;
-            color: var(--color-primary);
-        }
-
-        .product-details p {
-            margin: 0.5rem 0;
-            font-size: 1rem;
-        }
-
-        .product-details .price {
-            font-weight: 600;
-            color: var(--color-accent);
-            font-size: 1.1rem;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 4rem 1rem;
-            color: var(--color-text-secondary);
-            font-style: italic;
-        }
-
-        .home-link {
-            display: block;
-            text-align: center;
-            margin-top: 2rem;
-            font-weight: 600;
-            text-decoration: none;
-            color: var(--color-primary);
-            transition: color 0.3s;
-        }
-
-        .home-link:hover {
-            color: var(--color-accent);
-        }
     </style>
 </head>
-<body>
+<body class="bg-color-bg-light text-color-text">
 
-    <header class="header">
-        <h1 class="header-title">Explorer les boutiques</h1>
-        <p class="header-subtitle">Découvrez des produits de commerçants du monde entier</p>
-    </header>
-    
-    <main>
-        <div class="product-grid">
-            {% for product in products %}
-                <a href="{% url 'product_detail' product.id %}" class="product-card">
-                    {% if product.images.first %}
-                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
-                    {% else %}
-                        <img src="https://via.placeholder.com/300x200.png?text=Pas+d'image" alt="Pas d'image" class="product-image">
-                    {% endif %}
-                    <div class="product-details">
-                        <h3>{{ product.name }}</h3>
-                        <p class="price">{{ product.price }} CFA</p>
-                        <p>De la boutique : {{ product.shop.name }}</p>
-                    </div>
+    <!-- En-tête avec barre de navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo ou nom du site -->
+            <a href="{% url 'index' %}" class="text-2xl font-bold text-color-primary">DEANNA</a>
+
+            <!-- Liens de navigation -->
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="text-color-text-secondary hover:text-color-primary font-medium transition-colors">Accueil</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-primary font-medium transition-colors">Produits</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-primary font-medium transition-colors">Boutiques</a>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="flex items-center space-x-4">
+                <button class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <a href="{% url 'cart_detail' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        --color-border:            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        --color-border:        </svg>
+                </button>
+                <a href="#" class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A11.968 11.968 0 0112 15c2.72 0 5.303.743 7.18 2.155m-7.18-2.155L12 15m0 0a6 6 0 100-12 6 6 0 000 12z" />
+                    </svg>
                 </a>
-            {% empty %}
-                <div class="empty-state">
-                    <p>Aucun produit n'est disponible pour l'instant. Revenez plus tard !</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section "Hero" ou Bannière promotionnelle -->
+    <div class="bg-color-primary text-color-bg-light py-20 px-4 text-center rounded-b-3xl shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-3">Trouvez votre prochain trésor</h1>
+        <p class="text-lg md:text-xl max-w-2xl mx-auto">Explorez des produits uniques et de qualité provenant de nos boutiques partenaires.</p>
+    </div>
+
+    <!-- Contenu principal -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 mt-10 mb-20">
+        <h2 class="text-3xl font-bold text-color-primary mb-8 text-center">Produits populaires</h2>
+        
+        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Les fiches produits seront insérées ici par le moteur de templates de Django -->
+            {% for product in products %}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+                <span class="absolute top-2 left-2 bg-color-accent text-color-bg-light text-xs font-semibold px-2 py-1 rounded-full z-10">Nouveau</span>
+                --color-border:    {% if product.images.first %}
+                <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-xl">
+                {% else %}
+                <img src="https://placehold.co/400x300/F1F5F9/94A3B8?text=Pas+d'image" alt="Pas d'image" class="w-full h-48 object-cover rounded-t-xl">
+                {% endif %}
+                <div class="p-4">
+                    <h3 class="font-bold text-color-primary">{{ product.name }}</h3>
+                    <p class="text-sm text-color-text-secondary mt-1">De la boutique : <span class="font-medium text-color-text">{{ product.shop.name }}</span></p>
+                    <div class="flex justify-between items-center mt-3">
+                        <p class="text-xl font-semibold text-color-text">{{ product.price }} CFA</p>
+                        <a href="{% url 'add_to_cart' product.id %}" class="bg-color-accent text-color-primary px-4 py-2 rounded-full text-sm font-semibold hover:bg-color-accent-darker transition-colors">
+                            Ajouter
+                        </a>
+                    </div>
                 </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-md">
+                <p class="text-color-text-secondary text-lg">Aucun produit n'est disponible pour l'instant. Revenez plus tard !</p>
+            </div>
             {% endfor %}
         </div>
     </main>
 
-    <a href="{% url 'index' %}" class="home-link">Retour à la page d'accueil</a>
-
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-10">
+        <div --color-border: class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">À propos</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de confidentialité</a>
+            </div>
+            <p class="text-gray-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
 </body>
 </html>
