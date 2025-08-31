@@ -1,0 +1,6 @@
+# Ignore les dossiers de l'environnement virtuel
+/venv
+/env
+
+# Ignore le fichier de variables d'environnement
+.env
