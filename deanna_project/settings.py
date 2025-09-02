@@ -145,10 +145,10 @@ import os # S'assure que la bibliothèque 'os' est importée en haut du fichier
 
 # Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')LANGUAGE_CODE = 'fr-fr' # J'ai changé 'en-us' en 'fr-fr' pour le français
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # J'ai changé 'en-us' en 'fr-fr' pour le français
 # On définit le fuseau horaire sur le fuseau horaire de l'Afrique de l'Ouest
 TIME_ZONE = 'Africa/Bamako' 
-
+LANGUAGE_CODE = 'fr-fr'
 USE_I18N = True
 
 USE_TZ = True
