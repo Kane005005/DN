@@ -21,6 +21,47 @@
             margin: 0;
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card .icon {
+            font-size: 3rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card .value {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--color-text-secondary);
+        }
+
         h2 {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
@@ -28,6 +69,15 @@
             margin-top: 2rem;
             border-bottom: 1px solid var(--color-border);
             padding-bottom: 0.5rem;
+        }
+        
+        .chart-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            height: 400px;
+            margin-top: 2rem;
         }
     </style>
 
@@ -37,12 +87,169 @@
     
     {% if shop %}
         <h2>Statistiques et aperçus</h2>
-        <!-- Ici, nous afficherons les statistiques et les graphiques -->
-        <p>Cet espace est en cours de développement. Bientôt, vous verrez ici les statistiques de votre boutique !</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-box-open icon"></i>
+                <div class="value">{{ total_products }}</div>
+                <div class="label">Total de produits</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clipboard-list icon"></i>
+                <div class="value">{{ total_orders }}</div>
+                <div class="label">Total de commandes</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-chart-line icon"></i>
+                <div class="value">{{ total_revenue|floatformat:2 }} CFA</div>
+                <div class="label">Revenus totaux</div>
+            </div>
+        </div>
+
+        <h2>Graphiques de performance</h2>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <h2>Produits les plus vendus</h2>
+        <div class="chart-container">
+            <canvas id="topProductsChart"></canvas>
+        </div>
+
     {% else %}
         <p style="text-align: center; color: var(--color-text-secondary);">
-            Vous n'avez pas de boutique. <a href="{% url 'create_shop' %}">Créez-en une !</a>
+            Vous n'avez pas de boutique. <a href="{% url 'create_shop' %}" class="cta-btn">Créer une boutique maintenant</a>.
         </p>
     {% endif %}
 
+    <!-- Script pour Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupère les données passées par Django
+            const revenueData = JSON.parse('{{ revenue_data_json|safe }}');
+            const topProductsData = JSON.parse('{{ top_products_data_json|safe }}');
+
+            // --- Graphique du chiffre d'affaires ---
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            
+            // Formatage des données
+            const revenueLabels = revenueData.map(item => item.day);
+            const revenueValues = revenueData.map(item => item.revenue);
+
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        label: 'Chiffre d\'affaires (CFA)',
+                        data: revenueValues,
+                        borderColor: '#CFAF70',
+                        backgroundColor: 'rgba(207, 175, 112, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Chiffre d\'affaires (CFA)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- Graphique des produits les plus vendus ---
+            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+
+            // Formatage des données
+            const productNames = topProductsData.map(item => item.name);
+            const productQuantities = topProductsData.map(item => item.quantity);
+
+            const topProductsChart = new Chart(topProductsCtx, {
+                type: 'bar',
+                data: {
+                    labels: productNames,
+                    datasets: [{
+                        label: 'Quantité vendue',
+                        data: productQuantities,
+                        backgroundColor: [
+                            'rgba(11, 28, 42, 0.8)',
+                            'rgba(207, 175, 112, 0.8)',
+                            'rgba(26, 59, 87, 0.8)',
+                            'rgba(108, 108, 108, 0.8)',
+                            'rgba(128, 0, 32, 0.8)'
+                        ],
+                        borderColor: [
+                            '#0B1C2A',
+                            '#CFAF70',
+                            '#1A3B57',
+                            '#6C6C6C',
+                            '#800020'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantité vendue'
+                            },
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Produit'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

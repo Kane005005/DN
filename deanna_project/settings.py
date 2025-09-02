@@ -23,15 +23,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=uo)hy5(*66%3m*-fy6z61^)m_js3*usn5+3#(_@o3yged-vf7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # deanna_project/settings.py
 
 # Sécurité
+# Sécurité
 CSRF_TRUSTED_ORIGINS = [
+    ' Deanna0025.pythonanywhere.com',
     'https://8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
     # Ajoute la nouvelle URL ici
-    'https://8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev'
+    'https://8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev',
+    'https://8000-firebase-dn2-1756640636083.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
 ]
 
 ALLOWED_HOSTS = [
@@ -115,10 +118,63 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
+LANGUAGE_CODE = 'fr-fr' # J'ai changé 'en-us' en 'fr-fr' pour le français
+# On définit le fuseau horaire sur le fuseau horaire de l'Afrique de l'Ouest
+TIME_ZONE = 'Africa/Bamako' 
 
-LANGUAGE_CODE = 'en-us'
+USE_I18N = True
 
-TIME_ZONE = 'UTC'
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'shop/static',
+]
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+import os # S'assure que la bibliothèque 'os' est importée en haut du fichier
+
+# ... (les autres paramètres)
+
+# Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')LANGUAGE_CODE = 'fr-fr' # J'ai changé 'en-us' en 'fr-fr' pour le français
+# On définit le fuseau horaire sur le fuseau horaire de l'Afrique de l'Ouest
+TIME_ZONE = 'Africa/Bamako' 
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'shop/static',
+]
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+import os # S'assure que la bibliothèque 'os' est importée en haut du fichier
+
+# ... (les autres paramètres)
+
+# Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')LANGUAGE_CODE = 'fr-fr' # J'ai changé 'en-us' en 'fr-fr' pour le français
+# On définit le fuseau horaire sur le fuseau horaire de l'Afrique de l'Ouest
+TIME_ZONE = 'Africa/Bamako' 
 
 USE_I18N = True
 
@@ -144,8 +200,6 @@ import os # S'assure que la bibliothèque 'os' est importée en haut du fichier
 # Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
 import os
 from dotenv import load_dotenv
 

@@ -23,9 +23,16 @@ urlpatterns = [
     path('modifier-produit/<int:product_id>/', views.edit_product, name='edit_product'),
     path('supprimer-produit/<int:product_id>/', views.delete_product, name='delete_product'),
     
+    # AJOUT : URLs pour la navigation et la recherche de produits avancée
+    path('produits/', views.product_list, name='product_list'),
+    path('produits/recherche/', views.product_search, name='product_search'),
+    path('produits/categorie/<slug:category_slug>/', views.products_by_category, name='products_by_category'),
+    path('produits/categorie/<slug:category_slug>/<slug:subcategory_slug>/', views.products_by_subcategory, name='products_by_subcategory'),
+    
     # URLs pour les clients
     path('visiter-boutiques/', views.visit_shops, name='visit_shops'),
     path('produit/<int:product_id>/', views.product_detail, name='product_detail'),
+    path('produit/<int:product_id>/avis/', views.add_review, name='add_review'), # AJOUT : URL pour ajouter un avis
     path('ajouter-au-panier/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('panier/', views.cart_detail, name='cart_detail'),
     path('panier/supprimer/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
@@ -35,8 +42,8 @@ urlpatterns = [
     path('commande-confirmee/<int:order_id>/', views.order_confirmation, name='order_confirmation'),
     # Nouvelles URLs pour le chat
     path('chat/<int:product_id>/demarrer/', views.start_negotiation_view, name='start_negotiation'),
-    path('chat/<int:conversation_id>/', views.negotiation_chat_view, name='negotiation_chat'),
-    path('mes-conversations/', views.list_conversations, name='list_conversations'),
-        # URL de la négociation (AJOUTÉ)
-    path('chat/<int:conversation_id>/', views.negotiation_chat_view, name='negotiation_chat_view'),
+    path('chat/<int:conversation_id>/', views.conversation_detail_view, name='conversation_detail'),
+    path('chat/', views.list_conversations_view, name='list_conversations'),
+    path('api/chat/<int:conversation_id>/', views.chat_api, name='chat_api'),
+
 ]

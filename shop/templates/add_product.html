@@ -1,161 +1,215 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un produit - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Définition des variables CSS pour les couleurs */
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
             --color-bg-light: #FAF9F6;
             --color-text: #2C2C2C;
             --color-text-secondary: #6C6C6C;
-            --color-hover: #E0CBA3;
             --color-border: #1A3B57;
             --color-error: #800020;
         }
 
-        /* Styles de base pour la page */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        
-        .container {
-            max-width: 600px;
-            width: 100%;
-            padding: 2rem;
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        .bg-color-primary {
+            background-color: var(--color-primary);
         }
 
-        .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.25rem;
+        .text-color-primary {
             color: var(--color-primary);
-            margin-bottom: 2rem;
-            text-align: center;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .bg-color-accent {
+            background-color: var(--color-accent);
         }
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--color-text);
+        .text-color-accent {
+            color: var(--color-accent);
+        }
+
+        .bg-color-bg-light {
+            background-color: var(--color-bg-light);
+        }
+
+        .text-color-bg-light {
+            color: var(--color-bg-light);
+        }
+
+        .border-color-border {
+            border-color: var(--color-border);
+        }
+
+        .btn-submit {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         input[type="text"],
         input[type="number"],
-        input[type="file"],
-        textarea {
-            width: 100%;
-            padding: 0.75rem;
+        textarea,
+        select,
+        input[type="file"] {
             border: 1px solid var(--color-border);
             border-radius: 0.5rem;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--color-accent);
-        }
-
-        .btn-submit {
+            padding: 0.75rem;
             width: 100%;
-            padding: 1rem 2rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            background-color: var(--color-primary);
-            color: var(--color-bg-light);
+            background-color: #fff;
+            color: var(--color-text);
+        }
+
+        input[type="file"]::-webkit-file-upload-button {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .global-error {
-            color: var(--color-error);
-            background-color: #ffe8e8;
-            border: 1px solid var(--color-error);
-            padding: 1rem;
             border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #A3965E;
         }
     </style>
 </head>
-<body>
 
-    <div class="container">
-        <h1 class="title">Ajouter un nouveau produit</h1>
+<body class="bg-color-bg-light text-color-text">
 
-        {% if error_message %}
-            <div class="global-error">{{ error_message }}</div>
-        {% endif %}
+    <div class="container mx-auto p-4 md:p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center text-color-primary">Ajouter un produit</h1>
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
 
-        <!-- Le formulaire doit avoir un attribut enctype pour envoyer des fichiers -->
-        <form id="addProductForm" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+            <!-- Formulaire d'ajout de produit -->
+            <form action="{% url 'add_product' %}" method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
 
-            <div class="form-group">
-                <label for="name">Nom du produit :</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description :</label>
-                <textarea id="description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="price">Prix (CFA) :</label>
-                <input type="number" id="price" name="price" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label for="stock">Stock :</label>
-                <input type="number" id="stock" name="stock" required>
-            </div>
-            <div class="form-group">
-                <label for="images">Images du produit (plusieurs fichiers) :</label>
-                <input type="file" id="images" name="images" multiple accept="image/*" required>
-            </div>
-            <div class="form-group">
-                <label for="videos">Vidéos du produit (plusieurs fichiers) :</label>
-                <input type="file" id="videos" name="videos" multiple accept="video/*">
-            </div>
+                <!-- Nom du produit -->
+                <div>
+                    <label for="name" class="block text-sm font-medium text-color-text-secondary mb-1">Nom du produit</label>
+                    <input type="text" id="name" name="name" required class="w-full">
+                </div>
 
-            <button type="submit" class="btn-submit">Ajouter le produit</button>
-        </form>
+                <!-- Prix -->
+                <div>
+                    <label for="price" class="block text-sm font-medium text-color-text-secondary mb-1">Prix (CFA)</label>
+                    <input type="number" id="price" name="price" step="0.01" required class="w-full">
+                </div>
+
+                <!-- Catégorie et Sous-catégorie -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-color-text-secondary mb-1">Catégorie</label>
+                        <select id="category" name="category" required class="w-full">
+                            <option value="">Sélectionner une catégorie</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subcategory" class="block text-sm font-medium text-color-text-secondary mb-1">Sous-catégorie</label>
+                        <select id="subcategory" name="subcategory" required class="w-full">
+                            <option value="">Sélectionner une sous-catégorie</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-color-text-secondary mb-1">Description</label>
+                    <textarea id="description" name="description" rows="4" class="w-full"></textarea>
+                </div>
+
+                <!-- Stock -->
+                <div>
+                    <label for="stock" class="block text-sm font-medium text-color-text-secondary mb-1">Stock</label>
+                    <input type="number" id="stock" name="stock" required class="w-full">
+                </div>
+                
+                <!-- Images (permet plusieurs fichiers) -->
+                <div>
+                    <label for="images" class="block text-sm font-medium text-color-text-secondary mb-1">Images du produit (plusieurs fichiers possibles)</label>
+                    <input type="file" id="images" name="images" accept="image/*" multiple required>
+                </div>
+
+                <!-- Vidéos (permet plusieurs fichiers) -->
+                <div>
+                    <label for="videos" class="block text-sm font-medium text-color-text-secondary mb-1">Vidéos du produit (plusieurs fichiers possibles)</label>
+                    <input type="file" id="videos" name="videos" accept="video/*" multiple>
+                </div>
+
+                <div class="flex justify-center">
+                    <button type="submit" class="btn-submit px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:shadow-lg">Ajouter le produit</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Script pour les sous-catégories dynamiques -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categorySelect = document.getElementById('category');
+            const subcategorySelect = document.getElementById('subcategory');
+            
+            // Fonction pour charger les sous-catégories
+            const loadSubcategories = async (categoryId) => {
+                subcategorySelect.innerHTML = '<option value="">Chargement...</option>';
+                subcategorySelect.disabled = true;
+
+                if (!categoryId) {
+                    subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                    subcategorySelect.disabled = false;
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/categories/${categoryId}/subcategories/`);
+                    if (!response.ok) {
+                        throw new Error('Erreur de réseau ou de serveur.');
+                    }
+                    const subcategories = await response.json();
+
+                    subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                    subcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub.id;
+                        option.textContent = sub.name;
+                        subcategorySelect.appendChild(option);
+                    });
+                    subcategorySelect.disabled = false;
+
+                } catch (error) {
+                    console.error('Erreur lors du chargement des sous-catégories:', error);
+                    subcategorySelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                }
+            };
+
+            // Écouteur d'événement pour le changement de catégorie
+            categorySelect.addEventListener('change', (event) => {
+                const selectedCategoryId = event.target.value;
+                loadSubcategories(selectedCategoryId);
+            });
+            
+            // Charger les sous-catégories initiales si une catégorie est déjà sélectionnée
+            loadSubcategories(categorySelect.value);
+        });
+    </script>
 </body>
+
 </html>

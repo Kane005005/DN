@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des produits</title>
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inclure Glide.js pour le carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.theme.min.css">
+    <!-- Icônes Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+        }
+
+        .bg-color-primary {
+            background-color: var(--color-primary);
+        }
+
+        .text-color-accent {
+            color: var(--color-accent);
+        }
+
+        .bg-color-accent {
+            background-color: var(--color-accent);
+        }
+
+        .hover\:bg-color-accent-darker:hover {
+            background-color: #A3965E;
+        }
+
+        .text-color-text {
+            color: var(--color-text);
+        }
+
+        .text-color-text-secondary {
+            color: var(--color-text-secondary);
+        }
+
+        .border-color-border {
+            border-color: var(--color-border);
+        }
+
+        .btn-link {
+            transition: all 0.3s ease;
+        }
+
+        .btn-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 极.1);
+        }
+
+        /* Styles pour la navbar responsive */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        .nav-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Styles pour le carousel Hero */
+        .hero-slide {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            padding: 2rem;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-btn {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(207, 175, 112, 0.4);
+        }
+
+        /* Styles pour le tiroir de filtres mobile */
+        .filter-drawer {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .filter极-drawer.open {
+            transform: translateX(0);
+        }
+        
+        .overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Styles pour les cartes produits compactes */
+        .product-card {
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .product-image {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            margin-top: auto;
+        }
+        
+        /* Grille ultra compacte pour l'affichage des produits */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        @media (min-width: 480px) {
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+        
+        @media (min-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 14px;
+            }
+            
+            .hero-slide {
+                height: 500px;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .product-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 16px;
+            }
+        }
+        
+        @media (min-width: 1280px) {
+            .product-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 18px;
+            }
+            
+            .hero-slide {
+                height: 600px;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+        }
+        
+        /* Styles pour les écrans très petits */
+        @media (max-width: 360px) {
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+            
+            .hero-slide {
+                height极: 300px;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-color-bg-light text-color-text">
+    <!-- Barre de navigation responsive -->
+    <header class="bg-white shadow-md py-3">
+        <div class="container mx-auto px-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- Bouton menu hamburger pour mobile -->
+                <button id="mobileMenuToggle" class="md:hidden mr-3 text-color-text-secondary">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <h1 class="text-xl font-bold text-color-primary">
+                    <a href="{% url 'index' %}" class="flex items-center space-x-2">
+                        <svg class="h-7 w-7 text-color-accent" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 极.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92极C21.57 12.7 22.62 13.71 22.62 15V19极.14L21.45 14.58H20.94Z"
+                                fill="currentColor" />
+                        </svg>
+                        <span class="hidden sm:block">DEANNA</span>
+                    </a>
+                </h1>
+            </div>
+
+            <!-- Navigation desktop -->
+            <nav class="hidden md:flex space-x-4 items-center">
+                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
+                <a href="{% url 'product_list' %}" class="text-color-primary font-semibold">Produits</a>
+                {% if user.is_authenticated %}
+                    {% if is_merchant %}
+                        <a href="{% url 'dashboard' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Tableau de bord</a>
+                    {% endif %}
+                    <a href="{% url 'logout_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'create_shop' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Créer une boutique</a>
+                    <a href="{% url 'login_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Connexion</a>
+                {% endif %}
+                <a href="{% url 'cart_detail' %}" class="text-color-text-secondary hover:text-color-primary transition-colors relative">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    {% if user.is_authenticated and cart.items.count > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ cart.items.count }}
+                    </span>
+                    {% endif %}
+                </a>
+            </nav>
+
+            <!-- Icône panier pour mobile -->
+            <a href="{% url 'cart_detail' %}" class="md:hidden text-color-text-secondary hover:text-color-primary transition-colors relative">
+                <i class="fas fa-shopping-cart text-lg"></i>
+                {% if user.is_authenticated and cart.items.count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {{ cart.items.count }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- Menu mobile -->
+        <div id="navOverlay" class="nav-overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+        <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-3/4 max-w-xs bg-white z-50 overflow-y-auto p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold text-color-primary">Menu</h2>
+                <button id="closeMobileMenu" class="text-color-text-secondary">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <nav class="space-y-4">
+                <a href="{% url 'index' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                    <i class="fas fa-home mr-3"></i>Accueil
+                </a>
+                <a href="{% url 'product_list' %}" class="block py-2 text-color-primary font-semibold border-b border-gray-100">
+                    <i class="fas fa-shopping-bag mr-3"></i>Produits
+                </a>
+                
+                {% if user.is_authenticated %}
+                    {% if is_merchant %}
+                    <a href="{% url 'dashboard' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-chart-line mr-3"></i>Tableau de bord
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'logout_view' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Déconnexion
+                    </a>
+                {% else %}
+                    <a href="{% url 'create_shop' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-store mr-3"></i>Créer une boutique
+                    </a>
+                    <a href="{% url 'login_view' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-sign-in-alt mr-3"></i>Connexion
+                    </a>
+                {% endif %}
+                
+                <div class="pt-4 border-t border-gray-200">
+                    <p class="text-xs text-color-text-secondary mb-2">Connecté en tant que:</p>
+                    <p class="text-sm font-medium text-color-text">
+                        {% if user.is_authenticated %}
+                            {{ user.username }}
+                        {% else %}
+                            Visiteur
+                        {% endif %}
+                    </p>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-2 py-4">
+        <!-- Carousel Hero -->
+        {% if hero_slides %}
+        <div class="glide hero-carousel mb-8">
+            <div class="glide__track" data-glide-el="track">
+                <ul class="glide__slides">
+                    {% for slide in hero_slides %}
+                    <li class="glide__slide">
+                        <div class="hero-slide">
+                            <img src="{{ slide.image.url }}" alt="{{ slide.title }}">
+                            <div class="hero-content">
+                                <h2 class="hero-title">{{ slide.title }}</h2>
+                                {% if slide.subtitle %}
+                                <p class="hero-subtitle">{{ slide.subtitle }}</p>
+                                {% endif %}
+                                <a href="{{ slide.get_target_url }}" class="hero-btn">
+                                    {% if slide.product %}Voir le produit{% else %}Découvrir{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="glide__bullets" data-glide-el极="controls[nav]">
+                {% for slide in hero_slides %}
+                <button class="glide__bullet" data-glide-dir="={{ forloop.counter0 }}"></button>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Bouton pour ouvrir les filtres sur mobile -->
+        <div class="md:hidden flex justify-center mb-4">
+            <button id="filterToggle" class="bg-color-accent text-color-primary font-bold py-2 px-4 rounded-full flex items-center space-x-2 text-xs">
+                <i class="fas fa-filter"></i>
+                <span>Filtres et tri</span>
+            </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4">
+            <!-- Overlay pour mobile -->
+            <div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+
+            <!-- Panneau de filtre dans un tiroir sur mobile -->
+            <aside id="filterDrawer" class="filter-drawer fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white z-50 overflow-y-auto p-4 md:relative md:transform-none md:w-1/5 md:rounded-lg md:shadow-md md:h-fit md:sticky md:top-4">
+                <div class="flex justify-between items-center mb-4 md:hidden">
+                    <h2 class="text-xl font-bold text-color-primary">Filtres</h2>
+                    <button id="closeFilters" class="text-color-text-secondary">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <h2 class="text-xl font-bold text-color-primary mb-4 hidden md:block">Filtres</h2>
+                
+                <form method="GET" action="{% url 'product_list' %}" class="space-y-4">
+                    <!-- Champ de recherche -->
+                    <div>
+                        <label for="q" class="block text-xs font-medium text-color-text-secondary mb-1">Rechercher</label>
+                        <input type="text" name="q" id="q" placeholder="Nom ou description"
+                            value="{{ request.GET.q|default:'' }}"
+                            class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-1 focus:ring-color-accent text-sm">
+                    </div>
+
+                    <!-- Filtre par prix -->
+                    <div class="space-y-2">
+                        <h3 class="text-md font-semibold text-color-primary">Prix (CFA)</h3>
+                        <div>
+                            <label for="min_price" class="block text-xs font-medium text-color-text-secondary mb-1">Min</label>
+                            <input type="number" name="min_price" id="min_price" placeholder="0"
+                                value="{{ request.GET.min_price|default:'' }}"
+                                class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-1 focus:ring-color-accent text-sm">
+                        </div>
+                        <div>
+                            <label for="max_price" class="block text-xs font-medium text-color-text-secondary mb-1">Max</label>
+                            <input type="number" name="max_price" id="max_price" placeholder="100000"
+                                value="{{ request.GET.max_price|default:'' }}"
+                                class="w-full px-3 py-1.5 border rounded-md focus:outline-none focus:ring-1 focus:ring-color-accent text-sm">
+                        </div>
+                    </div>
+
+                    <!-- Filtre par note moyenne -->
+                    <div class="space-y-1">
+                        <h3 class="text-md font-semibold text-color-primary">Note minimale</h3>
+                        {% for i in "54321"|make_list %}
+                        <div class="flex items-center">
+                            <input type="radio" name="min_rating" id="rating-{{ i }}" value="{{ i }}" class="h-3 w-3 text-color-accent focus:ring-color-accent"
+                                {% if request.GET.min_rating == i %}checked{% endif %}>
+                            <label for="rating-{{ i }}" class="ml-1 flex items-center text-xs text-color-text-secondary">
+                                {{ i }} ★ et plus
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Catégories (si nécessaires) -->
+                    {% if categories %}
+                    <div>
+                        <h3 class="text-md font-semibold text-color-primary">Catégories</h3>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-accent transition-colors text-xs
+                                    {% if not current_category %}font-bold{% endif %}">
+                                    Toutes
+                                </a>
+                            </li>
+                            {% for category in categories %}
+                            <li>
+                                <a href="{% url 'products_by_category' category_slug=category.slug %}"
+                                    class="text-color-text-secondary hover:text-color-accent transition-colors text-xs
+                                    {% if current_category and current_category.slug == category.slug %}font-bold{% endif %}">
+                                    {{ category.name }}
+                                </a>
+                                {% if current_category and current_category.slug == category.slug and category.subcategories.all %}
+                                <ul class="ml-3 mt-1 space-y-0.5">
+                                    {% for subcategory in category.subcategories.all %}
+                                    <li>
+                                        <a href="{% url 'products_by_subcategory' category_slug极=category.slug subcategory_slug=subcategory.slug %}"
+                                            class="text-color-text-secondary hover:text-color-accent transition-colors text-xs
+                                            {% if current_subcategory and current_subcategory.slug == subcategory.slug %}font-bold{% endif %}">
+                                            - {{ subcategory.name }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Tri -->
+                    <div>
+                        <h3 class="text-md font-semibold text-color-primary mb-1">Trier par</h3>
+                        <select name="sort_by"
+                            class="w-full px-3极 py-1.5 border rounded-md focus:outline-none focus:ring-1 focus:ring-color-accent text-sm">
+                            <option value="">Pertinence</option>
+                            <option value="price_asc" {% if request.GET.sort_by == 'price_asc' %}selected{% endif %}>Prix croissant</option>
+                            <option value="price_desc" {% if request.GET.sort_by == 'price_desc' %}selected{% endif %}>Prix décroissant</option>
+                            <option value="rating_desc" {% if request.GET.sort_by == 'rating_desc' %}selected{% endif %}>Meilleure note</option>
+                        </select>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-color-accent text-color-primary font-bold py-1.5 px-3 rounded-full hover:opacity-80 transition-opacity text-sm">
+                        Appliquer
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Liste des produits -->
+            <section class="w-full md:w-4/5">
+                <div class="product-grid">
+                    {% for product in page_obj %}
+                    <div class="bg-white rounded-lg overflow-hidden product-card shadow-sm">
+                        <a href="{% url 'product_detail' product.id %}" class="w-full">
+                            {% if product.images.first %}
+                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
+                                class="product-image">
+                            {% else %}
+                            <img src="https://placehold.co/400x300/E8E8极E8/6C6C6C?text=Image+non+disponible"
+                                alt="Image non disponible" class="product-image">
+                            {% endif %}
+                        </a>
+                        <div class="p-2 product-info">
+                            <a href="{% url 'product_detail' product.id %}" class="w-full">
+                                <h3 class="text-xs font-semibold text-color-text mb-1 product-title leading-tight">{{ product.name }}</h3>
+                            </a>
+                            <p class="text-xs text-color-text-secondary mb-1 product-price font-bold">{{ product.price }} CFA</p>
+                            {% if product.get_average_rating > 0 %}
+                            <p class="text-xs text-yellow-500">★ {{ product.get_average_rating|floatformat:1 }}</p>
+                            {% endif %}
+                            <a href="{% url 'add_to_cart' product.id %}"
+                                class="mt-1 inline-block bg-color-accent text-color-primary px-2 py-1 rounded-full text-xs font-semibold hover:bg-color-accent-darker transition-colors w-full text-center">
+                                + Panier
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full text-center py-6 bg-white rounded-lg shadow-sm">
+                        <p class="text-color-text-secondary text-sm">Aucun produit ne correspond à votre recherche.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination - CORRIGÉ -->
+                <nav class="flex justify-center mt-6">
+                    <ul class="flex items-center space-x-1">
+                        {% if page_obj.has_previous %}
+                        <li>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_rating %}&min_rating={{ request.GET.min_rating }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}"
+                                class="px-2 py-1 leading-tight text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-gray-700 text-xs">Préc.</a>
+                        </li>
+                        {% endif %}
+                        <li class="px-2 py-1 leading极-tight text-color-primary bg-color-accent border border-color-accent rounded-md text-xs">
+                            {{ page_obj.number }}
+                        </li>
+                        {% if page_obj.has_next %}
+                        <li>
+                            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_rating %}&min_rating={{ request.GET.min_rating }}{% endif %}{% if request.GET.sort_by %}&sort_by={{ request.GET.sort_by }}{% endif %}"
+                                class="px-2 py-1 leading-tight text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-100 hover:text-gray-700 text-xs">Suiv.</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </section>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-6 mt-6">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-4 mb-3">
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors text-xs">À propos</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors text-xs">Contact</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors text-xs">Confidentialité</a>
+            </div>
+            <p class="text-gray-500 text-xs">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts pour Glide.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
+    <script>
+        // Initialisation du carousel Hero
+        {% if hero_slides %}
+        new Glide('.hero-carousel', {
+            type: 'carousel',
+            autoplay: 5000,
+            hoverpause: true,
+            perView: 1,
+            animationDuration: 800
+        }).mount();
+        {% endif %}
+
+        // Gestion du menu mobile
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navOverlay = document.getElementById('navOverlay');
+        
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('open');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+        }
+        
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+        closeMobileMenu.addEventListener('click', toggleMobileMenu);
+        navOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Gestion du tiroir de filtres sur mobile
+        const filterToggle = document.getElementById('filterToggle');
+        const filterDrawer = document.getElementById('filterDrawer');
+        const closeFilters = document.getElementById('closeFilters');
+        const overlay = document.getElementById('overlay');
+        
+        function toggleFilters() {
+            filterDrawer.classList.toggle('open');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = filterDrawer.classList.contains('open') ? 'hidden' : '';
+        }
+        
+        filterToggle.addEventListener('click', toggleFilters);
+        closeFilters.addEventListener('click', toggleFilters);
+        overlay.addEventListener('click', toggleFilters);
+        
+        // Fermer les filtres si on clique sur un lien de catégorie en mode mobile
+        const categoryLinks = document.querySelectorAll('a[href*="category"]');
+        categoryLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    toggleFilters();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
