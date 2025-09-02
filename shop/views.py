@@ -714,3 +714,32 @@ def list_conversations_view(request):
         'is_merchant': is_merchant
     }
     return render(request, 'list_conversations.html', context)
+
+@login_required(login_url='login_view')
+def negotiation_chat(request, conversation_id):
+    conversation = get_object_or_404(Conversation, id=conversation_id)
+    
+    # Vérification des permissions
+    is_merchant = hasattr(request.user, 'merchant')
+    if (is_merchant and conversation.merchant.user != request.user) or (not is_merchant and conversation.client != request.user):
+        return redirect('list_conversations')
+    
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if message_text:
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                text=message_text
+            )
+            return redirect('negotiation_chat', conversation_id=conversation.id)
+    
+    messages = conversation.messages.all().order_by('timestamp')
+    
+    context = {
+        'conversation': conversation,
+        'messages': messages,
+        'product': conversation.product,
+        'is_merchant': is_merchant,
+    }
+    return render(request, 'negotiation_chat.html', context)

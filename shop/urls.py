@@ -45,5 +45,7 @@ urlpatterns = [
     path('chat/<int:conversation_id>/', views.conversation_detail_view, name='conversation_detail'),
     path('chat/', views.list_conversations_view, name='list_conversations'),
     path('api/chat/<int:conversation_id>/', views.chat_api, name='chat_api'),
+    # Ajoutez cette ligne dans urlpatterns
+    path('chat/<int:conversation_id>/negocier/', views.negotiation_chat, name='negotiation_chat'),
 
 ]
