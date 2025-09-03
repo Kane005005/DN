@@ -348,13 +348,19 @@ def product_detail(request, product_id):
     # AJOUT : Récupération des variations de produits
     variations = product.variations.all()
     
+    # Vérifier si la catégorie et le slug existent
+    has_valid_category = product.category and product.category.slug
+    has_valid_subcategory = product.subcategory and product.subcategory.slug
+    
     context = {
         'product': product,
         'reviews': reviews,
         'average_rating': average_rating,
         'similar_products': similar_products,
         'variations': variations,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')
+        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant'),
+        'has_valid_category': has_valid_category,
+        'has_valid_subcategory': has_valid_subcategory
     }
     return render(request, 'product_detail.html', context)
 
@@ -714,6 +720,7 @@ def list_conversations_view(request):
         'is_merchant': is_merchant
     }
     return render(request, 'list_conversations.html', context)
+
 
 @login_required(login_url='login_view')
 def negotiation_chat(request, conversation_id):
