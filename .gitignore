@@ -4,3 +4,10 @@
 
 # Ignore le fichier de variables d'environnement
 .env
+*.sqlite3
+*.pyc
+__pycache__/
+media/
+.env
+.env.local
+.DS_Store
