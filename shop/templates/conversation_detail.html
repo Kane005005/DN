@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Négociation - {{ product.name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-alert: #800020;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            padding: 2rem;
+        }
+
+        .cta-btn {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-btn:hover {
+            background-color: #e0b982;
+            transform: translateY(-2px);
+        }
+
+        /* Styles spécifiques au chat */
+        .negotiation-container {
+            max-width: 900px;
+            margin: auto;
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+
+        .negotiation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .negotiation-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .product-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .negotiation-status .status-badge {
+            background-color: #D1FAE5;
+            color: #065F46;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .message.my-message {
+            flex-direction: row-reverse;
+        }
+        
+        .message-content {
+            padding: 0.75rem 1.25rem;
+            border-radius: 1.5rem;
+            max-width: 70%;
+            position: relative;
+        }
+
+        .my-message .message-content {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+        }
+
+        .other-message .message-content {
+            background-color: var(--color-border);
+            color: white;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .sender-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: inherit;
+        }
+
+        .message-timestamp {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .my-message .message-timestamp {
+             color: rgba(11, 28, 42, 0.7);
+        }
+
+        .message-text {
+            margin-top: 0.25rem;
+            word-wrap: break-word;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            gap: 0.5rem;
+        }
+
+        .input-area textarea {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+        }
+
+        .input-area button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-area button:hover {
+            background-color: #1A3B57;
+        }
+        
+        .typing-indicator {
+            padding: 0.5rem 1.25rem;
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
+
+        .offer-message {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+        }
+        
+        .ai-message {
+            background-color: var(--color-border) !important;
+            color: white !important;
+        }
+        
+        .ai-message .sender-name {
+            color: white;
+        }
+
+        .ai-message .message-timestamp {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+<div class="negotiation-container">
+    <!-- En-tête avec informations du produit -->
+    <div class="negotiation-header">
+        <a href="javascript:history.back()" class="cta-btn">
+            Retour
+        </a>
+        <div class="product-info">
+            <h1>Négociation : {{ product.name }}</h1>
+            <div class="product-details">
+                <span class="price">Prix: {{ product.price }} CFA</span>
+                <span class="stock">Stock: {{ product.stock }}</span>
+            </div>
+        </div>
+        <div class="negotiation-status">
+            <span class="status-badge">En cours</span>
+        </div>
+    </div>
+
+    <!-- Zone de chat améliorée -->
+    <div id="chat-box" class="chat-box">
+        {% for message in messages %}
+        <div class="message {% if message.sender == request.user %}my-message{% else %}other-message{% endif %} {% if message.is_ai_response %}ai-message{% endif %}">
+            <div class="message-avatar">
+                {{ message.sender.username|first|upper }}
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="sender-name">{% if message.is_ai_response %}DEANNA{% else %}{{ message.sender.username }}{% endif %}</span>
+                    <span class="message-timestamp">{{ message.timestamp|date:"H:i" }}</span>
+                </div>
+                <div class="message-text">
+                    {{ message.text|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Zone de saisie du message -->
+    <div class="input-area">
+        <form id="chat-form" method="post" action="{% url 'negotiation_chat' conversation_id=conversation.id %}">
+            {% csrf_token %}
+            <textarea id="message-input" name="message" placeholder="Tapez votre message ici..." rows="1" required></textarea>
+            <button type="submit" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatBox = document.getElementById('chat-box');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        
+        // Fonction pour ajouter un message à la boîte de chat
+        function addMessageToChat(sender, text, isMine, isAI) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message ' + (isMine ? 'my-message' : 'other-message') + (isAI ? ' ai-message' : '');
+
+            const avatarElement = document.createElement('div');
+            avatarElement.className = 'message-avatar';
+            avatarElement.textContent = sender.charAt(0).toUpperCase();
+
+            const contentElement = document.createElement('div');
+            contentElement.className = 'message-content';
+
+            const headerElement = document.createElement('div');
+            headerElement.className = 'message-header';
+
+            const senderNameElement = document.createElement('span');
+            senderNameElement.className = 'sender-name';
+            senderNameElement.textContent = isAI ? 'DEANNA' : sender;
+            
+            const timestampElement = document.createElement('span');
+            timestampElement.className = 'message-timestamp';
+            timestampElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            const textElement = document.createElement('div');
+            textElement.className = 'message-text';
+            textElement.textContent = text;
+            
+            headerElement.appendChild(senderNameElement);
+            headerElement.appendChild(timestampElement);
+            contentElement.appendChild(headerElement);
+            contentElement.appendChild(textElement);
+            messageElement.appendChild(avatarElement);
+            messageElement.appendChild(contentElement);
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Gestion de la soumission du formulaire
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const messageText = messageInput.value.trim();
+            if (messageText === '') return;
+
+            // Ajoute le message de l'utilisateur de manière "optimiste"
+            addMessageToChat('{{ request.user.username }}', messageText, true, false);
+
+            // Envoie le message au serveur via Fetch API
+            const formData = new FormData(chatForm);
+            fetch(chatForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    messageInput.value = ''; // Efface le champ de saisie
+                    
+                    // Si l'IA répond, afficher sa réponse
+                    if (data.ai_response) {
+                        setTimeout(() => {
+                            addMessageToChat('DEANNA', data.ai_response, false, true);
+                        }, 1000);
+                    }
+                } else {
+                    console.error(data.error || 'Erreur inconnue');
+                    // Gérer l'erreur côté client, par exemple en affichant un message
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                // Gérer l'erreur de connexion
+            });
+        });
+        
+        // Focus automatique sur le champ de message
+        messageInput.focus();
+        
+        // Permet d'envoyer le message avec la touche Entrée
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    });
+</script>
+</body>
+</html>
