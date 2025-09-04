@@ -225,7 +225,31 @@ class NegotiationSettings(models.Model):
     def __str__(self):
         return f"Paramètres de négociation pour {self.shop}"
 
-# Ajoutez ceci à votre fichier models.py
+# Ajoutez ces modèles à votre fichier models.py
+# (juste avant la classe HeroSlide)
+
+class Client(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class ShopSettings(models.Model):
+    shop = models.OneToOneField(Shop, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=True, help_text="Rendre la boutique visible au public")
+    shareable_link_slug = models.SlugField(max_length=50, unique=True, blank=True, null=True,
+                                         help_text="Nom personnalisé pour le lien de la boutique (ex: 'boutique-de-jane'). Laissez vide pour utiliser le nom d'utilisateur.")
+    
+    def __str__(self):
+        return f"Paramètres de {self.shop.merchant.user.username}"
 
 class HeroSlide(models.Model):
     title = models.CharField(max_length=200)
@@ -250,3 +274,5 @@ class HeroSlide(models.Model):
         elif self.external_url:
             return self.external_url
         return '#'
+
+#

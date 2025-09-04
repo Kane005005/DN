@@ -40,6 +40,7 @@ urlpatterns = [
     path('paiement/', views.checkout_view, name='checkout_view'),
     path('paiement/traiter/', views.process_order, name='process_order'),
     path('commande-confirmee/<int:order_id>/', views.order_confirmation, name='order_confirmation'),
+    path('produits/', views.product_search_list, name='product_search_list'),
     # Nouvelles URLs pour le chat
     path('chat/<int:product_id>/demarrer/', views.start_negotiation_view, name='start_negotiation'),
     path('chat/<int:conversation_id>/', views.conversation_detail_view, name='conversation_detail'),
@@ -48,5 +49,17 @@ urlpatterns = [
     # Ajoutez cette ligne dans urlpatterns
     path('chat/<int:conversation_id>/negocier/', views.negotiation_chat, name='negotiation_chat'),
     # Ajoutez cette ligne dans urlpatterns
+    # Ajoutez ces URLs à votre urlpatterns
+
+    
+    path('boutiques/', views.visit_shops, name='visit_shops'),
+    path('boutiques/<slug:shop_slug>/', views.shop_detail, name='shop_detail'),
+    path('boutiques/<slug:shop_slug>/produits/', views.shop_products, name='shop_products'),
+    path('boutiques/<slug:shop_slug>/categorie/<slug:category_slug>/', views.shop_category, name='shop_category'),
+    path('boutiques/<slug:shop_slug>/contact/', views.shop_contact, name='shop_contact'), # NOUVEAU
+    
+    
+    # AJOUT : URL pour la création de compte client
+    path('creer-client/', views.create_client, name='create_client'),
 
 ]

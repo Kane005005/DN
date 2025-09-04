@@ -45,13 +45,11 @@
         .form-group textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid #ccc;
+            border: 1px solid #e0e0e0;
             border-radius: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-
+        
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
@@ -77,27 +75,112 @@
             transform: translateY(-2px);
         }
 
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .share-button i {
+            margin-right: 0.5rem;
+        }
+
+        .share-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
     </style>
 
     <div class="header-content">
         <h1>Gérer ma boutique</h1>
+        <!-- Bouton de partage -->
+        <button id="shareButton" class="share-button">
+            <i class="fas fa-share-alt"></i> Partager le lien
+        </button>
     </div>
     
     <div class="form-container">
-        <form method="post">
+        <!-- Le formulaire doit avoir enctype="multipart/form-data" pour les fichiers -->
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            <h2 class="text-xl font-semibold mb-4 text-color-primary">Informations de la boutique</h2>
+
+            <!-- Champ pour l'image de la boutique -->
             <div class="form-group">
-                <label for="category">Catégorie de la boutique</label>
-                <input type="text" id="category" name="category" value="{{ shop.category }}" required>
+                <label for="image">Image de la boutique</label>
+                <div class="flex items-center space-x-4">
+                    {% if shop.image %}
+                        <img src="{{ shop.image.url }}" alt="Image de la boutique" class="w-32 h-32 object-cover rounded-lg shadow">
+                    {% else %}
+                        <div class="w-32 h-32 flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">
+                            Aucune image
+                        </div>
+                    {% endif %}
+                    <input type="file" id="image" name="image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+                </div>
             </div>
+
+            <!-- Champ pour la description de la boutique -->
             <div class="form-group">
                 <label for="description">Description de la boutique</label>
                 <textarea id="description" name="description" rows="5">{{ shop.description }}</textarea>
             </div>
+            
+            <hr class="my-6 border-gray-200">
+
+            <h2 class="text-xl font-semibold mb-4 text-color-primary">Paramètres de visibilité</h2>
+            
+            <!-- Champ pour le slug du lien de partage -->
             <div class="form-group">
-                <button type="submit" class="cta-button">Sauvegarder les modifications</button>
+                <label for="shareable_link_slug">Lien de partage personnalisé</label>
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-500">
+                        {{ request.scheme }}://{{ request.get_host }}/boutique/
+                    </span>
+                    <input type="text" id="shareable_link_slug" name="shareable_link_slug" value="{{ shop_settings.shareable_link_slug|default:request.user.username }}" class="flex-1">
+                </div>
+                <small class="text-gray-500 mt-1 block">Le lien vers votre boutique sera : <a href="{{ shop_link }}" target="_blank" class="text-color-accent">{{ shop_link }}</a></small>
             </div>
+
+            <!-- Champ pour le statut public -->
+            <div class="form-group flex items-center space-x-2">
+                <input type="checkbox" id="is_public" name="is_public" class="rounded text-color-accent" {% if shop_settings.is_public %}checked{% endif %}>
+                <label for="is_public" class="mb-0">Rendre ma boutique publique</label>
+            </div>
+
+            <button type="submit" class="cta-button w-full mt-6">Enregistrer les modifications</button>
         </form>
     </div>
 
+    <script>
+        document.getElementById('shareButton').addEventListener('click', () => {
+            const shareableLink = document.querySelector('#shareable_link_slug').value;
+            const fullUrl = `${window.location.protocol}//${window.location.host}/boutique/${shareableLink}`;
+            
+            // Vérifie si l'API Web Share est disponible
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Découvrez ma boutique !',
+                    text: 'Visitez ma boutique pour trouver des produits incroyables.',
+                    url: fullUrl
+                }).catch((error) => console.log('Erreur de partage', error));
+            } else {
+                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    alert('Lien copié dans le presse-papiers !');
+                }).catch(err => {
+                    alert('Erreur lors de la copie du lien : ' + err);
+                });
+            }
+        });
+    </script>
 {% endblock %}

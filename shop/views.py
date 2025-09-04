@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Sum, F, Avg, Q # AJOUT : Import d'Avg et Q pour la moyenne et la recherche
-from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings
+from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings, ShopSettings
 from django.core.files.storage import FileSystemStorage
 from decimal import Decimal, InvalidOperation
 import json
@@ -19,7 +19,9 @@ from django.views.decorators.http import require_POST
 from django.db.models.functions import TruncDay
 from django.core.paginator import Paginator # AJOUT : Pour la pagination
 import logging
-
+from django.urls import reverse
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
 # Configuration du logger
 logger = logging.getLogger(__name__)
 # VUES EXISTANTES
@@ -294,13 +296,46 @@ def order_detail(request, order_id):
     return render(request, 'order_detail.html', context)
 
 
-@login_required(login_url='login_view')
+@login_required
 def manage_shop(request):
     try:
         merchant = request.user.merchant
         shop = merchant.shop
+        # Récupère ou crée les paramètres de la boutique
+        shop_settings, created = ShopSettings.objects.get_or_create(shop=shop)
+
+        # Gère la logique de la méthode POST pour la mise à jour des paramètres
+        if request.method == 'POST':
+            description = request.POST.get('description')
+            image = request.FILES.get('image')
+            is_public = request.POST.get('is_public') == 'on'
+            shareable_link_slug = request.POST.get('shareable_link_slug')
+            
+            # Mise à jour des champs du modèle Shop
+            shop.description = description
+            if image:
+                shop.image = image
+            shop.save()
+            
+            # Mise à jour des champs du modèle ShopSettings
+            shop_settings.is_public = is_public
+            shop_settings.shareable_link_slug = shareable_link_slug
+            shop_settings.save()
+            
+            return redirect('manage_shop')
+
+        # Génère le lien de partage
+        if shop_settings.shareable_link_slug:
+            shop_slug = shop_settings.shareable_link_slug
+        else:
+            shop_slug = request.user.username
+        
+        shop_link = request.build_absolute_uri(reverse('shop_detail', args=[shop_slug]))
+        
         context = {
             'shop': shop,
+            'shop_settings': shop_settings,
+            'shop_link': shop_link,
             'is_merchant': True
         }
     except Merchant.DoesNotExist:
@@ -328,15 +363,33 @@ def configure_negotiation(request):
         'settings': settings
     }
     return render(request, 'configure_negotiation.html', context)
-
+def product_search_list(request):
+    query = request.GET.get('q')
+    products = Product.objects.all()
+    
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    
+    paginator = Paginator(products, 12) # Affiche 12 produits par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'query': query
+    }
+    return render(request, 'product_search_list.html', context)
 
 # NOUVELLES FONCTIONNALITÉS : Vues pour la navigation et la recherche de produits
 def visit_shops(request):
-    # Cette vue est maintenant plus simple car la logique de filtrage est dans product_list
-    shops = Shop.objects.all()
-    context = {'shops': shops}
+    """
+    Vue qui liste toutes les boutiques publiques.
+    """
+    shops = Shop.objects.filter(shopsettings__is_public=True)
+    context = {
+        'shops': shops
+    }
     return render(request, 'visit_shops.html', context)
-
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -837,3 +890,151 @@ def negotiation_chat(request, conversation_id):
         'is_merchant': is_merchant,
     }
     return render(request, 'conversation_detail.html', context)
+
+# AJOUT : Vue pour la page de détail de la boutique
+def shop_detail(request, shop_id):
+    """
+    Vue pour afficher les détails d'une boutique et ses produits.
+    """
+    # 1. Récupère la boutique ou renvoie une erreur 404 si elle n'existe pas
+    shop = get_object_or_404(Shop, id=shop_id)
+    
+    # 2. Récupère tous les produits associés à cette boutique
+    products = Product.objects.filter(shop=shop)
+    
+    # 3. Crée le dictionnaire de contexte à passer au template
+    context = {
+        'shop': shop,
+        'products': products,
+        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')
+    }
+    
+    # 4. Rend le template 'shop_detail.html' avec les données
+    return render(request, 'shop_detail.html', context)
+
+# Vue détaillée de la boutique
+def shop_detail(request, shop_slug):
+    """Affiche la page d'accueil d'une boutique avec les produits en vedette."""
+    shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
+    featured_products = Product.objects.filter(shop=shop, stock__gt=0)[:8]
+    categories = Category.objects.filter(products__shop=shop).distinct()
+    
+    context = {
+        'shop': shop,
+        'featured_products': featured_products,
+        'categories': categories,
+        'is_shop_page': True
+    }
+    return render(request, 'shop/shop_detail.html', context)
+
+# Tous les produits de la boutique
+def shop_products(request, shop_slug):
+    """Affiche tous les produits d'une boutique, avec pagination et filtres."""
+    shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
+    products = Product.objects.filter(shop=shop, stock__gt=0)
+    
+    # Filtres et pagination similaires à product_list
+    query = request.GET.get('q')
+    category_slug = request.GET.get('cat')
+    subcategory_slug = request.GET.get('subcat')
+    
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
+    if category_slug:
+        products = products.filter(category__slug=category_slug)
+    if subcategory_slug:
+        products = products.filter(subcategory__slug=subcategory_slug)
+
+    paginator = Paginator(products, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    categories = Category.objects.filter(products__shop=shop).distinct()
+    
+    context = {
+        'shop': shop,
+        'page_obj': page_obj,
+        'categories': categories,
+        'query': query,
+        'is_shop_page': True
+    }
+    return render(request, 'shop/shop_products.html', context)
+
+# Produits par catégorie dans la boutique
+def shop_category(request, shop_slug, category_slug):
+    """Affiche les produits d'une boutique, filtrés par une catégorie spécifique."""
+    shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
+    category = get_object_or_404(Category, slug=category_slug)
+    products = Product.objects.filter(shop=shop, category=category, stock__gt=0)
+    
+    paginator = Paginator(products, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'shop': shop,
+        'category': category,
+        'page_obj': page_obj,
+        'is_shop_page': True
+    }
+    return render(request, 'shop/shop_category.html', context)
+
+# Page contact de la boutique
+def shop_contact(request, shop_slug):
+    """Gère le formulaire de contact pour une boutique spécifique."""
+    shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
+    
+    if request.method == 'POST':
+        # Gérer l'envoi du formulaire de contact
+        # (L'envoi d'email au commerçant est à implémenter ici)
+        
+        messages.success(request, 'Votre message a été envoyé avec succès!')
+        return redirect('shop_contact', shop_slug=shop_slug)
+    
+    context = {
+        'shop': shop,
+        'is_shop_page': True
+    }
+    return render(request, 'shop/shop_contact.html', context)
+
+# Création de compte client
+def create_client(request):
+    """Crée un nouvel utilisateur et un profil client."""
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        username = request.POST.get('username')
+        
+        try:
+            # Créer l'utilisateur
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
+            # Créer le client
+            client = Client.objects.create(
+                user=user,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone
+            )
+            
+            # Connecter automatiquement l'utilisateur
+            login(request, user)
+            messages.success(request, 'Votre compte a été créé avec succès!')
+            return redirect('index')
+            
+        except IntegrityError:
+            return render(request, 'client/create_client.html', {
+                'error': 'Nom d\'utilisateur ou email déjà utilisé'
+            })
+    
+    return render(request, 'client/create_client.html')

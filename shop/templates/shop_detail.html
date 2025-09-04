@@ -1,0 +1,16 @@
+<h1>Boutique : {{ shop.merchant.first_name }}</h1>
+
+<img src="{{ shop.image.url }}" alt="Image de la boutique {{ shop.merchant.first_name }}">
+<p>{{ shop.description }}</p>
+
+<h2>Nos produits</h2>
+<ul>
+    {% for product in products %}
+        <li>
+            <h3><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h3>
+            <p>{{ product.price }} CFA</p>
+        </li>
+    {% empty %}
+        <li>Aucun produit n'est disponible dans cette boutique.</li>
+    {% endfor %}
+</ul>
