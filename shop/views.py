@@ -18,7 +18,10 @@ from datetime import date, timedelta
 from django.views.decorators.http import require_POST
 from django.db.models.functions import TruncDay
 from django.core.paginator import Paginator # AJOUT : Pour la pagination
+import logging
 
+# Configuration du logger
+logger = logging.getLogger(__name__)
 # VUES EXISTANTES
 def index(request):
     return render(request, 'index.html')
@@ -626,19 +629,67 @@ def start_negotiation_view(request, product_id):
 def conversation_detail_view(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id)
     
-    # Assure que seul le client ou le commerçant peut voir la conversation
+    # Vérification des permissions
     is_merchant = hasattr(request.user, 'merchant')
-    if is_merchant and conversation.merchant.user != request.user:
+    if (is_merchant and conversation.merchant.user != request.user) or \
+       (not is_merchant and conversation.client != request.user):
         return redirect('list_conversations')
-    elif not is_merchant and conversation.client != request.user:
-        return redirect('list_conversations')
-        
+    
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if not message_text:
+            return JsonResponse({'error': 'Message vide.'}, status=400)
+
+        # Création du message de l'utilisateur
+        Message.objects.create(
+            conversation=conversation,
+            sender=request.user,
+            text=message_text
+        )
+
+        # Logique pour déclencher l'IA si c'est le client qui a envoyé le message
+        # et que le commerçant a activé la négociation IA.
+        if not is_merchant:
+            try:
+                # Vérifie si le commerçant a activé la négociation IA
+                negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
+                if negotiation_settings.is_active:
+                    
+                    # Convertit le prix en Decimal
+                    try:
+                        user_price_offer = Decimal(message_text.replace(' CFA', ''))
+                    except (InvalidOperation, ValueError):
+                        user_price_offer = None
+                    
+                    # Si l'offre de prix est valide, appelle l'IA
+                    if user_price_offer is not None:
+                        ai_response_text = get_ai_negotiation_response(conversation.product, user_price_offer, conversation)
+                        
+                        # Crée un message pour la réponse de l'IA
+                        Message.objects.create(
+                            conversation=conversation,
+                            sender=conversation.merchant.user,
+                            text=ai_response_text,
+                            is_ai_response=True
+                        )
+            except NegotiationSettings.DoesNotExist:
+                logger.info("Les paramètres de négociation de l'IA n'existent pas pour cette boutique.")
+            except Exception as e:
+                logger.error(f"Erreur lors de l'appel à l'IA : {e}")
+
+        # La réponse se fera via le rechargement de la page pour le moment
+        return redirect('conversation_detail_view', conversation_id=conversation.id)
+    
+    messages = conversation.messages.all().order_by('timestamp')
+    
     context = {
         'conversation': conversation,
+        'messages': messages,
+        'product': conversation.product,
         'is_merchant': is_merchant,
-        'is_client': not is_merchant,
     }
     return render(request, 'conversation_detail.html', context)
+
 
 @login_required(login_url='login_view')
 def chat_api(request, conversation_id):
@@ -728,18 +779,54 @@ def negotiation_chat(request, conversation_id):
     
     # Vérification des permissions
     is_merchant = hasattr(request.user, 'merchant')
-    if (is_merchant and conversation.merchant.user != request.user) or (not is_merchant and conversation.client != request.user):
+    if (is_merchant and conversation.merchant.user != request.user) or \
+       (not is_merchant and conversation.client != request.user):
         return redirect('list_conversations')
     
     if request.method == 'POST':
         message_text = request.POST.get('message', '').strip()
-        if message_text:
-            Message.objects.create(
-                conversation=conversation,
-                sender=request.user,
-                text=message_text
-            )
-            return redirect('negotiation_chat', conversation_id=conversation.id)
+        if not message_text:
+            return JsonResponse({'error': 'Message vide.'}, status=400)
+
+        # Création du message de l'utilisateur
+        Message.objects.create(
+            conversation=conversation,
+            sender=request.user,
+            text=message_text
+        )
+
+        # Logique pour déclencher l'IA si c'est le client qui a envoyé le message
+        # et que le commerçant a activé la négociation IA.
+        if not is_merchant:
+            try:
+                # Vérifie si le commerçant a activé la négociation IA
+                negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
+                if negotiation_settings.is_active:
+                    
+                    # Convertit le prix en Decimal
+                    try:
+                        user_price_offer = Decimal(message_text.replace(' CFA', ''))
+                    except (InvalidOperation, ValueError):
+                        user_price_offer = None
+                    
+                    # Si l'offre de prix est valide, appelle l'IA
+                    if user_price_offer is not None:
+                        ai_response_text = get_ai_negotiation_response(conversation.product, user_price_offer, conversation)
+                        
+                        # Crée un message pour la réponse de l'IA
+                        Message.objects.create(
+                            conversation=conversation,
+                            sender=conversation.merchant.user,
+                            text=ai_response_text,
+                            is_ai_response=True
+                        )
+            except NegotiationSettings.DoesNotExist:
+                logger.info("Les paramètres de négociation de l'IA n'existent pas pour cette boutique.")
+            except Exception as e:
+                logger.error(f"Erreur lors de l'appel à l'IA : {e}")
+
+        # La réponse se fera via le rechargement de la page pour le moment
+        return redirect('negotiation_chat', conversation_id=conversation.id)
     
     messages = conversation.messages.all().order_by('timestamp')
     
@@ -749,4 +836,4 @@ def negotiation_chat(request, conversation_id):
         'product': conversation.product,
         'is_merchant': is_merchant,
     }
-    return render(request, 'negotiation_chat.html', context)
+    return render(request, 'conversation_detail.html', context)
