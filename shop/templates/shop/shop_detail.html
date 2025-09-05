@@ -5,170 +5,369 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boutique de {{ shop.merchant.user.username }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
+        
+        /* En-tête avec effet de fond flou */
         .shop-header {
-            background-color: #f8f8f8;
-            padding: 40px 20px;
+            position: relative;
+            padding: 80px 20px;
             text-align: center;
-            border-bottom: 2px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: white;
+            overflow: hidden;
         }
-        .shop-header h1 {
-            color: #333;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        
+        .shop-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+            z-index: 1;
         }
-        .shop-header p {
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto 20px;
+        
+        .shop-header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: {% if shop.image %}url('{{ shop.image.url }}'){% else %}url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'){% endif %};
+            background-size: cover;
+            background-position: center;
+            filter: blur(8px);
+            transform: scale(1.05);
+            z-index: 0;
         }
-        .shop-header img {
-            width: 150px;
-            height: 150px;
+        
+        .shop-header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .shop-logo {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .section-title {
-            font-size: 2rem;
-            color: #444;
-            margin-top: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             margin-bottom: 20px;
-            text-align: center;
-            position: relative;
         }
-        .section-title::after {
-            content: '';
-            width: 60px;
-            height: 4px;
-            background-color: #CFAF70;
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
+        
+        .shop-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-        }
-        .product-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .product-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .product-info {
-            padding: 15px;
-            text-align: center;
-        }
-        .product-info h3 {
+        
+        .shop-header p {
             font-size: 1.2rem;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
         }
-        .product-info p {
-            font-size: 1.1rem;
-            color: #CFAF70;
-            font-weight: bold;
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
+        
         .btn-shop {
-            display: inline-block;
-            padding: 12px 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
             background-color: #CFAF70;
             color: white;
             text-decoration: none;
             border-radius: 50px;
-            margin-top: 15px;
-            transition: background-color 0.3s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(207, 175, 112, 0.3);
         }
+        
         .btn-shop:hover {
-            background-color: #a8946e;
+            background-color: #b8995d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(207, 175, 112, 0.4);
         }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background-color: white;
+            color: #333;
+        }
+        
+        /* Sections */
+        .section-title {
+            font-size: 2.2rem;
+            color: #2d3748;
+            margin: 60px 0 30px;
+            text-align: center;
+            position: relative;
+            font-weight: 700;
+        }
+        
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #CFAF70, #b8995d);
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        /* Catégories */
         .category-list {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
-        .category-list a {
-            background-color: #e9e9e9;
-            padding: 10px 20px;
-            border-radius: 20px;
+        
+        .category-item {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 25px;
             text-decoration: none;
-            color: #555;
-            transition: background-color 0.3s ease;
+            color: #4a5568;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
         }
-        .category-list a:hover {
-            background-color: #ddd;
+        
+        .category-item:hover {
+            background-color: #CFAF70;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(207, 175, 112, 0.25);
         }
+        
+        /* Grille de produits */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px 0;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .product-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .product-info h3 a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .product-info h3 a:hover {
+            color: #CFAF70;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            color: #CFAF70;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .shop-header {
+                padding: 60px 15px;
+            }
+            
+            .shop-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .shop-header p {
+                font-size: 1.1rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-shop {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .shop-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-item {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Animation d'entrée */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .shop-header-content, .section-title, .category-list, .product-grid {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .product-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .product-card:nth-child(2) { animation-delay: 0.1s; }
+        .product-card:nth-child(3) { animation-delay: 0.2s; }
+        .product-card:nth-child(4) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
 
     <div class="shop-header">
-        {% if shop.image %}
-            <img src="{{ shop.image.url }}" alt="Image de {{ shop.merchant.user.username }}">
-        {% else %}
-            <img src="https://via.placeholder.com/150" alt="Image par défaut de la boutique">
-        {% endif %}
-        <h1>Bienvenue sur la boutique de {{ shop.merchant.user.username }}</h1>
-        <p>{{ shop.description|default:"Cette boutique n'a pas encore de description." }}</p>
-        <a href="{% url 'shop_products' shop_slug=shop.merchant.user.username %}" class="btn-shop">Voir tous les produits</a>
-        <a href="{% url 'shop_contact' shop_slug=shop.merchant.user.username %}" class="btn-shop">Contacter le commerçant</a>
+        <div class="shop-header-background"></div>
+        <div class="shop-header-content">
+            {% if shop.image %}
+                <img src="{{ shop.image.url }}" alt="Logo de {{ shop.merchant.user.username }}" class="shop-logo">
+            {% else %}
+                <img src="https://via.placeholder.com/120" alt="Logo par défaut" class="shop-logo">
+            {% endif %}
+            
+            <h1>Boutique de {{ shop.merchant.user.username }}</h1>
+            <p>{{ shop.description|default:"Découvrez nos produits exceptionnels et services de qualité." }}</p>
+            
+            <div class="btn-container">
+                <a href="{% url 'shop_products' shop_slug=shop.merchant.user.username %}" class="btn-shop">
+                    Voir tous les produits
+                </a>
+                <a href="{% url 'shop_contact' shop_slug=shop.merchant.user.username %}" class="btn-shop btn-outline">
+                    Contacter le vendeur
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="container">
         {% if categories %}
-        <h2 class="section-title">Catégories</h2>
+        <h2 class="section-title">Nos Catégories</h2>
         <div class="category-list">
             {% for category in categories %}
-                <a href="{% url 'shop_category' shop_slug=shop.merchant.user.username category_slug=category.slug %}">{{ category.name }}</a>
+                <a href="{% url 'shop_category' shop_slug=shop.merchant.user.username category_slug=category.slug %}" class="category-item">
+                    {{ category.name }}
+                </a>
             {% endfor %}
         </div>
         {% endif %}
 
         {% if featured_products %}
-        <h2 class="section-title">Produits en vedette</h2>
+        <h2 class="section-title">Produits Populaires</h2>
         <div class="product-grid">
             {% for product in featured_products %}
                 <div class="product-card">
-                    {% if product.productimage_set.first.image %}
-                        <img src="{{ product.productimage_set.first.image.url }}" alt="{{ product.name }}">
+                    <!-- CORRECTION : Utilisation de la relation correcte pour les images -->
+                    {% if product.images.first and product.images.first.image %}
+                        <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
                     {% else %}
-                        <img src="https://via.placeholder.com/250x200?text=Image+Produit" alt="Image par défaut">
+                        <img src="https://via.placeholder.com/300x220?text=Image+Produit" alt="Image par défaut" class="product-image">
                     {% endif %}
                     <div class="product-info">
-                        <h3><a href="{% url 'product_detail' product_id=product.id %}" class="text-black no-underline hover:underline">{{ product.name }}</a></h3>
-                        <p>{{ product.price }} CFA</p>
+                        <h3><a href="{% url 'product_detail' product_id=product.id %}">{{ product.name }}</a></h3>
+                        <p class="product-price">{{ product.price }} CFA</p>
                     </div>
                 </div>
             {% endfor %}

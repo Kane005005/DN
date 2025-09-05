@@ -141,10 +141,10 @@
         <div class="product-grid">
             {% for product in page_obj %}
                 <div class="product-card">
-                    <!-- Mise à jour du lien pour utiliser la vue product_detail -->
+                    <!-- CORRECTION : Utilisation de la relation correcte pour les images -->
                     <a href="{% url 'product_detail' product_id=product.id %}">
-                        {% if product.productimage_set.first.image %}
-                            <img src="{{ product.productimage_set.first.image.url }}" alt="{{ product.name }}">
+                        {% if product.images.first and product.images.first.image %}
+                            <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
                         {% else %}
                             <img src="https://via.placeholder.com/250x200?text=Image+Produit" alt="Image par défaut">
                         {% endif %}
