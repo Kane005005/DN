@@ -1,321 +1,216 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.name }} - DEANNA</title>
-    <!-- Inclure Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+{% block title %}{{ product.name }} - DEANNA{% endblock %}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Utilisation des couleurs fournies par l'utilisateur */
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-border: #1A3B57;
-            --color-error: #800020;
-        }
+{% block extra_css %}
+<style>
+    .modal-overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .thumbnail-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+    
+    .thumbnail:hover {
+        border-color: var(--color-accent);
+    }
+    
+    .main-media-container {
+        border: 4px solid var(--color-border);
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+    
+    .main-media-container img,
+    .main-media-container video {
+        width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
 
-        .bg-color-primary {
-            background-color: var(--color-primary);
-        }
+{% block content %}
+<div class="bg-white rounded-xl shadow-md p-6 lg:p-12 flex flex-col lg:flex-row gap-8">
+    <!-- Galerie d'images et de vidéos -->
+    <div class="lg:w-1/2">
+        <div class="main-media-container">
+            {% if product.videos.first %}
+            <video id="main-product-video" controls autoplay class="w-full h-auto">
+                <source src="{{ product.videos.first.video.url }}" type="video/mp4">
+                Votre navigateur ne supporte pas la vidéo.
+            </video>
+            <img id="main-product-image" src="" alt="{{ product.name }}" class="w-full h-auto hidden">
+            {% elif product.images.first %}
+            <img id="main-product-image" src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-auto">
+            <video id="main-product-video" controls class="w-full h-auto hidden"></video>
+            {% else %}
+            <img id="main-product-image" src="https://placehold.co/800x600/E8E8E8/6C6C6C?text=Image+non+disponible" alt="Image non disponible" class="w-full h-auto">
+            <video id="main-product-video" controls class="w-full h-auto hidden"></video>
+            {% endif %}
+        </div>
+        <div class="thumbnail-gallery">
+            {% for image in product.images.all %}
+            <img src="{{ image.image.url }}" alt="Miniature {{ forloop.counter }}" class="thumbnail" data-media-type="image" data-media-url="{{ image.image.url }}">
+            {% endfor %}
+            {% for video in product.videos.all %}
+            <video class="thumbnail" data-media-type="video" data-media-url="{{ video.video.url }}">
+                <source src="{{ video.video.url }}" type="video/mp4">
+            </video>
+            {% endfor %}
+        </div>
+    </div>
 
-        .text-color-primary {
-            color: var(--color-primary);
-        }
+    <!-- Détails du produit et actions -->
+    <div class="lg:w-1/2">
+        <h2 class="text-4xl font-bold text-color-primary mb-2">{{ product.name }}</h2>
+        <p class="text-sm text-color-text-secondary mb-4">
+            Boutique: <a href="#" class="hover:underline">{{ product.shop.merchant.first_name }}</a> |
+            Catégorie: <a href="{% url 'products_by_category' category_slug=product.category.slug %}" class="hover:underline">{{ product.category.name }}</a>
+            {% if product.subcategory %}
+            / <a href="{% url 'products_by_subcategory' category_slug=product.category.slug subcategory_slug=product.subcategory.slug %}" class="hover:underline">{{ product.subcategory.name }}</a>
+            {% endif %}
+        </p>
 
-        .bg-color-accent {
-            background-color: var(--color-accent);
-        }
-
-        .text-color-accent {
-            color: var(--color-accent);
-        }
-
-        .bg-color-bg-light {
-            background-color: var(--color-bg-light);
-        }
-
-        .text-color-bg-light {
-            color: var(--color-bg-light);
-        }
-
-        .text-color-text {
-            color: var(--color-text);
-        }
-
-        .text-color-text-secondary {
-            color: var(--color-text-secondary);
-        }
-
-        .border-color-border {
-            border-color: var(--color-border);
-        }
-
-        .btn-link {
-            transition: all 0.3s ease;
-        }
-
-        .btn-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
+        <!-- Affichage de la note moyenne -->
+        {% if average_rating %}
+        <div class="flex items-center space-x-2 mb-4">
+            <div class="flex">
+                {% for i in "54321"|make_list %}
+                <svg class="h-5 w-5 {% if average_rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.631-.921 1.932 0l1.848 5.686a1 1 极0 00.95.691h5.992c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c极.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
+                </svg>
+                {% endfor %}
+            </div>
+            <p class="text-sm text-color-text-secondary">({{ average_rating|floatformat:1 }}/5)</p>
+        </div>
+        {% endif %}
         
-    </style>
-</head>
+        <p class="text-3xl font-bold text-color-accent mb-4">{{ product.price }} CFA</p>
+        <p class="text-lg text-color-text mb-6 leading-relaxed">{{ product.description }}</p>
+        
+        {% if product.stock > 0 %}
+        <span class="text-green-600 font-semibold">En stock ({{ product.stock }})</span>
+        {% else %}
+        <span class="text-red-600 font-semibold">Stock épuisé</span>
+        {% endif %}
 
-<body class="bg-color-bg-light text-color-text">
-    <!-- Barre de navigation -->
-    <header class="bg-white shadow-md py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-color-primary">
-                <a href="{% url 'index' %}" class="flex items-center space-x-2">
-                    <svg class="h-8 w-8 text-color-accent" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z"
-                            fill="currentColor" />
+        <div class="flex space-x-4 mt-6">
+            <a href="{% url 'add_to_cart' product.id %}" class="bg-color-accent text-color-primary font-bold py-3 px-6 rounded-full hover:opacity-80 transition-opacity flex-1 text-center">
+                Ajouter au panier
+            </a>
+            <a href="{% url 'start_negotiation' product.id %}" class="bg-gray-200 text-color-text font-bold py-3 px-6 rounded-full hover:bg-gray-300 transition-colors flex-1 text-center">
+                Discuter
+            </a>
+        </div>
+
+        <!-- Section pour les avis -->
+        <div class="mt-12">
+            <h3 class="text-2xl font-bold text-color-primary mb-4">Avis des clients ({{ reviews|length }})</h3>
+            {% if user.is_authenticated and not is_merchant %}
+            <!-- Formulaire d'avis -->
+            <div class="bg-gray-100 rounded-lg p-6 mb-8">
+                <h4 class="text-lg font-semibold mb-4">Laisser un avis</h4>
+                <form action="{% url 'add_review' product.id %}" method="post" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="rating" class="block text-sm font-medium text-color-text-secondary">Note (1-5 étoiles)</label>
+                        <select name="rating" id="rating" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Très bien</option>
+                            <option value="3">3 - Moyen</option>
+                            <option value="2">2 - Passable</option>
+                            <option value="1">1 - Très mauvais</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="comment" class="block text-sm font-medium text-color-text-secondary">Commentaire</label>
+                        <textarea name="comment" id="comment" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent" placeholder="Partagez votre avis sur ce produit..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-color-primary text-color-bg-light font-bold py-2 px-4 rounded-full hover:bg-opacity-80 transition-opacity">
+                        Soumettre l'avis
+                    </button>
+                </form>
+            </div>
+            {% elif user.is_authenticated %}
+                <p class="text-sm text-color-text-secondary italic mb-4">En tant que commerçant, vous ne pouvez pas laisser d'avis sur ce produit.</p>
+            {% else %}
+                <p class="text-sm text-color-text-secondary italic mb-4">Connectez-vous pour laisser un avis.</p>
+            {% endif %}
+
+            {% for review in reviews %}
+            <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="font-semibold">{{ review.user.username }}</span>
+                    <span class="text-sm text-color-text-secondary">- {{ review.date_created|date:"d M Y" }}</span>
+                </div>
+                <div class="flex">
+                    {% for i in "54321"|make_list %}
+                    <svg class="h-5 w-5 {% if review.rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9.049 2.927c.3-.921 1.631-.921 1.932 极0l1.848 5.686a1 1 0 00.95.691h5.992极c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.极.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
                     </svg>
-                    <span>DEANNA</span>
-                </a>
-            </h1>
-            <nav class="flex space-x-4">
-                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
-                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Produits</a>
-                {% if user.is_authenticated %}
-                {% if is_merchant %}
-                <a href="{% url 'dashboard' %}"
-                    class="text-color-text-secondary hover:text-color-primary transition-colors">Tableau de bord</a>
-                {% endif %}
-                <a href="{% url 'logout_view' %}"
-                    class="text-color-text-secondary hover:text-color-primary transition-colors">Déconnexion</a>
-                {% else %}
-                <a href="{% url 'create_shop' %}"
-                    class="text-color-text-secondary hover:text-color-primary transition-colors">Créer une boutique</a>
-                <a href="{% url 'login_view' %}"
-                    class="text-color-text-secondary hover:text-color-primary transition-colors">Connexion</a>
-                {% endif %}
-                <a href="{% url 'cart_detail' %}"
-                    class="text-color-text-secondary hover:text-color-primary transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.76.707 1.76H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                </a>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Contenu principal -->
-    <main class="container mx-auto px-4 py-8">
-        <div class="bg-white rounded-xl shadow-md p-6 lg:p-12 flex flex-col lg:flex-row gap-8">
-            <!-- Galerie d'images et de vidéos -->
-            <div class="lg:w-1/2">
-                <div class="main-media-container mb-4 rounded-lg overflow-hidden border-4 border-color-border">
-                    {% if product.videos.first %}
-                    <video id="main-product-video" controls autoplay class="w-full h-auto rounded-lg">
-                        <source src="{{ product.videos.first.video.url }}" type="video/mp4">
-                        Votre navigateur ne supporte pas la vidéo.
-                    </video>
-                    <img id="main-product-image" src="" alt="{{ product.name }}"
-                        class="w-full h-auto rounded-lg hidden">
-                    {% elif product.images.first %}
-                    <img id="main-product-image" src="{{ product.images.first.image.url }}" alt="{{ product.name }}"
-                        class="w-full h-auto rounded-lg">
-                    <video id="main-product-video" controls class="w-full h-auto rounded-lg hidden"></video>
-                    {% else %}
-                    <img id="main-product-image"
-                        src="https://placehold.co/800x600/E8E8E8/6C6C6C?text=Image+non+disponible" alt="Image non disponible"
-                        class="w-full h-auto rounded-lg">
-                    <video id="main-product-video" controls class="w-full h-auto rounded-lg hidden"></video>
-                    {% endif %}
-                </div>
-                <div class="thumbnail-gallery flex flex-wrap gap-4 justify-center">
-                    {% for image in product.images.all %}
-                    <img src="{{ image.image.url }}" alt="Miniature {{ forloop.counter }}"
-                        class="thumbnail w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-color-accent transition-colors"
-                        data-media-type="image" data-media-url="{{ image.image.url }}">
-                    {% endfor %}
-                    {% for video in product.videos.all %}
-                    <video
-                        class="thumbnail w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-color-accent transition-colors"
-                        data-media-type="video" data-media-url="{{ video.video.url }}">
-                        <source src="{{ video.video.url }}" type="video/mp4">
-                    </video>
                     {% endfor %}
                 </div>
+                <p class="mt-2 text-color-text-secondary">{{ review.comment }}</p>
             </div>
-
-            <!-- Détails du produit et actions -->
-            <div class="lg:w-1/2">
-                <h2 class="text-4xl font-bold text-color-primary mb-2">{{ product.name }}</h2>
-                <p class="text-sm text-color-text-secondary mb-4">
-                    Boutique: <a href="#" class="hover:underline">{{ product.shop.merchant.first_name }}</a> |
-                    Catégorie: <a href="{% url 'products_by_category' category_slug=product.category.slug %}"
-                        class="hover:underline">{{ product.category.name }}</a>
-                    {% if product.subcategory %}
-                    / <a href="{% url 'products_by_subcategory' category_slug=product.category.slug subcategory_slug=product.subcategory.slug %}"
-                        class="hover:underline">{{ product.subcategory.name }}</a>
-                    {% endif %}
-                </p>
-
-                <!-- AJOUT : Affichage de la note moyenne -->
-                {% if average_rating %}
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="flex">
-                        {% for i in "54321"|make_list %}
-                        <svg class="h-5 w-5 {% if average_rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}"
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                                d="M9.049 2.927c.3-.921 1.631-.921 1.932 0l1.848 5.686a1 1 0 00.95.691h5.992c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
-                        </svg>
-                        {% endfor %}
-                    </div>
-                    <p class="text-sm text-color-text-secondary">({{ average_rating|floatformat:1 }}/5)</p>
-                </div>
-                {% endif %}
-                
-                <p class="text-3xl font-bold text-color-accent mb-4">{{ product.price }} CFA</p>
-                <p class="text-lg text-color-text mb-6 leading-relaxed">{{ product.description }}</p>
-                
-                {% if product.stock > 0 %}
-                <span class="text-green-600 font-semibold">En stock ({{ product.stock }})</span>
-                {% else %}
-                <span class="text-red-600 font-semibold">Stock épuisé</span>
-                {% endif %}
-
-                <div class="flex space-x-4 mt-6">
-                    <a href="{% url 'add_to_cart' product.id %}"
-                        class="bg-color-accent text-color-primary font-bold py-3 px-6 rounded-full hover:opacity-80 transition-opacity flex-1 text-center">
-                        Ajouter au panier
-                    </a>
-                    <a href="{% url 'start_negotiation' product.id %}"
-                        class="bg-gray-200 text-color-text font-bold py-3 px-6 rounded-full hover:bg-gray-300 transition-colors flex-1 text-center">
-                        Discuter
-                    </a>
-                </div>
-
-                <!-- AJOUT : Section pour les avis -->
-                <div class="mt-12">
-                    <h3 class="text-2xl font-bold text-color-primary mb-4">Avis des clients ({{ reviews|length }})</h3>
-                    {% if user.is_authenticated and not is_merchant %}
-                    <!-- Formulaire d'avis -->
-                    <div class="bg-gray-100 rounded-lg p-6 mb-8">
-                        <h4 class="text-lg font-semibold mb-4">Laisser un avis</h4>
-                        <form action="{% url 'add_review' product.id %}" method="post" class="space-y-4">
-                            {% csrf_token %}
-                            <div>
-                                <label for="rating" class="block text-sm font-medium text-color-text-secondary">Note (1-5 étoiles)</label>
-                                <select name="rating" id="rating" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent">
-                                    <option value="5">5 - Excellent</option>
-                                    <option value="4">4 - Très bien</option>
-                                    <option value="3">3 - Moyen</option>
-                                    <option value="2">2 - Passable</option>
-                                    <option value="1">1 - Très mauvais</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="comment" class="block text-sm font-medium text-color-text-secondary">Commentaire</label>
-                                <textarea name="comment" id="comment" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent"
-                                    placeholder="Partagez votre avis sur ce produit..."></textarea>
-                            </div>
-                            <button type="submit"
-                                class="w-full bg-color-primary text-color-bg-light font-bold py-2 px-4 rounded-full hover:bg-opacity-80 transition-opacity">
-                                Soumettre l'avis
-                            </button>
-                        </form>
-                    </div>
-                    {% elif user.is_authenticated %}
-                        <p class="text-sm text-color-text-secondary italic mb-4">En tant que commerçant, vous ne pouvez pas laisser d'avis sur ce produit.</p>
-                    {% else %}
-                        <p class="text-sm text-color-text-secondary italic mb-4">Connectez-vous pour laisser un avis.</p>
-                    {% endif %}
-
-                    {% for review in reviews %}
-                    <div class="border-t border-gray-200 pt-6 mt-6">
-                        <div class="flex items-center space-x-2 mb-2">
-                            <span class="font-semibold">{{ review.user.username }}</span>
-                            <span class="text-sm text-color-text-secondary">- {{ review.date_created|date:"d M Y" }}</span>
-                        </div>
-                        <div class="flex">
-                            {% for i in "54321"|make_list %}
-                            <svg class="h-5 w-5 {% if review.rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.631-.921 1.932 0l1.848 5.686a1 1 0 00.95.691h5.992c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
-                            </svg>
-                            {% endfor %}
-                        </div>
-                        <p class="mt-2 text-color-text-secondary">{{ review.comment }}</p>
-                    </div>
-                    {% empty %}
-                    <p class="text-sm text-color-text-secondary italic">Soyez le premier à laisser un avis pour ce produit !</p>
-                    {% endfor %}
-                </div>
-            </div>
+            {% empty %}
+            <p class="text-sm text-color-text-secondary italic">Soyez le premier à laisser un avis pour ce produit !</p>
+            {% endfor %}
         </div>
-    </main>
+    </div>
+</div>
+{% endblock %}
 
-    <!-- Pied de page -->
-    <footer class="bg-color-primary text-color-bg-light py-10 mt-8">
-        <div class="container mx-auto px-4 text-center">
-            <div class="flex justify-center space-x-6 mb-4">
-                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">À propos</a>
-                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
-                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de
-                    confidentialité</a>
-            </div>
-            <p class="text-gray-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
-        </div>
-    </footer>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('main-product-image');
+        const mainVideo = document.getElementById('main-product-video');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const thumbnails = document.querySelectorAll('.thumbnail');
-            const mainImage = document.getElementById('main-product-image');
-            const mainVideo = document.getElementById('main-product-video');
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                const mediaType = this.getAttribute('data-media-type');
+                const mediaUrl = this.getAttribute('data-media-url');
 
-            thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function () {
-                    const mediaType = this.getAttribute('data-media-type');
-                    const mediaUrl = this.getAttribute('data-media-url');
-
-                    if (mediaType === 'image') {
-                        mainImage.src = mediaUrl;
-                        mainImage.classList.remove('hidden');
-                        mainVideo.classList.add('hidden');
-                        mainVideo.pause();
-                    } else if (mediaType === 'video') {
-                        mainVideo.src = mediaUrl;
-                        mainImage.classList.add('hidden');
-                        mainVideo.classList.remove('hidden');
-                        mainVideo.play();
-                    }
-                });
+                if (mediaType === 'image') {
+                    mainImage.src = mediaUrl;
+                    mainImage.classList.remove('hidden');
+                    mainVideo.classList.add('hidden');
+                    mainVideo.pause();
+                } else if (mediaType === 'video') {
+                    mainVideo.src = mediaUrl;
+                    mainImage.classList.add('hidden');
+                    mainVideo.classList.remove('hidden');
+                    mainVideo.play();
+                }
             });
-
-            // Gère l'affichage initial au chargement de la page
-            const initialVideo = document.querySelector('.thumbnail[data-media-type="video"]');
-            if (initialVideo) {
-                mainImage.classList.add('hidden');
-                mainVideo.classList.remove('hidden');
-                mainVideo.src = initialVideo.getAttribute('data-media-url');
-            }
         });
-    </script>
-</body>
 
-</html>
+        // Gère l'affichage initial au chargement de la page
+        const initialVideo = document.querySelector('.thumbnail[data-media-type="video"]');
+        if (initialVideo) {
+            mainImage.classList.add('hidden');
+            mainVideo.classList.remove('hidden');
+            mainVideo.src = initialVideo.getAttribute('data-media-url');
+        }
+    });
+</script>
+{% endblock %}

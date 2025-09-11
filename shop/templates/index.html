@@ -1,332 +1,215 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEANNA - Mon commerce en un clic</title>
-    <!-- Inclure Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icônes Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Utilisation des couleurs fournies par l'utilisateur */
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-border: #1A3B57;
-        }
-        
-        .bg-color-primary { background-color: var(--color-primary); }
-        .text-color-primary { color: var(--color-primary); }
-        .bg-color-accent { background-color: var(--color-accent); }
-        .text-color-accent { color: var(--color-accent); }
-        .bg-color-bg-light { background-color: var(--color-bg-light); }
-        .text-color-bg-light { color: var(--color-bg-light); }
-        .text-color-text { color: var(--color-text); }
-        .text-color-text-secondary { color: var(--color-text-secondary); }
+{% extends 'base.html' %}
+{% load static %}
 
-        /* Hero section avec image de fond */
-        .hero-section {
-            background-image: linear-gradient(rgba(11, 28, 42, 0.7), rgba(11, 28, 42, 0.7)), url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+{% block title %}DEANNA - Mon commerce en un clic{% endblock %}
 
-        /* Animation pour le slogan */
-        .slogan-animated {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInAndSlideUp 1s forwards;
-        }
-        
-        @keyframes fadeInAndSlideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Animation pour les éléments */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fadeIn {
-            animation: fadeIn 1s forwards;
-        }
-        
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .delay-600 { animation-delay: 0.6s; }
-        .delay-800 { animation-delay: 0.8s; }
-        
-        /* Boutons avec effet */
-        .btn-primary {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        /* Cartes de fonctionnalités */
-        .feature-card {
-            transition: all 0.3s ease;
-            border: 1px solid rgba(207, 175, 112, 0.2);
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-color: var(--color-accent);
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
+{% block extra_css %}
+<style>
+    /* Hero section avec image de fond */
+    .hero-section {
+        background-image: linear-gradient(rgba(11, 28, 42, 0.7), rgba(11, 28, 42, 0.7)), url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-    <!-- En-tête avec barre de navigation -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <!-- Logo ou nom du site -->
-            <a href="{% url 'index' %}" class="text-2xl font-bold text-color-primary flex items-center">
-                <i class="fas fa-store mr-2 text-color-accent"></i>
-                DEANNA
-            </a>
+    /* Animation pour le slogan */
+    .slogan-animated {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInAndSlideUp 1s forwards;
+    }
+    
+    @keyframes fadeInAndSlideUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Cartes de fonctionnalités */
+    .feature-card {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(207, 175, 112, 0.2);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-color: var(--color-accent);
+    }
+</style>
+{% endblock %}
 
-            <!-- Boutons d'action -->
-            <div class="flex items-center space-x-4">
-                <a href="{% url 'login_view' %}" class="px-4 py-2 text-sm md:text-base font-semibold text-color-primary border border-color-primary rounded-full hover:bg-color-primary hover:text-white transition-colors duration-300">
-                    Se connecter
+{% block content %}
+<!-- Section principale "Hero" avec image de fond -->
+<section class="hero-section">
+    <div class="flex-grow flex items-center justify-center text-center p-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 id="slogan-title" class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4 slogan-animated" style="font-family: 'Playfair Display', serif;">
+                Votre commerce en un clic
+            </h1>
+            <p id="slogan-text" class="text-xl md:text-2xl text-white max-w-2xl mx-auto mt-6 opacity-0 animate-fadeIn delay-200">
+                Vendez plus, stressez moins. Lancez votre boutique en ligne avec facilité.
+            </p>
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary animate-fadeIn delay-400">
+                    <i class="fas fa-shopping-bag mr-2"></i>Découvrir les produits
                 </a>
-                <a href="{% url 'create_shop' %}" class="px-4 py-2 text-sm md:text-base font-semibold text-white bg-color-accent rounded-full btn-primary">
-                    Créer une boutique
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Section principale "Hero" avec image de fond -->
-    <section class="hero-section">
-        <div class="flex-grow flex items-center justify-center text-center p-8">
-            <div class="max-w-4xl mx-auto">
-                <h1 id="slogan-title" class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4 slogan-animated" style="font-family: 'Playfair Display', serif;">
-                    Votre commerce en un clic
-                </h1>
-                <p id="slogan-text" class="text-xl md:text-2xl text-white max-w-2xl mx-auto mt-6 opacity-0 animate-fadeIn delay-200">
-                    Vendez plus, stressez moins. Lancez votre boutique en ligne avec facilité.
-                </p>
-                <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary animate-fadeIn delay-400">
-                        <i class="fas fa-shopping-bag mr-2"></i>Découvrir les produits
-                    </a>
-                    <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fadeIn delay-600">
-                        <i class="fas fa-store mr-2"></i>Commencer à vendre
-                    </a>
-                    
-                    <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
-                        Voir les boutiques
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Indicateur de défilement -->
-        <div class="text-center pb-10 animate-fadeIn delay-800">
-            <a href="#features" class="text-white text-2xl animate-bounce inline-block">
-                <i class="fas fa-chevron-down"></i>
-            </a>
-        </div>
-    </section>
-
-    <!-- Section fonctionnalités -->
-    <section id="features" class="py-16 bg-color-bg-light">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-center text-color-primary mb-12">Pourquoi choisir DEANNA ?</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Carte 1 -->
-                <div class="feature-card bg-white p-6 rounded-xl text-center">
-                    <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-rocket text-2xl text-color-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-color-primary mb-2">Lancement rapide</h3>
-                    <p class="text-color-text-secondary">Créez votre boutique en quelques minutes seulement, sans compétences techniques requises.</p>
-                </div>
-                
-                <!-- Carte 2 -->
-                <div class="feature-card bg-white p-6 rounded-xl text-center">
-                    <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-chart-line text-2xl text-color-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-color-primary mb-2">Croissance assurée</h3>
-                    <p class="text-color-text-secondary">Des outils puissants pour gérer vos produits, stocks et commandes efficacement.</p>
-                </div>
-                
-                <!-- Carte 3 -->
-                <div class="feature-card bg-white p-6 rounded-xl text-center">
-                    <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-headset text-2xl text-color-primary"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-color-primary mb-2">Support dédié</h3>
-                    <p class="text-color-text-secondary">Notre équipe est là pour vous accompagner à chaque étape de votre croissance.</p>
-                </div>
-            </div>
-            
-            <div class="text-center mt-12">
-                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
-                    Commencer gratuitement
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section témoignages -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl md:text-4xl font-bold text-center text-color-primary mb-12">Ils nous font confiance</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- Témoignage 1 -->
-                <div class="bg-color-bg-light p-6 rounded-xl">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-color-accent rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-color-primary"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-color-primary">Marie L.</h4>
-                            <p class="text-sm text-color-text-secondary">Créatrice de bijoux</p>
-                        </div>
-                    </div>
-                    <p class="text-color-text">"DEANNA a transformé mon hobby en véritable entreprise. Je gère maintenant mes ventes en toute sérénité."</p>
-                </div>
-                
-                <!-- Témoignage 2 -->
-                <div class="bg-color-bg-light p-6 rounded-xl">
-                    <div class="flex items-center mb-4">
-                        <div class="w-12 h-12 bg-color-accent rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-color-primary"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-semibold text-color-primary">Thomas D.</h4>
-                            <p class="text-sm text-color-text-secondary">Artisan potier</p>
-                        </div>
-                    </div>
-                    <p class="text-color-text">"L'interface est intuitive et les fonctionnalités de négociation automatique ont boosté mes ventes de 40%."</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA final -->
-    <section class="py-16 bg-color-primary text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">Prêt à lancer votre boutique ?</h2>
-            <p class="text-xl max-w-2xl mx-auto mb-8">Rejoignez des milliers de commerçants qui font grandir leur business avec DEANNA.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
-                    Créer ma boutique
-                </a>
-                <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
-                    Voir les produits
+                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fade极In delay-600">
+                    <i class="fas fa-store mr-2"></i>Commencer à vendre
                 </a>
                 <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
                     Voir les boutiques
                 </a>
-                
             </div>
         </div>
-    </section>
+    </div>
+    
+    <!-- Indicateur de défilement -->
+    <div class="text-center pb-10 animate-fadeIn delay-800">
+        <a href="#features" class="text-white text-2xl animate-bounce inline-block">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </div>
+</section>
 
-    <!-- Pied de page -->
-    <footer class="bg-color-primary text-color-bg-light py-12">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">DEANNA</h3>
-                    <p class="text-gray-400">La plateforme e-commerce qui simplifie votre business.</p>
+<!-- Section fonctionnalités -->
+<section id="features" class="py-16 bg-color-bg-light">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-color-primary mb-12">Pourquoi choisir DEANNA ?</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Carte 1 -->
+            <div class="feature-card bg-white p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-rocket text-2xl text-color-primary"></i>
                 </div>
-                
-                <div>
-                    <h4 class="font-semibold mb-4">Liens rapides</h4>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'index' %}" class="text-gray-400 hover:text-white transition-colors">Accueil</a></li>
-                        <li><a href="{% url 'product_list' %}" class="text-gray-400 hover:text-white transition-colors">Produits</a></li>
-                        <li><a href="{% url 'create_shop' %}" class="text-gray-400 hover:text-white transition-colors">Créer une boutique</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="font-semibold mb-4">Support</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Centre d'aide</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="font-semibold mb-4">Légal</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Conditions d'utilisation</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Politique de confidentialité</a></li>
-                    </ul>
-                </div>
+                <h3 class="text-xl font-semib极old text-color-primary mb-2">Lancement rapide</h3>
+                <p class="text-color-text-secondary">Créez votre boutique en quelques minutes seulement, sans compétences techniques requises.</p>
             </div>
             
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                <p class="text-gray-400 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+            <!-- Carte 2 -->
+            <div class="feature-card bg-white p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-line text-2xl text-color-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-color-primary mb-2">Croissance assurée</h3>
+                <p class="text-color-text-secondary">Des outils puissants pour gérer vos produits, stocks et commandes efficacement.</p>
+            </div>
+            
+            <!-- Carte 3 -->
+            <div class="feature-card bg-white p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-headset text-2xl text-color-primary"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-color-primary mb-2">Support dédié</h3>
+                <p class="text-color-text-secondary">Notre équipe est là pour vous accompagner à chaque étape de votre croissance.</p>
             </div>
         </div>
-    </footer>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'create_shop' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
+                Commencer gratuitement
+            </a>
+        </div>
+    </div>
+</section>
 
-    <script>
-        // Effet d'animation simple au chargement de la page
-        window.addEventListener('load', () => {
-            const sloganTitle = document.getElementById('slogan-title');
-            const sloganText = document.getElementById('slogan-text');
+<!-- Section témoignages -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-color-primary mb-12">Ils nous font confiance</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Témoignage 1 -->
+            <div class="bg-color-bg-light p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-color-accent rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-color-primary"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-semibold text-color-primary">Marie L.</h4>
+                        <p class="text-sm text-color-text-secondary">Créatrice de bijoux</p>
+                    </div>
+                </div>
+                <p class="text-color-text">"DEANNA a transformé mon hobby en véritable entreprise. Je gère maintenant mes ventes en toute sérénité."</p>
+            </div>
             
-            sloganTitle.style.opacity = '1';
-            sloganTitle.style.transform = 'translateY(0)';
+            <!-- Témoignage 2 -->
+            <div class="bg-color-bg-light p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-color-accent rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-color-primary"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h4 class="font-semibold text-color-primary">Thomas D.</h4>
+                        <p class="text-sm text-color-text-secondary">Artisan potier</p>
+                    </div>
+                </div>
+                <p class="text-color-text">"L'interface est intuitive et les fonctionnalités de négociation automatique ont boosté mes ventes de 40%."</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-            setTimeout(() => {
-                sloganText.style.opacity = '1';
-                sloganText.style.transform = 'translateY(0)';
-            }, 200);
+<!-- CTA final -->
+<section class="py-16 bg-color-primary text-white">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3极xl md:text-4xl font-bold mb-4">Prêt à lancer votre boutique ?</h2>
+        <p class="text-xl max-w-2xl mx-auto mb-8">Rejoignez des milliers de commerçants qui font grandir leur business avec DEANNA.</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
+                Créer ma boutique
+            </a>
+            <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                Voir les produits
+            </a>
+            <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                Voir les boutiques
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Effet d'animation simple au chargement de la page
+    window.addEventListener('load', () => {
+        const sloganTitle = document.getElementById('slogan-title');
+        const sloganText = document.getElementById('slogan-text');
+        
+        sloganTitle.style.opacity = '1';
+        sloganTitle.style.transform = 'translateY(0)';
+
+        setTimeout(() => {
+            sloganText.style.opacity = '1';
+            sloganText.style.transform = 'translateY(0)';
+        }, 200);
+    });
+
+    // Animation pour les éléments au défilement
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fadeIn');
+            }
         });
+    }, observerOptions);
 
-        // Animation pour les éléments au défilement
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-fadeIn');
-                }
-            });
-        }, observerOptions);
-
-        // Observer les éléments à animer
-        document.querySelectorAll('.feature-card').forEach(card => {
-            observer.observe(card);
-        });
-    </script>
-</body>
-</html>
+    // Observer les éléments à animer
+    document.querySelectorAll('.feature-card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

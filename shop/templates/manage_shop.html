@@ -1,170 +1,363 @@
 <!-- Fichier : shop/templates/manage_shop.html -->
 {% extends 'base_dashboard.html' %}
+{% load static %}
 
-{% block title %}Gérer ma boutique{% endblock %}
+{% block title %}Gérer ma boutique - {{ shop.name }}{% endblock %}
 
-{% block content %}
-    <style>
+{% block extra_css %}
+<style>
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-content h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--color-primary);
+        margin: 0;
+    }
+    
+    .form-container {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .form-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--color-accent);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 0.5rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.2);
+    }
+    
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .image-preview {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        border: 2px dashed #e0e0e0;
+    }
+    
+    .image-placeholder {
+        width: 150px;
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        color: #6c757d;
+    }
+    
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+    }
+    
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .file-input-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--color-primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .file-input-button:hover {
+        background-color: #1A3B57;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+    
+    .url-preview {
+        background-color: #f8f9fa;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        margin-top: 0.5rem;
+        font-family: monospace;
+        word-break: break-all;
+    }
+    
+    .url-preview a {
+        color: var(--color-accent);
+        text-decoration: none;
+    }
+    
+    .url-preview a:hover {
+        text-decoration: underline;
+    }
+    
+    .cta-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: var(--color-primary);
+        color: #fff;
+        padding: 0.75rem 2rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .cta-button:hover {
+        background-color: #1A3B57;
+        transform: translateY(-2px);
+    }
+
+    .share-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: #007BFF;
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        text-decoration: none;
+        transition: background-color 0.2s, transform 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .share-button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+    }
+    
+    .alert {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid;
+    }
+    
+    .alert-info {
+        background-color: #e8f4fd;
+        border-color: #007BFF;
+        color: #0056b3;
+    }
+    
+    .form-help-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 768px) {
         .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
+            flex-direction: column;
+            align-items: flex-start;
         }
-
+        
         .header-content h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--color-primary);
-            margin: 0;
+            font-size: 2rem;
         }
         
         .form-container {
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            max-width: 800px;
-            margin: 0 auto;
+            padding: 1.5rem;
         }
+    }
+</style>
+{% endblock %}
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--color-text);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 0.5rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.2);
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background-color: var(--color-primary);
-            color: #fff;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.2s, transform 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .cta-button:hover {
-            background-color: #1A3B57;
-            transform: translateY(-2px);
-        }
-
-        .share-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: #007BFF;
-            color: #fff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.2s, transform 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .share-button i {
-            margin-right: 0.5rem;
-        }
-
-        .share-button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-
-    </style>
-
+{% block content %}
     <div class="header-content">
         <h1>Gérer ma boutique</h1>
-        <!-- Bouton de partage -->
         <button id="shareButton" class="share-button">
             <i class="fas fa-share-alt"></i> Partager le lien
         </button>
     </div>
     
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     <div class="form-container">
-        <!-- Le formulaire doit avoir enctype="multipart/form-data" pour les fichiers -->
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="shopForm">
             {% csrf_token %}
-            <h2 class="text-xl font-semibold mb-4 text-color-primary">Informations de la boutique</h2>
-
-            <!-- Champ pour l'image de la boutique -->
-            <div class="form-group">
-                <label for="image">Image de la boutique</label>
-                <div class="flex items-center space-x-4">
+            
+            <div class="form-section">
+                <h2>Informations de la boutique</h2>
+                
+                <div class="form-group">
+                    <label>Image actuelle</label>
                     {% if shop.image %}
-                        <img src="{{ shop.image.url }}" alt="Image de la boutique" class="w-32 h-32 object-cover rounded-lg shadow">
+                        <img src="{{ shop.image.url }}" alt="Image de la boutique" class="image-preview" id="currentImage">
                     {% else %}
-                        <div class="w-32 h-32 flex items-center justify-center bg-gray-100 rounded-lg text-gray-400">
-                            Aucune image
+                        <div class="image-placeholder" id="currentImagePlaceholder">
+                            <i class="fas fa-store fa-2x"></i>
                         </div>
                     {% endif %}
-                    <input type="file" id="image" name="image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+                    
+                    <div class="file-input-wrapper">
+                        <button type="button" class="file-input-button">
+                            <i class="fas fa-upload"></i> Changer l'image
+                        </button>
+                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(this)">
+                    </div>
+                    <div class="form-help-text">Format recommandé: JPG, PNG ou WEBP. Taille max: 5MB</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description de la boutique</label>
+                    <textarea id="description" name="description" rows="5" placeholder="Décrivez votre boutique, vos produits et vos valeurs...">{{ shop.description }}</textarea>
+                    <div class="form-help-text">Cette description sera visible par les clients visitant votre boutique.</div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h2>Paramètres de visibilité</h2>
+                
+                <div class="form-group">
+                    <label for="shareable_link_slug">Identifiant personnalisé</label>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-500">
+                            {{ request.scheme }}://{{ request.get_host }}/boutiques/
+                        </span>
+                        <input type="text" id="shareable_link_slug" name="shareable_link_slug" 
+                               value="{{ shop_settings.shareable_link_slug|default:request.user.username }}"
+                               pattern="[a-zA-Z0-9_-]+" 
+                               title="Seules les lettres, chiffres, tirets et underscores sont autorisés">
+                    </div>
+                    <div class="url-preview">
+                        Votre lien: <a href="{{ shop_link }}" target="_blank" id="shopLinkPreview">{{ shop_link }}</a>
+                    </div>
+                    <div class="form-help-text">Cet identifiant sera utilisé dans l'URL de votre boutique. Utilisez uniquement des lettres, chiffres, tirets et underscores.</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is_public" name="is_public" {% if shop_settings.is_public %}checked{% endif %}>
+                        <label for="is_public">Rendre ma boutique publique</label>
+                    </div>
+                    <div class="form-help-text">
+                        Si cette option est cochée, votre boutique sera visible par tous les visiteurs. 
+                        Si elle est décochée, seuls vous pourrez y accéder.
+                    </div>
                 </div>
             </div>
 
-            <!-- Champ pour la description de la boutique -->
-            <div class="form-group">
-                <label for="description">Description de la boutique</label>
-                <textarea id="description" name="description" rows="5">{{ shop.description }}</textarea>
-            </div>
-            
-            <hr class="my-6 border-gray-200">
-
-            <h2 class="text-xl font-semibold mb-4 text-color-primary">Paramètres de visibilité</h2>
-            
-            <!-- Champ pour le slug du lien de partage -->
-            <div class="form-group">
-                <label for="shareable_link_slug">Lien de partage personnalisé</label>
-                <div class="flex items-center space-x-2">
-                    <span class="text-gray-500">
-                        {{ request.scheme }}://{{ request.get_host }}/boutique/
-                    </span>
-                    <input type="text" id="shareable_link_slug" name="shareable_link_slug" value="{{ shop_settings.shareable_link_slug|default:request.user.username }}" class="flex-1">
-                </div>
-                <small class="text-gray-500 mt-1 block">Le lien vers votre boutique sera : <a href="{{ shop_link }}" target="_blank" class="text-color-accent">{{ shop_link }}</a></small>
-            </div>
-
-            <!-- Champ pour le statut public -->
-            <div class="form-group flex items-center space-x-2">
-                <input type="checkbox" id="is_public" name="is_public" class="rounded text-color-accent" {% if shop_settings.is_public %}checked{% endif %}>
-                <label for="is_public" class="mb-0">Rendre ma boutique publique</label>
-            </div>
-
-            <button type="submit" class="cta-button w-full mt-6">Enregistrer les modifications</button>
+            <button type="submit" class="cta-button">
+                <i class="fas fa-save"></i> Enregistrer les modifications
+            </button>
         </form>
     </div>
+{% endblock %}
 
-    <script>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mise à jour en temps réel de l'aperçu du lien
+        const slugInput = document.getElementById('shareable_link_slug');
+        const linkPreview = document.getElementById('shopLinkPreview');
+        
+        if (slugInput && linkPreview) {
+            slugInput.addEventListener('input', function() {
+                const baseUrl = `${window.location.protocol}//${window.location.host}/boutiques/`;
+                linkPreview.textContent = baseUrl + this.value;
+                linkPreview.href = baseUrl + this.value;
+            });
+        }
+        
+        // Partage de la boutique
         document.getElementById('shareButton').addEventListener('click', () => {
-            const shareableLink = document.querySelector('#shareable_link_slug').value;
-            const fullUrl = `${window.location.protocol}//${window.location.host}/boutique/${shareableLink}`;
+            const shareableLink = document.getElementById('shareable_link_slug').value;
+            const fullUrl = `${window.location.protocol}//${window.location.host}/boutiques/${shareableLink}`;
             
             // Vérifie si l'API Web Share est disponible
             if (navigator.share) {
@@ -172,15 +365,88 @@
                     title: 'Découvrez ma boutique !',
                     text: 'Visitez ma boutique pour trouver des produits incroyables.',
                     url: fullUrl
-                }).catch((error) => console.log('Erreur de partage', error));
-            } else {
-                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
-                navigator.clipboard.writeText(fullUrl).then(() => {
-                    alert('Lien copié dans le presse-papiers !');
-                }).catch(err => {
-                    alert('Erreur lors de la copie du lien : ' + err);
+                }).catch((error) => {
+                    console.log('Erreur de partage', error);
+                    copyToClipboard(fullUrl);
                 });
+            } else {
+                copyToClipboard(fullUrl);
             }
         });
-    </script>
+        
+        // Fonction pour copier dans le presse-papiers
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Lien copié dans le presse-papiers !', 'success');
+            }).catch(err => {
+                showNotification('Erreur lors de la copie du lien : ' + err, 'error');
+            });
+        }
+        
+        // Fonction pour afficher des notifications
+        function showNotification(message, type) {
+            // Créer une notification temporaire
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.maxWidth = '300px';
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    });
+    
+    // Prévisualisation de l'image
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Créer ou mettre à jour l'aperçu d'image
+                let preview = document.getElementById('imagePreview');
+                const placeholder = document.getElementById('currentImagePlaceholder');
+                const currentImage = document.getElementById('currentImage');
+                
+                if (!preview) {
+                    preview = document.createElement('img');
+                    preview.id = 'imagePreview';
+                    preview.className = 'image-preview';
+                    
+                    if (placeholder) {
+                        placeholder.parentNode.replaceChild(preview, placeholder);
+                    } else if (currentImage) {
+                        currentImage.parentNode.replaceChild(preview, currentImage);
+                    } else {
+                        input.parentNode.parentNode.insertBefore(preview, input.parentNode);
+                    }
+                }
+                
+                preview.src = e.target.result;
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    // Validation du formulaire
+    document.getElementById('shopForm').addEventListener('submit', function(e) {
+        const slugInput = document.getElementById('shareable_link_slug');
+        const slugValue = slugInput.value;
+        const slugPattern = /^[a-zA-Z0-9_-]+$/;
+        
+        if (!slugPattern.test(slugValue)) {
+            e.preventDefault();
+            alert('L\'identifiant personnalisé ne peut contenir que des lettres, chiffres, tirets et underscores.');
+            slugInput.focus();
+        }
+    });
+</script>
 {% endblock %}

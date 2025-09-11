@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte client - DEANNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .text-color-text { color: var(--color-text); }
+        .text-color-text-secondary { color: var(--color-text-secondary); }
+        .border-color-border { border-color: var(--color-border); }
+        
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(207, 175, 112, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-color-bg-light min-h-screen flex flex-col">
+    <!-- Barre de navigation -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-color-primary">
+                <a href="{% url 'index' %}" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-color-accent" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor" />
+                    </svg>
+                    <span>DEANNA</span>
+                </a>
+            </h1>
+            <nav class="flex space-x-4">
+                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
+                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Produits</a>
+                <a href="{% url 'login_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Connexion</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-white rounded-xl shadow-md p-8">
+            <h2 class="text-3xl font-bold text-color-primary mb-6 text-center">Créer un compte client</h2>
+            
+            {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-color-text-secondary mb-1">Prénom *</label>
+                        <input type="text" id="first_name" name="first_name" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-color-text-secondary mb-1">Nom *</label>
+                        <input type="text" id="last_name" name="last_name" required 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-color-text-secondary mb-1">Email *</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-color-text-secondary mb-1">Téléphone</label>
+                    <input type="tel" id="phone" name="phone" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                </div>
+                
+                <div>
+                    <label for="username" class="block text-sm font-medium text-color-text-secondary mb-1">Nom d'utilisateur *</label>
+                    <input type="text" id="username" name="username" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-color-text-secondary mb-1">Mot de passe *</label>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-color-accent focus:border-color-accent">
+                </div>
+                
+                <button type="submit" class="w-full btn-primary font-bold py-3 px-6 rounded-full">
+                    Créer mon compte
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <p class="text-color-text-secondary">
+                    Vous avez déjà un compte ? 
+                    <a href="{% url 'login_view' %}" class="text-color-accent hover:underline">Connectez-vous</a>
+                </p>
+                <p class="text-color-text-secondary mt-2">
+                    Vous êtes commerçant ? 
+                    <a href="{% url 'create_shop' %}" class="text-color-accent hover:underline">Créez votre boutique</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-10">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">À propos</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de confidentialité</a>
+            </div>
+            <p class="text-gray-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

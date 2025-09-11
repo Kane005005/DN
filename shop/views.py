@@ -1,29 +1,61 @@
 # Fichier : shop/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Product, Conversation, Message, Merchant,HeroSlide
-from django.http import JsonResponse
+from .models import Product, Conversation, Message, Merchant, HeroSlide, Client
+from django.http import JsonResponse, HttpResponseForbidden
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.db.models import Sum, F, Avg, Q # AJOUT : Import d'Avg et Q pour la moyenne et la recherche
-from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings, ShopSettings
+from django.db.models import Sum, F, Avg, Q
+from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings, ShopSettings, Client
 from django.core.files.storage import FileSystemStorage
 from decimal import Decimal, InvalidOperation
 import json
 from datetime import date, timedelta
 from django.views.decorators.http import require_POST
 from django.db.models.functions import TruncDay
-from django.core.paginator import Paginator # AJOUT : Pour la pagination
+from django.core.paginator import Paginator
 import logging
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
+import re
+
 # Configuration du logger
 logger = logging.getLogger(__name__)
+
+# Fonctions utilitaires pour vérifier le type d'utilisateur
+def is_merchant(user):
+    return user.is_authenticated and hasattr(user, 'merchant')
+
+def is_client(user):
+    return user.is_authenticated and hasattr(user, 'client')
+
+def get_user_type(user):
+    if is_merchant(user):
+        return 'merchant'
+    elif is_client(user):
+        return 'client'
+    return 'anonymous'
+
+# Décorateurs personnalisés
+def client_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not is_client(request.user):
+            return HttpResponseForbidden("Accès réservé aux clients")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+def merchant_required(view_func):
+    def wrapper(request, *args, **kwargs):
+        if not is_merchant(request.user):
+            return HttpResponseForbidden("Accès réservé aux commerçants")
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
 # VUES EXISTANTES
 def index(request):
     return render(request, 'index.html')
@@ -75,7 +107,13 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            # Rediriger vers le tableau de bord approprié
+            if hasattr(user, 'merchant'):
+                return redirect('dashboard')
+            elif hasattr(user, 'client'):
+                return redirect('client_dashboard')
+            else:
+                return redirect('index')
         else:
             # Si l'authentification échoue
             return render(request, 'login.html', {'error': 'Nom d\'utilisateur ou mot de passe incorrect.'})
@@ -122,6 +160,14 @@ def dashboard(request):
             .order_by('day')
         )
         
+        # Convert datetime objects to strings for JSON serialization
+        revenue_data_list = []
+        for item in revenue_data:
+            revenue_data_list.append({
+                'day': item['day'].strftime('%Y-%m-%d'),  # Convert to string
+                'revenue': float(item['revenue']) if item['revenue'] else 0.0
+            })
+        
         # Produits les plus vendus
         top_products = (
             OrderItem.objects.filter(product__shop=shop, order__complete=True)
@@ -131,12 +177,13 @@ def dashboard(request):
         )
         
         # Conversion en JSON pour le template
-        import json
-        revenue_data_json = json.dumps(list(revenue_data))
+        revenue_data_json = json.dumps(revenue_data_list)
         top_products_data_json = json.dumps(list(top_products))
         
         context = {
             'is_merchant': True,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user),
             'shop': shop,
             'total_products': total_products,
             'total_orders': total_orders,
@@ -150,11 +197,24 @@ def dashboard(request):
         # Si ce n'est pas un commerçant ou n'a pas de boutique
         context = {
             'is_merchant': False,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user),
+            'shop': None
+        }
+        return render(request, 'dashboard.html', context)
+        
+    except (Merchant.DoesNotExist, Shop.DoesNotExist):
+        # Si ce n'est pas un commerçant ou n'a pas de boutique
+        context = {
+            'is_merchant': False,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user),
             'shop': None
         }
         return render(request, 'dashboard.html', context)
     
 @login_required(login_url='login_view')
+@merchant_required
 def manage_products(request):
     try:
         merchant = request.user.merchant
@@ -162,7 +222,9 @@ def manage_products(request):
         products = Product.objects.filter(shop=shop)
         context = {
             'products': products,
-            'is_merchant': True
+            'is_merchant': True,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user)
         }
     except (Merchant.DoesNotExist, Shop.DoesNotExist):
         return redirect('dashboard')
@@ -170,6 +232,7 @@ def manage_products(request):
     return render(request, 'manage_products.html', context)
 
 @login_required(login_url='login_view')
+@merchant_required
 def add_product(request):
     try:
         merchant = request.user.merchant
@@ -180,9 +243,6 @@ def add_product(request):
     categories = Category.objects.all()
 
     if request.method == 'POST':
-        # SUPPRIMER: with transaction.atomic():  (si vous n'en avez pas besoin)
-        # OU AJOUTER: from django.db import transaction  en haut du fichier
-        
         product_name = request.POST.get('name')
         product_price = request.POST.get('price')
         product_description = request.POST.get('description')
@@ -207,19 +267,23 @@ def add_product(request):
             ProductImage.objects.create(product=product, image=image_file)
 
         for video_file in videos:
-            ProductVideo.objects.create(product=product, video=video_file)  # CORRECTION: video au lieu de video_file
+            ProductVideo.objects.create(product=product, video=video_file)
 
         return redirect('manage_products')
 
     context = {
         'categories': categories,
+        'is_merchant': True,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'add_product.html', context)
 
+@login_required(login_url='login_view')
+@merchant_required
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'POST':
-        # ... (le code de cette fonction ne change pas)
         try:
             # S'assure que l'utilisateur est le propriétaire de la boutique
             if request.user.merchant.shop != product.shop:
@@ -230,7 +294,7 @@ def edit_product(request, product_id):
             product.description = request.POST.get('description')
             product.stock = request.POST.get('stock')
             
-            # AJOUT : Mise à jour des catégories
+            # Mise à jour des catégories
             category_id = request.POST.get('category')
             subcategory_id = request.POST.get('subcategory')
             product.category = get_object_or_404(Category, id=category_id) if category_id else None
@@ -245,18 +309,20 @@ def edit_product(request, product_id):
         except (Merchant.DoesNotExist, InvalidOperation):
             return redirect('dashboard')
     
-    # AJOUT : Récupère les catégories et sous-catégories pour le formulaire
+    # Récupère les catégories et sous-catégories pour le formulaire
     categories = Category.objects.all()
     context = {
         'product': product,
         'categories': categories,
-        'is_merchant': True
+        'is_merchant': True,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'edit_product.html', context)
 
-
+@login_required(login_url='login_view')
+@merchant_required
 def delete_product(request, product_id):
-    # ... (le code de cette fonction ne change pas)
     product = get_object_or_404(Product, id=product_id)
     try:
         if request.user.merchant.shop != product.shop:
@@ -267,6 +333,7 @@ def delete_product(request, product_id):
     return redirect('manage_products')
 
 @login_required(login_url='login_view')
+@merchant_required
 def manage_orders(request):
     try:
         merchant = request.user.merchant
@@ -274,13 +341,16 @@ def manage_orders(request):
         orders = Order.objects.filter(orderitem__product__shop=shop).distinct().order_by('-date_ordered')
         context = {
             'orders': orders,
-            'is_merchant': True
+            'is_merchant': True,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user)
         }
     except (Merchant.DoesNotExist, Shop.DoesNotExist):
         return redirect('dashboard')
     return render(request, 'manage_orders.html', context)
 
 @login_required(login_url='login_view')
+@merchant_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     # Vérifie si le commerçant a un produit dans la commande
@@ -291,12 +361,14 @@ def order_detail(request, order_id):
         
     context = {
         'order': order,
-        'is_merchant': True
+        'is_merchant': True,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'order_detail.html', context)
 
-
-@login_required
+@login_required(login_url='login_view')
+@merchant_required
 def manage_shop(request):
     try:
         merchant = request.user.merchant
@@ -322,6 +394,7 @@ def manage_shop(request):
             shop_settings.shareable_link_slug = shareable_link_slug
             shop_settings.save()
             
+            messages.success(request, 'Les paramètres de votre boutique ont été mis à jour avec succès!')
             return redirect('manage_shop')
 
         # Génère le lien de partage
@@ -330,13 +403,16 @@ def manage_shop(request):
         else:
             shop_slug = request.user.username
         
-        shop_link = request.build_absolute_uri(reverse('shop_detail', args=[shop_slug]))
+        # CORRECTION ICI: Utilisez 'shop_detail_by_slug' au lieu de 'shop_detail'
+        shop_link = request.build_absolute_uri(reverse('shop_detail_by_slug', args=[shop_slug]))
         
         context = {
             'shop': shop,
             'shop_settings': shop_settings,
             'shop_link': shop_link,
-            'is_merchant': True
+            'is_merchant': True,
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user)
         }
     except Merchant.DoesNotExist:
         return redirect('dashboard')
@@ -344,8 +420,8 @@ def manage_shop(request):
     return render(request, 'manage_shop.html', context)
 
 @login_required(login_url='login_view')
+@merchant_required
 def configure_negotiation(request):
-    # ... (le code de cette fonction ne change pas)
     try:
         merchant = request.user.merchant
         settings, created = NegotiationSettings.objects.get_or_create(shop=merchant.shop)
@@ -360,9 +436,13 @@ def configure_negotiation(request):
         return redirect('configure_negotiation')
 
     context = {
-        'settings': settings
+        'settings': settings,
+        'is_merchant': True,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'configure_negotiation.html', context)
+
 def product_search_list(request):
     query = request.GET.get('q')
     products = Product.objects.all()
@@ -370,13 +450,16 @@ def product_search_list(request):
     if query:
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
     
-    paginator = Paginator(products, 12) # Affiche 12 produits par page
+    paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     context = {
         'page_obj': page_obj,
-        'query': query
+        'query': query,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'product_search_list.html', context)
 
@@ -387,21 +470,24 @@ def visit_shops(request):
     """
     shops = Shop.objects.filter(shopsettings__is_public=True)
     context = {
-        'shops': shops
+        'shops': shops,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'visit_shops.html', context)
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
-    # AJOUT : Récupération des avis et de la note moyenne
+    # Récupération des avis et de la note moyenne
     reviews = Review.objects.filter(product=product).order_by('-date_created')
     average_rating = reviews.aggregate(Avg('rating'))['rating__avg']
     
-    # AJOUT : Récupération des produits similaires
+    # Récupération des produits similaires
     similar_products = product.similar_products.all()
     
-    # AJOUT : Récupération des variations de produits
+    # Récupération des variations de produits
     variations = product.variations.all()
     
     # Vérifier si la catégorie et le slug existent
@@ -414,7 +500,9 @@ def product_detail(request, product_id):
         'average_rating': average_rating,
         'similar_products': similar_products,
         'variations': variations,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant'),
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user),
         'has_valid_category': has_valid_category,
         'has_valid_subcategory': has_valid_subcategory
     }
@@ -425,9 +513,8 @@ def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # S'assure que l'utilisateur n'est pas le commerçant de la boutique
-    if request.user.is_authenticated and hasattr(request.user, 'merchant'):
-        if request.user.merchant.shop == product.shop:
-            return redirect('product_detail', product_id=product_id)
+    if is_merchant(request.user) and request.user.merchant.shop == product.shop:
+        return redirect('product_detail', product_id=product_id)
     
     if request.method == 'POST':
         rating = request.POST.get('rating')
@@ -445,21 +532,17 @@ def add_review(request, product_id):
     
     return redirect('product_detail', product_id=product_id)
 
-
-# Modifiez la vue product_list pour inclure les slides hero
-
 def product_list(request):
     # Récupération de tous les produits, puis application des filtres
     products = Product.objects.all().order_by('name')
     categories = Category.objects.all()
     
     # Récupérer les slides hero actifs
-    hero_slides = HeroSlide.objects.filter(is_active=True).order_by('order')[:5]  # Limiter à 5 slides
+    hero_slides = HeroSlide.objects.filter(is_active=True).order_by('order')[:5]
     
     # 1. Filtre par recherche (champ 'q')
     query = request.GET.get('q')
     if query:
-        # Utilisation de Q pour combiner la recherche sur plusieurs champs
         products = products.filter(Q(name__icontains=query) | Q(description__icontains=query))
 
     # 2. Filtre par prix
@@ -496,24 +579,27 @@ def product_list(request):
         products = products.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
         
     # Pagination
-    paginator = Paginator(products, 12)  # Affiche 12 produits par page
+    paginator = Paginator(products, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     context = {
         'page_obj': page_obj,
         'categories': categories,
-        'hero_slides': hero_slides,  # Ajout des slides hero
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant'),
+        'hero_slides': hero_slides,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user),
     }
     return render(request, 'product_list.html', context)
-# AJOUT : Vue pour les produits par catégorie
+
+# Vue pour les produits par catégorie
 def products_by_category(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
     # Réutilisation de la vue product_list avec le filtre de catégorie
     return product_list(request, category_slug=category_slug)
 
-# AJOUT : Vue pour les produits par sous-catégorie
+# Vue pour les produits par sous-catégorie
 def products_by_subcategory(request, category_slug, subcategory_slug):
     subcategory = get_object_or_404(SubCategory, slug=subcategory_slug)
     products = Product.objects.filter(subcategory=subcategory).order_by('name')
@@ -526,18 +612,18 @@ def products_by_subcategory(request, category_slug, subcategory_slug):
     context = {
         'page_obj': page_obj,
         'categories': categories,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant'),
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user),
         'current_category': subcategory.category,
         'current_subcategory': subcategory,
     }
     return render(request, 'product_list.html', context)
 
-
-# AJOUT : Vue pour la recherche de produits
+# Vue pour la recherche de produits
 def product_search(request):
     return product_list(request)
-    
-# ... autres vues (le reste du code)
+
 @login_required(login_url='login_view')
 def cart_detail(request):
     try:
@@ -545,7 +631,12 @@ def cart_detail(request):
     except Cart.DoesNotExist:
         cart = Cart.objects.create(user=request.user)
         
-    context = {'cart': cart, 'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')}
+    context = {
+        'cart': cart, 
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
+    }
     return render(request, 'cart_detail.html', context)
 
 @login_required(login_url='login_view')
@@ -600,7 +691,9 @@ def checkout_view(request):
     context = {
         'cart': cart, 
         'total': total,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'checkout.html', context)
 
@@ -654,7 +747,9 @@ def order_confirmation(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     context = {
         'order': order,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'order_confirmation.html', context)
     
@@ -663,7 +758,7 @@ def start_negotiation_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
     # Si le client est aussi un commerçant et que le produit lui appartient, on redirige
-    if hasattr(request.user, 'merchant') and request.user.merchant.shop == product.shop:
+    if is_merchant(request.user) and request.user.merchant.shop == product.shop:
         return redirect('product_detail', product_id=product_id)
         
     try:
@@ -683,9 +778,9 @@ def conversation_detail_view(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id)
     
     # Vérification des permissions
-    is_merchant = hasattr(request.user, 'merchant')
-    if (is_merchant and conversation.merchant.user != request.user) or \
-       (not is_merchant and conversation.client != request.user):
+    is_user_merchant = is_merchant(request.user)
+    if (is_user_merchant and conversation.merchant.user != request.user) or \
+       (not is_user_merchant and conversation.client != request.user):
         return redirect('list_conversations')
     
     if request.method == 'POST':
@@ -702,7 +797,7 @@ def conversation_detail_view(request, conversation_id):
 
         # Logique pour déclencher l'IA si c'est le client qui a envoyé le message
         # et que le commerçant a activé la négociation IA.
-        if not is_merchant:
+        if not is_user_merchant:
             try:
                 # Vérifie si le commerçant a activé la négociation IA
                 negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
@@ -733,28 +828,28 @@ def conversation_detail_view(request, conversation_id):
         # La réponse se fera via le rechargement de la page pour le moment
         return redirect('conversation_detail_view', conversation_id=conversation.id)
     
-    messages = conversation.messages.all().order_by('timestamp')
+    messages_list = conversation.messages.all().order_by('timestamp')
     
     context = {
         'conversation': conversation,
-        'messages': messages,
+        'messages': messages_list,
         'product': conversation.product,
-        'is_merchant': is_merchant,
+        'is_merchant': is_user_merchant,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user),
     }
     return render(request, 'conversation_detail.html', context)
-
 
 @login_required(login_url='login_view')
 def chat_api(request, conversation_id):
     if request.method == 'POST':
         conversation = get_object_or_404(Conversation, id=conversation_id)
         
-        is_merchant = hasattr(request.user, 'merchant')
+        is_user_merchant = is_merchant(request.user)
         # Vérifie que l'utilisateur est bien un participant de la conversation
-        if (is_merchant and conversation.merchant.user != request.user) or (not is_merchant and conversation.client != request.user):
+        if (is_user_merchant and conversation.merchant.user != request.user) or (not is_user_merchant and conversation.client != request.user):
             return JsonResponse({'error': 'Unauthorized'}, status=403)
         
-        # ... (le code de cette fonction ne change pas)
         try:
             data = json.loads(request.body)
             message_text = data.get('message', '').strip()
@@ -771,7 +866,7 @@ def chat_api(request, conversation_id):
             
             # Tente de générer une réponse de l'IA (si la négociation est active)
             response_text = ""
-            if is_merchant:
+            if is_user_merchant:
                 # C'est un commerçant qui envoie un message, l'IA ne répond pas
                 pass
             else:
@@ -807,12 +902,11 @@ def chat_api(request, conversation_id):
             
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
-
 @login_required(login_url='login_view')
 def list_conversations_view(request):
-    is_merchant = hasattr(request.user, 'merchant')
+    is_user_merchant = is_merchant(request.user)
     
-    if is_merchant:
+    if is_user_merchant:
         # Si c'est un commerçant, on récupère les conversations de sa boutique
         conversations = Conversation.objects.filter(merchant=request.user.merchant)
     else:
@@ -821,19 +915,20 @@ def list_conversations_view(request):
     
     context = {
         'conversations': conversations,
-        'is_merchant': is_merchant
+        'is_merchant': is_user_merchant,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'list_conversations.html', context)
-
 
 @login_required(login_url='login_view')
 def negotiation_chat(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id)
     
     # Vérification des permissions
-    is_merchant = hasattr(request.user, 'merchant')
-    if (is_merchant and conversation.merchant.user != request.user) or \
-       (not is_merchant and conversation.client != request.user):
+    is_user_merchant = is_merchant(request.user)
+    if (is_user_merchant and conversation.merchant.user != request.user) or \
+       (not is_user_merchant and conversation.client != request.user):
         return redirect('list_conversations')
     
     if request.method == 'POST':
@@ -850,7 +945,7 @@ def negotiation_chat(request, conversation_id):
 
         # Logique pour déclencher l'IA si c'est le client qui a envoyé le message
         # et que le commerçant a activé la négociation IA.
-        if not is_merchant:
+        if not is_user_merchant:
             try:
                 # Vérifie si le commerçant a activé la négociation IA
                 negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
@@ -881,17 +976,19 @@ def negotiation_chat(request, conversation_id):
         # La réponse se fera via le rechargement de la page pour le moment
         return redirect('negotiation_chat', conversation_id=conversation.id)
     
-    messages = conversation.messages.all().order_by('timestamp')
+    messages_list = conversation.messages.all().order_by('timestamp')
     
     context = {
         'conversation': conversation,
-        'messages': messages,
+        'messages': messages_list,
         'product': conversation.product,
-        'is_merchant': is_merchant,
+        'is_merchant': is_user_merchant,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user),
     }
     return render(request, 'conversation_detail.html', context)
 
-# AJOUT : Vue pour la page de détail de la boutique
+# Vue pour la page de détail de la boutique
 def shop_detail(request, shop_id):
     """
     Vue pour afficher les détails d'une boutique et ses produits.
@@ -906,14 +1003,16 @@ def shop_detail(request, shop_id):
     context = {
         'shop': shop,
         'products': products,
-        'is_merchant': request.user.is_authenticated and hasattr(request.user, 'merchant')
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     
     # 4. Rend le template 'shop_detail.html' avec les données
     return render(request, 'shop_detail.html', context)
 
 # Vue détaillée de la boutique
-def shop_detail(request, shop_slug):
+def shop_detail_by_slug(request, shop_slug):
     """Affiche la page d'accueil d'une boutique avec les produits en vedette."""
     shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
     featured_products = Product.objects.filter(shop=shop, stock__gt=0)[:8]
@@ -923,7 +1022,10 @@ def shop_detail(request, shop_slug):
         'shop': shop,
         'featured_products': featured_products,
         'categories': categories,
-        'is_shop_page': True
+        'is_shop_page': True,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'shop/shop_detail.html', context)
 
@@ -956,7 +1058,10 @@ def shop_products(request, shop_slug):
         'page_obj': page_obj,
         'categories': categories,
         'query': query,
-        'is_shop_page': True
+        'is_shop_page': True,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'shop/shop_products.html', context)
 
@@ -975,7 +1080,10 @@ def shop_category(request, shop_slug, category_slug):
         'shop': shop,
         'category': category,
         'page_obj': page_obj,
-        'is_shop_page': True
+        'is_shop_page': True,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'shop/shop_category.html', context)
 
@@ -993,13 +1101,19 @@ def shop_contact(request, shop_slug):
     
     context = {
         'shop': shop,
-        'is_shop_page': True
+        'is_shop_page': True,
+        'is_merchant': is_merchant(request.user),
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
     }
     return render(request, 'shop/shop_contact.html', context)
 
 # Création de compte client
 def create_client(request):
     """Crée un nouvel utilisateur et un profil client."""
+    if request.user.is_authenticated:
+        return redirect('index')
+        
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -1007,6 +1121,12 @@ def create_client(request):
         phone = request.POST.get('phone')
         password = request.POST.get('password')
         username = request.POST.get('username')
+        
+        # Validation basique
+        if not all([first_name, last_name, email, password, username]):
+            return render(request, 'client/create_client.html', {
+                'error': 'Tous les champs obligatoires doivent être remplis'
+            })
         
         try:
             # Créer l'utilisateur
@@ -1029,12 +1149,130 @@ def create_client(request):
             
             # Connecter automatiquement l'utilisateur
             login(request, user)
-            messages.success(request, 'Votre compte a été créé avec succès!')
-            return redirect('index')
+            messages.success(request, 'Votre compte client a été créé avec succès!')
+            return redirect('client_dashboard')
             
         except IntegrityError:
             return render(request, 'client/create_client.html', {
                 'error': 'Nom d\'utilisateur ou email déjà utilisé'
             })
+        except Exception as e:
+            # En cas d'autre erreur, supprimer l'utilisateur créé si nécessaire
+            if 'user' in locals():
+                user.delete()
+            return render(request, 'client/create_client.html', {
+                'error': f'Une erreur s\'est produite: {str(e)}'
+            })
     
     return render(request, 'client/create_client.html')
+
+@login_required
+@client_required
+def client_dashboard(request):
+    """Tableau de bord pour les clients"""
+    client = request.user.client
+    orders = Order.objects.filter(user=request.user).order_by('-date_ordered')[:5]
+    total_orders = Order.objects.filter(user=request.user).count()
+    
+    # Calculer le total des dépenses
+    total_spent = Order.objects.filter(
+        user=request.user, 
+        complete=True
+    ).aggregate(total=Sum(F('orderitem__product__price') * F('orderitem__quantity')))['total'] or 0
+    
+    context = {
+        'client': client,
+        'recent_orders': orders,
+        'total_orders': total_orders,
+        'total_spent': total_spent,
+        'is_client': True,
+        'is_merchant': is_merchant(request.user),
+        'user_type': 'client'
+    }
+    return render(request, 'client/dashboard.html', context)
+
+@login_required
+@client_required
+def client_orders(request):
+    """Historique des commandes du client"""
+    orders = Order.objects.filter(user=request.user).order_by('-date_ordered')
+    
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'page_obj': page_obj,
+        'is_client': True,
+        'is_merchant': is_merchant(request.user),
+        'user_type': 'client'
+    }
+    return render(request, 'client/orders.html', context)
+
+@login_required
+@client_required
+def client_order_detail(request, order_id):
+    """Détail d'une commande client"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    context = {
+        'order': order,
+        'is_client': True,
+        'is_merchant': is_merchant(request.user),
+        'user_type': 'client'
+    }
+    return render(request, 'client/order_detail.html', context)
+
+@login_required
+@client_required
+def client_profile(request):
+    """Profil du client avec possibilité de modification"""
+    client = request.user.client
+    
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        country = request.POST.get('country')
+        
+        # Mettre à jour le user
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+        request.user.email = email
+        request.user.save()
+        
+        # Mettre à jour le client
+        client.first_name = first_name
+        client.last_name = last_name
+        client.email = email
+        client.phone = phone
+        client.address = address
+        client.city = city
+        client.country = country
+        client.save()
+        
+        messages.success(request, 'Votre profil a été mis à jour avec succès!')
+        return redirect('client_profile')
+    
+    context = {
+        'client': client,
+        'is_client': True,
+        'is_merchant': is_merchant(request.user),
+        'user_type': 'client'
+    }
+    return render(request, 'client/profile.html', context)
+
+# Fonction utilitaire pour l'IA de négociation (doit être implémentée)
+def get_ai_negotiation_response(product, user_price_offer, conversation):
+    """
+    Fonction qui génère une réponse de négociation basée sur l'IA.
+    À implémenter selon vos besoins spécifiques.
+    """
+    # Exemple simple de réponse
+    if user_price_offer >= product.price * Decimal('0.8'):
+        return f"J'accepte votre offre de {user_price_offer} CFA!"
+    else:
+        return f"Je ne peux pas accepter {user_price_offer} CFA. Mon prix minimum est {product.price * Decimal('0.8')} CFA."

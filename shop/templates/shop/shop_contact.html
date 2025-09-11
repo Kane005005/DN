@@ -1,91 +1,101 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contactez {{ shop.merchant.user.username }}</title>
-    <!-- Inclure Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+{% block title %}Contactez {{ shop.merchant.user.username }} - DEANNA{% endblock %}
 
-        .shop-nav {
-            background-color: #ffffff;
-            padding: 10px 20px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
+{% block extra_css %}
+<style>
+    .shop-nav {
+        background-color: #ffffff;
+        padding: 10px 20px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
 
-        .shop-nav a {
-            padding: 8px 15px;
-            text-decoration: none;
-            color: #555;
-            font-weight: bold;
-            transition: color 0.3s ease;
-            border-radius: 20px;
-        }
+    .shop-nav a {
+        padding: 8px 15px;
+        text-decoration: none;
+        color: #555;
+        font-weight: bold;
+        transition: color 0.3s ease;
+        border-radius: 20px;
+    }
 
-        .shop-nav a:hover {
-            color: #CFAF70;
-        }
+    .shop-nav a:hover {
+        color: #CFAF70;
+    }
 
-        .shop-nav .shop-title {
-            font-size: 1.2rem;
-            margin-right: auto;
-            color: #333;
-        }
+    .shop-nav .shop-title {
+        font-size: 1.2rem;
+        margin-right: auto;
+        color: #333;
+    }
 
-        .shop-nav .active {
-            background-color: #CFAF70;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <!-- Barre de navigation des catégories -->
-    <nav class="shop-nav">
-        <a href="{% url 'shop_detail' shop_slug=shop.merchant.user.username %}" class="shop-title">
-            Boutique de {{ shop.merchant.user.username }}
+    .shop-nav .active {
+        background-color: #CFAF70;
+        color: white;
+    }
+
+    .contact-container {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .contact-info {
+        display: inline-block;
+        background-color: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .phone-number {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--color-accent);
+        margin: 20px 0;
+        display: block;
+    }
+
+    .phone-number:hover {
+        color: #b8995d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Barre de navigation des catégories -->
+<nav class="shop-nav">
+    <a href="{% url 'shop_detail_by_slug' shop_slug=shop.merchant.user.username %}" class极="shop-title">
+        Boutique de {{ shop.merchant.user.username }}
+    </a>
+    <a href="{% url 'shop_products' shop_slug=shop.merchant.user.username %}">Tous les produits</a>
+    {% for cat in categories %}
+    <a href="{% url 'shop_category' shop_slug=shop.merchant.user.username category_slug=cat.slug %}">{{ cat.name }}</a>
+    {% endfor %}
+    <a href="{% url 'shop_contact' shop_slug=shop.merchant.user.username %}" class="active">Contact</a>
+</nav>
+
+<div class="contact-container">
+    <h1 class="text-3xl font-bold text-color-primary mb-4">Contactez {{ shop.merchant.first_name }}</h1>
+    
+    <p class="text-lg text-color-text-secondary mb-8 max-w-lg mx-auto">
+        Pour le moment, veuillez contacter la boutique directement par téléphone. Les autres modes de contact sont en cours de développement.
+    </p>
+
+    <div class="contact-info">
+        <h2 class="text-2xl font-bold text-color-primary mb-4">Numéro de téléphone</h2>
+        <a href="tel:{{ shop.merchant.phone }}" class="phone-number hover:underline">
+            {{ shop.merchant.phone }}
         </a>
-        <a href="{% url 'shop_products' shop_slug=shop.merchant.user.username %}">Tous les produits</a>
-        {% for cat in categories %}
-        <a href="{% url 'shop_category' shop_slug=shop.merchant.user.username category_slug=cat.slug %}">{{ cat.name }}</a>
-        {% endfor %}
-        <a href="{% url 'shop_contact' shop_slug=shop.merchant.user.username %}" class="active">Contact</a>
-    </nav>
-
-    <div class="container text-center py-20">
-        <h1 class="text-4xl font-bold text-gray-800 mb-4">Contactez {{ shop.merchant.first_name }}</h1>
-        
-        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
-            Pour le moment, veuillez contacter la boutique directement par téléphone. Les autres modes de contact sont en cours de développement.
-        </p>
-
-        <div class="inline-block bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Numéro de téléphone</h2>
-            <a href="tel:{{ shop.merchant.phone }}" class="text-3xl font-bold text-[#CFAF70] hover:underline">
-                {{ shop.merchant.phone }}
-            </a>
-        </div>
+        <p class="text-sm text-color-text-secondary">Appelez directement en cliquant sur le numéro</p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

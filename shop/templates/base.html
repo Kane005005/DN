@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DEANNA - Mon commerce en un clic{% endblock %}</title>
+    <!-- Inclure Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icônes Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+        
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .text-color-text { color: var(--color-text); }
+        .text-color-text-secondary { color: var(--color-text-secondary); }
+        .border-color-border { border-color: var(--color-border); }
+
+        /* Navigation mobile */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        .nav-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Boutons */
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(207, 175, 112, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <!-- Barre de navigation -->
+    <header class="bg-white shadow-md py-3">
+        <div class="container mx-auto px-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- Bouton menu hamburger pour mobile -->
+                <button id="mobileMenuToggle" class="md:hidden mr-3 text-color-text-secondary">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <h1 class="text-xl font-bold text-color-primary">
+                    <a href="{% url 'index' %}" class="flex items-center space-x-2">
+                        <svg class="h-7 w-7 text-color-accent" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7极.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5极.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22极 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor" />
+                        </svg>
+                        <span class="hidden sm:block">DEANNA</span>
+                    </a>
+                </h1>
+            </div>
+
+            <!-- Navigation desktop -->
+            <nav class="hidden md:flex space-x-4 items-center">
+                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
+                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Produits</a>
+                <a href="{% url 'visit_shops' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Boutiques</a>
+                
+                {% if user.is_authenticated %}
+                    {% if is_merchant %}
+                        <a href="{% url 'dashboard' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Tableau de bord</a>
+                    {% elif is_client %}
+                        <a href="{% url 'client_dashboard' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Mon compte</a>
+                    {% endif %}
+                    <a href="{% url 'logout_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'create_shop' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Créer une boutique</a>
+                    <a href="{% url 'create_client' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Créer un compte</a>
+                    <a href="{% url 'login_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Connexion</a>
+                {% endif %}
+                <a href="{% url 'cart_detail' %}" class="text-color-text-secondary hover:text-color-primary transition-colors relative">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    {% if user.is_authenticated and cart.items.count > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ cart.items.count }}
+                    </span>
+                    {% endif %}
+                </a>
+            </nav>
+
+            <!-- Icône panier pour mobile -->
+            <a href="{% url 'cart_detail' %}" class="md:hidden text-color-text-secondary hover:text-color-primary transition-colors relative">
+                <i class="fas fa-shopping-cart text-lg"></i>
+                {% if user.is_authenticated and cart.items.count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {{ cart.items.count }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- Menu mobile -->
+        <div id="navOverlay" class="nav-overlay fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"></div>
+        <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-3/4 max-w-xs bg-white z-50 overflow-y-auto p-6 shadow-xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold text-color-primary">Menu</h2>
+                <button id="closeMobileMenu" class="text-color-text-secondary">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <nav class="space-y-4">
+                <a href="{% url 'index' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                    <i class="fas fa-home mr-3"></i>Accueil
+                </a>
+                <a href="{% url 'product_list' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                    <i class="fas fa-shopping-bag mr-3"></i>Produits
+                </a>
+                <a href="{% url 'visit_shops' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                    <i class="fas fa-store mr-3"></i>Boutiques
+                </a>
+                
+                {% if user.is_authenticated %}
+                    {% if is_merchant %}
+                    <a href="{% url 'dashboard' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-chart-line mr-3"></极>Tableau de bord
+                    </a>
+                    {% elif is_client %}
+                    <a href="{% url 'client_dashboard' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-user mr-3"></i>Mon compte
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'logout_view' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-sign-out-alt mr-3"></i>Déconnexion
+                    </a>
+                {% else %}
+                    <a href="{% url 'create_shop' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-store mr-3"></i>Créer une boutique
+                    </a>
+                    <a href="{% url 'create_client' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class="fas fa-user-plus mr-3"></i>Créer un compte
+                    </a>
+                    <a href="{% url 'login_view' %}" class="block py-2 text-color-text-secondary hover:text-color-primary transition-colors border-b border-gray-100">
+                        <i class极="fas fa-sign-in-alt mr-3"></i>Connexion
+                    </a>
+                {% endif %}
+                
+                <div class="pt-4 border-t border-gray-200">
+                    <p class="text-xs text-color-text-secondary mb-2">Connecté en tant que:</p>
+                    <p class="text-sm font-medium text-color-text">
+                        {% if user.is_authenticated %}
+                            {{ user.username }}
+                            {% if is_merchant %}(Commerçant){% elif is_client %}(Client){% endif %}
+                        {% else %}
+                            Visiteur
+                        {% endif %}
+                    </p>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="flex-grow container mx-auto px-4 py-6">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-10 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">DEANNA</h3>
+                    <p class="text-gray-400">La plateforme e-commerce qui simplifie votre business.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Liens rapides</h4>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'index' %}" class="text-gray-400 hover:text-white transition-colors">Accueil</a></li>
+                        <li><a href="{% url 'product_list' %}" class="text-gray-400 hover:text-white transition-colors">Produits</a></li>
+                        <li><a href="{% url 'visit_shops' %}" class="text-gray-400 hover:text-white transition-colors">Boutiques</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Centre d'aide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Légal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Gestion du menu mobile
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navOverlay = document.getElementById('navOverlay');
+        
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('open');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+        }
+        
+        mobileMenuToggle.addEventListener('click', toggleMobileMenu);
+        closeMobileMenu.addEventListener('click', toggleMobileMenu);
+        navOverlay.addEventListener('click', toggleMobileMenu);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

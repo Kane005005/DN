@@ -53,7 +53,7 @@ urlpatterns = [
 
     
     path('boutiques/', views.visit_shops, name='visit_shops'),
-    path('boutiques/<slug:shop_slug>/', views.shop_detail, name='shop_detail'),
+    path('boutiques/<slug:shop_slug>/', views.shop_detail_by_slug, name='shop_detail_by_slug'),
     path('boutiques/<slug:shop_slug>/produits/', views.shop_products, name='shop_products'),
     path('boutiques/<slug:shop_slug>/categorie/<slug:category_slug>/', views.shop_category, name='shop_category'),
     path('boutiques/<slug:shop_slug>/contact/', views.shop_contact, name='shop_contact'), # NOUVEAU
@@ -61,5 +61,13 @@ urlpatterns = [
     
     # AJOUT : URL pour la création de compte client
     path('creer-client/', views.create_client, name='create_client'),
+        # Tableau de bord client
+    path('tableau-de-bord-client/', views.client_dashboard, name='client_dashboard'),
+    
+    # Historique des commandes client
+    path('mes-commandes/', views.client_orders, name='client_orders'),
+    
+    # Détail d'une commande client
+    path('ma-commande/<int:order_id>/', views.client_order_detail, name='client_order_detail'),
 
 ]

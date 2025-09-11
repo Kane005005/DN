@@ -1,190 +1,143 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paiement - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        /* Styles CSS pour la page de paiement */
-        :root {
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-border: #1A3B57;
-            --color-error: #800020;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            box-sizing: border-box;
-            min-height: 100vh;
-        }
+{% block title %}Paiement - DEANNA{% endblock %}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-        }
-        
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--color-primary);
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: 1rem;
-        }
-        
+{% block extra_css %}
+<style>
+    .checkout-details {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: 1fr;
+    }
+    
+    @media (min-width: 768px) {
         .checkout-details {
-            display: grid;
-            gap: 2rem;
-            grid-template-columns: 1fr;
+            grid-template-columns: 2fr 1fr;
         }
-        
-        @media (min-width: 768px) {
-            .checkout-details {
-                grid-template-columns: 2fr 1fr;
-            }
-        }
-        
-        .form-section, .summary-section {
-            padding: 1.5rem;
-            background-color: #F8F8F8;
-            border-radius: 0.75rem;
-        }
-        
-        h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--color-primary);
-            margin-top: 0;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
+    }
+    
+    .form-section, .summary-section {
+        padding: 1.5rem;
+        background-color: #F8F8F8;
+        border-radius: 0.75rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 0.5rem;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+    }
 
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .summary-item:last-of-type {
-            border-bottom: none;
-        }
-        
-        .summary-total {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            display: flex;
-            justify-content: space-between;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            border-top: 2px solid var(--color-primary);
-        }
-        
-        .submit-btn {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            font-weight: 600;
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            text-align: center;
-            border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 2rem;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-    </style>
-</head>
-<body>
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .summary-item:last-of-type {
+        border-bottom: none;
+    }
+    
+    .summary-total {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        display: flex;
+        justify-content: space-between;
+        padding-top: 1rem;
+        margin-top: 1rem;
+        border-top: 2px solid var(--color-primary);
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        font-weight: 600;
+        background-color: var(--color-accent);
+        color: var(--color-primary);
+        text-align: center;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 2rem;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
 
-    <div class="container">
-        <h1>Paiement</h1>
-        <div class="checkout-details">
-            <div class="form-section">
-                <h2>Informations de livraison</h2>
-                <!-- NOTE: Le formulaire a été mis à jour pour envoyer les données à la vue process_order -->
-                <form id="payment-form" method="post" action="{% url 'process_order' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="full_name">Nom complet</label>
-                        <input type="text" id="full_name" name="full_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Adresse</label>
-                        <input type="text" id="address" name="address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="city">Ville</label>
-                        <input type="text" id="city" name="city" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Numéro de téléphone</label>
-                        <input type="tel" id="phone" name="phone" required>
-                    </div>
-                </form>
-            </div>
-            
-            <div class="summary-section">
-                <h2>Résumé de la commande</h2>
-                {% for item in cart.items.all %}
-                    <div class="summary-item">
-                        <span>{{ item.quantity }} x {{ item.product.name }}</span>
-                        <span>{{ item.total_cost }} CFA</span>
-                    </div>
-                {% endfor %}
-                <div class="summary-total">
-                    <span>Total :</span>
-                    <span>{{ total_cost }} CFA</span>
+{% block content %}
+<div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold text-color-primary mb-6">Paiement</h1>
+    <div class="checkout-details">
+        <div class="form-section">
+            <h2 class="text-2xl font-bold text-color-primary mb-4">Informations de livraison</h2>
+            <form id="payment-form" method="post" action="{% url 'process_order' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="full_name">Nom complet</label>
+                    <input type="text" id="full_name" name="full_name" required>
                 </div>
-                <!-- Le bouton fait référence au formulaire par son ID -->
-                <button type="submit" form="payment-form" class="submit-btn">Confirmer la commande</button>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Adresse</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">Ville</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="zipcode">Code postal</label>
+                    <input type="text" id="zipcode" name="zipcode" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Numéro de téléphone</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+            </form>
+        </div>
+        
+        <div class="summary-section">
+            <h2 class="text-2xl font-bold text-color-primary mb-4">Résumé de la commande</h2>
+            {% for item in cart.items.all %}
+                <div class="summary-item">
+                    <span>{{ item.quantity }} x {{ item.product.name }}</span>
+                    <span>{{ item.get_total }} CFA</span>
+                </div>
+            {% endfor %}
+            <div class="summary-total">
+                <span>Total :</span>
+                <span>{{ cart.get_cart_total }} CFA</span>
             </div>
+            <button type="submit" form="payment-form" class="submit-btn">Confirmer la commande</button>
         </div>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}

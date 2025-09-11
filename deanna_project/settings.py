@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=uo)hy5(*66%3m*-fy6z61^)m_js3*usn5+3#(_@o3yged-vf7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Permet à Django de savoir quels domaines sont autorisés à servir l'application
 # Ajoute ton domaine PythonAnywhere

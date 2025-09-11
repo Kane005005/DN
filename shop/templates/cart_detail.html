@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon panier - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styles CSS pour la page du panier */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
         :root {
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
@@ -24,8 +23,7 @@
             background-color: var(--color-bg-light);
             color: var(--color-text);
             margin: 0;
-            padding: 2rem 1rem;
-            box-sizing: border-box;
+            padding: 0;
             min-height: 100vh;
         }
 
@@ -36,10 +34,11 @@
             border-radius: 1rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
         
         h1 {
-            font-family: 'Playfair Display', serif;
             font-size: 2.5rem;
             color: var(--color-primary);
             margin-bottom: 1rem;
@@ -77,7 +76,6 @@
         }
 
         .item-details h3 {
-            font-family: 'Playfair Display', serif;
             font-size: 1.2rem;
             margin: 0 0 0.5rem;
         }
@@ -126,7 +124,6 @@
         }
 
         .cart-total {
-            font-family: 'Playfair Display', serif;
             font-size: 1.5rem;
             color: var(--color-primary);
         }
@@ -195,6 +192,45 @@
     </style>
 </head>
 <body>
+    <!-- Barre de navigation -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-color-primary">
+                <a href极="{% url 'index' %}" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-color-accent" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.极72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15极.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor"/>
+                    </svg>
+                    <span>DEANNA</span>
+                </a>
+            </h1>
+            <nav class="flex space-x-4 items-center">
+                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
+                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Produits</a>
+                {% if user.is_authenticated %}
+                    {% if is_merchant %}
+                    <a href="{% url 'dashboard' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Tableau de bord</a>
+                    {% elif is_client %}
+                    <a href="{% url 'client_dashboard' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Mon compte</a>
+                    {% endif %}
+                    <a href="{% url 'logout_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'create_shop' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Créer une boutique</a>
+                    <a href="{% url 'create_client' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Créer un compte</a>
+                    <a href="{% url 'login_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Connexion</a>
+                {% endif %}
+                <a href="{% url 'cart_detail' %}" class="text-color-primary font-semibold relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.76.707 1.76H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 极0 2 2 0 014 0z"/>
+                    </svg>
+                    {% if user.is_authenticated and cart.items.count > 0 %}
+                    <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ cart.items.count }}
+                    </span>
+                    {% endif %}
+                </a>
+            </nav>
+        </div>
+    </header>
 
     <div class="container">
         <h1>Mon panier</h1>
@@ -232,17 +268,28 @@
             </ul>
             
             <div class="cart-summary">
-                <span class="cart-total">Total : {{ total_cost }} CFA</span>
+                <span class="cart-total">Total : {{ total }} CFA</span>
                 <a href="{% url 'checkout_view' %}" class="checkout-btn">Passer la commande</a>
             </div>
             
         {% else %}
             <div class="empty-cart">
                 <p>Votre panier est vide.</p>
-                <a href="{% url 'visit_shops' %}" class="continue-shopping">Continuer vos achats</a>
+                <a href="{% url 'product_list' %}" class="continue-shopping">Continuer vos achats</a>
             </div>
         {% endif %}
     </div>
 
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-10 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">À propos</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de confidentialité</a>
+            </div>
+            <p class="text-gray极-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -1,170 +1,109 @@
-<!-- Fichier : shop/templates/visit_shops.html -->
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toutes les boutiques</title>
-    <!-- Inclure Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        
-        :root {
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-border: #1A3B57;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            line-height: 1.6;
-        }
+{% block title %}Toutes les boutiques - DEANNA{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
+{% block extra_css %}
+<style>
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 2rem 0;
+    }
 
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            padding: 2rem 0;
-        }
+    .shop-card {
+        background-color: #fff;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
 
-        .shop-card {
-            background-color: #fff;
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
+    .shop-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
 
-        .shop-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        }
+    .shop-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        object-position: center;
+    }
+    
+    .shop-info {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .shop-info h2 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--color-primary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .shop-info p {
+        font-size: 1rem;
+        color: var(--color-text-secondary);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line极amp: 3;
+        -webkit-box-orient: vertical;
+    }
+    
+    .cta-button {
+        display: inline-block;
+        background-color: var(--color-primary);
+        color: #fff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+        transition: background-color 0.2s, transform 0.2s;
+        text-decoration: none;
+        margin-top: auto;
+    }
 
-        .shop-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            object-position: center;
-        }
-        
-        .shop-info {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .shop-info h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-        
-        .shop-info p {
-            font-size: 1rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 1rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background-color: var(--color-primary);
-            color: #fff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            font-weight: bold;
-            transition: background-color 0.2s, transform 0.2s;
-            text-decoration: none;
-            margin-top: auto;
-        }
+    .cta-button:hover {
+        background-color: #1A3B57;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
 
-        .cta-button:hover {
-            background-color: #1A3B57;
-            transform: translateY(-2px);
-        }
+{% block content %}
+<div class="container mx-auto px-4">
+    <h1 class="text-3xl font-bold text-center text-color-primary mt-8 mb-4">Découvrez nos boutiques</h1>
+    <p class="text-center text-lg text-color-text-secondary mb-8">
+        Parcourez une sélection de boutiques uniques et trouvez votre bonheur.
+    </p>
 
-        .header {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1rem 0;
-        }
-
-        .header .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            font-weight: bold;
-        }
-        
-        .nav-link {
-            color: var(--color-text);
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .nav-link:hover {
-            color: var(--color-accent);
-        }
-
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="container flex justify-between items-center">
-            <a href="{% url 'index' %}" class="logo">DEANNA</a>
-            <nav>
-                <a href="{% url 'visit_shops' %}" class="nav-link mx-4">Boutiques</a>
-                <a href="{% url 'product_search_list' %}" class="nav-link mx-4">Produits</a>
-            </nav>
-        </div>
-    </header>
-
-    <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold text-center text-color-primary mt-8 mb-4">Découvrez nos boutiques</h1>
-        <p class="text-center text-lg text-color-text-secondary mb-8">
-            Parcourez une sélection de boutiques uniques et trouvez votre bonheur.
-        </p>
-
-        <div class="shop-grid">
-            {% for shop in shops %}
-                <div class="shop-card">
-                    {% if shop.image %}
-                        <img src="{{ shop.image.url }}" alt="Image de la boutique {{ shop.merchant.user.username }}" class="shop-image">
-                    {% else %}
-                        <img src="https://placehold.co/400x200/FAF9F6/6C6C6C?text=Aucune+image" alt="Image par défaut de la boutique" class="shop-image">
-                    {% endif %}
-                    
-                    <div class="shop-info">
-                        <h2 class="text-color-primary">{{ shop.merchant.user.username }}</h2>
-                        <p>{{ shop.description|default:"Cette boutique n'a pas encore de description." }}</p>
-                        <a href="{% url 'shop_detail' shop_slug=shop.shopsettings.shareable_link_slug|default:shop.merchant.user.username %}" class="cta-button">Visiter la boutique</a>
-                    </div>
+    <div class="shop-grid">
+        {% for shop in shops %}
+            <div class="shop-card">
+                {% if shop.image %}
+                    <img src="{{ shop.image.url }}" alt="Image de la boutique {{ shop.merchant.user.username }}" class="shop-image">
+                {% else %}
+                    <img src="https://placehold.co/400x200/FAF9F6/6C6C6C?text=Aucune+image" alt="Image par défaut de la boutique" class="shop-image">
+                {% endif %}
+                
+                <div class极="shop-info">
+                    <h2>{{ shop.merchant.user.username }}</h2>
+                    <p>{{ shop.description|default:"Cette boutique n'a pas encore de description." }}</p>
+                    <a href="{% url 'shop_detail_by_slug' shop_slug=shop.merchant.user.username %}" class="cta-button">Visiter la boutique</a>
                 </div>
-            {% empty %}
-                <p class="text-center text-lg col-span-full">Aucune boutique publique n'a été trouvée pour le moment.</p>
-            {% endfor %}
-        </div>
+            </div>
+        {% empty %}
+            <p class="text-center text-lg col-span-full">Aucune boutique publique n'a été trouvée pour le moment.</p>
+        {% endfor %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

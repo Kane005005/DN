@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande #{{ order.id }} - DEANNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-error: #800020;
+        }
+
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .text-color-text { color: var(--color-text); }
+        .text-color-text-secondary { color: var(--color-text-secondary); }
+        .border-color-border { border-color: var(--color-border); }
+        
+        .order-item:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body class="bg-color-bg-light min-h-screen flex flex-col">
+    <!-- Barre de navigation -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-color-primary">
+                <a href="{% url 'index' %}" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-color-accent" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor" />
+                    </svg>
+                    <span>DEANNA</span>
+                </a>
+            </h1>
+            <nav class="flex space-x-4 items-center">
+                <a href="{% url 'index' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Accueil</a>
+                <a href="{% url 'product_list' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Produits</a>
+                <a href="{% url 'client_dashboard' %}" class="text-color-primary font-semibold">Mon compte</a>
+                <a href="{% url 'logout_view' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">Déconnexion</a>
+                <a href="{% url 'cart_detail' %}" class="text-color-text-secondary hover:text-color-primary transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.76.707 1.76H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenu principal -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-color-primary">Commande #{{ order.id }}</h1>
+                <p class="text-color-text-secondary">Passée le {{ order.date_ordered|date:"d/m/Y à H:i" }}</p>
+            </div>
+            <a href="{% url 'client_orders' %}" class="text-color-accent hover:underline flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Retour aux commandes
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Détails de la commande -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold text-color-primary mb-4">Articles de la commande</h2>
+                    
+                    <div class="divide-y divide-gray-200">
+                        {% for item in order.orderitem_set.all %}
+                        <div class="py-4 order-item flex items-center">
+                            <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                                {% if item.product.images.first %}
+                                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <h3 class="text-sm font-medium text-color-primary">{{ item.product.name }}</h3>
+                                <p class="text-sm text-color-text-secondary">Quantité: {{ item.quantity }}</p>
+                                <p class="text-sm text-color-text-secondary">Boutique: {{ item.product.shop.merchant.first_name }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-color-primary">{{ item.get_total }} CFA</p>
+                                <p class="text-sm text-color-text-secondary">{{ item.product.price }} CFA l'unité</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <div class="flex justify-between text-sm text-color-text-secondary mb-2">
+                            <span>Sous-total</span>
+                            <span>{{ order.get_cart_total }} CFA</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-color-text-secondary mb-2">
+                            <span>Frais de livraison</span>
+                            <span>0 CFA</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-color-primary mt-4 pt-4 border-t border-gray-200">
+                            <span>Total</span>
+                            <span>{{ order.get_cart_total }} CFA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-color-primary mb-4">Adresse de livraison</h2>
+                    <div class="text-color-text-secondary">
+                        <p class="font-medium">{{ order.full_name }}</p>
+                        <p>{{ order.address }}</p>
+                        <p>{{ order.zipcode }} {{ order.city }}</p>
+                        <p class="mt-2">{{ order.email }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informations de suivi -->
+            <div>
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold text-color-primary mb-4">Statut de la commande</h2>
+                    <div class="flex items-center mb-4">
+                        <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Complétée
+                        </span>
+                    </div>
+                    <div class="text-sm text-color-text-secondary">
+                        <p>Votre commande a été livrée avec succès.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <h2 class="text-xl font-bold text-color-primary mb-4">Actions</h2>
+                    <div class="space-y-3">
+                        <button class="w-full bg-color-accent text-color-primary font-bold py-2 px-4 rounded-full hover:opacity-80 transition-opacity">
+                            Télécharger la facture
+                        </button>
+                        <button class="w-full bg-gray-200 text-color-text font-bold py-2 px-4 rounded-full hover:bg-gray-300 transition-colors">
+                            Commander à nouveau
+                        </button>
+                        <button class="w-full bg-gray-200 text-color-text font-bold py-2 px-4 rounded-full hover:bg-gray-300 transition-colors">
+                            Contacter le vendeur
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="bg-color-primary text-color-bg-light py-10 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">À propos</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
+                <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de confidentialité</a>
+            </div>
+            <p class="text-gray-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+
+</html>

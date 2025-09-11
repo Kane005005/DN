@@ -1,213 +1,158 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer une boutique - DEANNA</title>
-    <!-- On charge les polices de caractères Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        /* Définition des variables CSS pour les couleurs */
-        :root {
-            --color-primary: #0B1C2A;
-            --color-accent: #CFAF70;
-            --color-bg-light: #FAF9F6;
-            --color-text: #2C2C2C;
-            --color-text-secondary: #6C6C6C;
-            --color-hover: #E0CBA3;
-            --color-border: #1A3B57;
-            --color-error: #800020;
-        }
+{% extends 'base.html' %}
+{% load static %}
 
-        /* Styles de base pour la page */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            box-sizing: border-box;
-        }
+{% block title %}Créer une boutique - DEANNA{% endblock %}
 
-        /* Conteneur principal */
-        .container {
-            max-width: 600px;
-            width: 100%;
-            padding: 2rem;
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            text-align: left; /* Pour que le texte du formulaire soit bien aligné */
-        }
+{% block extra_css %}
+<style>
+    .form-container {
+        max-wid极th: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
-        /* Titre de la page */
-        .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.25rem; /* 36px */
-            color: var(--color-primary);
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        /* Style des étiquettes et des champs de formulaire */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--color-text);
+    }
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--color-text);
-        }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="password"],
-        select,
-        textarea { /* Ajout de la balise textarea pour la description */
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: 0.5rem;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        textarea {
-            min-height: 100px; /* Taille minimum pour la zone de texte */
-            resize: vertical; /* Permet de redimensionner verticalement */
-        }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.1);
+    }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--color-accent);
-        }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
 
-        /* Style pour les messages d'erreur */
-        .error-message {
-            color: var(--color-error);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none; /* Cache le message par défaut */
-        }
-        
-        .global-error {
-            color: var(--color-error);
-            background-color: #ffe8e8;
-            border: 1px solid var(--color-error);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-        
-        /* Style du bouton de soumission */
-        .btn-submit {
-            width: 100%;
-            padding: 1rem 2rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            background-color: var(--color-primary);
-            color: var(--color-bg-light);
-            border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .error-message {
+        color: var(--color-error);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
 
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-    </style>
-</head>
-<body>
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: var(--color-accent);
+        color: var(--color-primary);
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-    <div class="container">
-        <h1 class="title">Créer une boutique</h1>
-        
-        <!-- Affiche le message d'erreur s'il est présent -->
-        {% if error_message %}
-            <div class="global-error">{{ error_message }}</div>
-        {% endif %}
+    .submit-btn:hover {
+        background-color: #b8995d;
+        transform: translateY(-2px);
+    }
 
-        <form id="createShopForm" method="post">
-            {% csrf_token %} <!-- TRÈS IMPORTANT : le jeton CSRF pour la sécurité -->
-            <div class="form-group">
-                <label for="country">Pays :</label>
-                <input type="text" id="country" name="country" required>
-            </div>
-            <div class="form-group">
-                <label for="first_name">Prénom :</label>
-                <input type="text" id="first_name" name="first_name" required>
-            </div>
-            <div class="form-group">
-                <label for="last_name">Nom :</label>
-                <input type="text" id="last_name" name="last_name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Adresse mail :</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Téléphone :</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <label for="category">Catégorie de boutique :</label>
-                <input type="text" id="category" name="category" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description de la boutique :</label>
-                <textarea id="description" name="description"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="username">Nom d'utilisateur :</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Mot de passe :</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="confirm_password">Confirmer le mot de passe :</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-                <div id="password-error" class="error-message">Les mots de passe ne correspondent pas.</div>
-            </div>
-            
-            <button type="submit" class="btn-submit">Créer ma boutique</button>
-        </form>
+    .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--color-text-secondary);
+    }
+
+    .login-link a {
+        color: var(--color-accent);
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="text-2xl font-bold text-center text-color-primary mb-6">Créer votre boutique</h2>
+    
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+        {{ error }}
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('createShopForm');
-            const password = document.getElementById('password');
-            const confirmPassword = document.getElementById('confirm_password');
-            const passwordError = document.getElementById('password-error');
-
-            form.addEventListener('submit', (event) => {
-                if (password.value !== confirmPassword.value) {
-                    event.preventDefault();
-                    passwordError.style.display = 'block';
-                    confirmPassword.focus();
-                } else {
-                    passwordError.style.display = 'none';
-                    // Le formulaire sera maintenant envoyé au serveur Django
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="first_name">Prénom *</label>
+            <input type="text" id="first_name" name="first_name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="last_name">Nom *</label>
+            <input type="text" id="last_name" name="last_name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Téléphone *</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="country">Pays *</label>
+            <input type="text" id="country" name="country" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description de la boutique</label>
+            <textarea id="description" name="description" placeholder="Décrivez votre boutique..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="image">Image de la boutique</label>
+            <input type="file" id="image" name="image" accept="image/*">
+        </div>
+        
+        <div class="form-group">
+            <label for="username">Nom d'utilisateur *</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mot de passe *</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="submit-btn">Créer ma boutique</button>
+    </form>
+    
+    <div class="login-link">
+        Vous avez déjà un compte ? <a href="{% url 'login_view' %}">Connectez-vous</a>
+    </div>
+</div>
+{% endblock %}
