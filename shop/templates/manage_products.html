@@ -4,12 +4,10 @@
 
 {% block content %}
     <style>
-        /* Styles CSS spécifiques pour la page de gestion des produits */
         .products-grid {
             display: grid;
             gap: 1.5rem;
-            /* La taille minmax a été réduite pour afficher plus de produits par ligne */
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             margin-top: 2rem;
         }
 
@@ -50,15 +48,34 @@
             margin-bottom: 0.5rem;
         }
         
-        .product-details p {
-            margin: 0;
-            font-weight: 500;
+        .product-info {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .product-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .variation-badge {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stock-info {
             color: var(--color-text-secondary);
-            font-size: 1.1rem;
+            font-weight: 500;
         }
         
         .product-actions {
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             display: flex;
             justify-content: center;
             gap: 1rem;
@@ -68,7 +85,7 @@
         .edit-btn, .delete-btn {
             flex-grow: 1;
             padding: 0.75rem 1.5rem;
-            border-radius: 9999px; /* Forme de pilule */
+            border-radius: 9999px;
             text-decoration: none;
             font-weight: 600;
             transition: background-color 0.3s, transform 0.2s;
@@ -120,6 +137,11 @@
             background-color: #e0b982;
             transform: translateY(-2px);
         }
+        
+        .no-variations {
+            color: var(--color-text-secondary);
+            font-style: italic;
+        }
     </style>
 
     <div class="header-content">
@@ -140,12 +162,36 @@
                     {% endif %}
                     <div class="product-details">
                         <h3 class="font-playfair">{{ product.name }}</h3>
-                        <p class="font-inter text-lg text-color-text">{{ product.price }} CFA</p>
+                        
+                        <div class="product-info">
+                            <div class="product-stats">
+                                <span class="font-bold text-color-accent">{{ product.price }} CFA</span>
+                                <span class="stock-info">Stock: {{ product.stock }}</span>
+                            </div>
+                            
+                            <div class="product-stats">
+                                {% if product.variations.exists %}
+                                    <span class="variation-badge">
+                                        {{ product.variations.count }} variation(s)
+                                    </span>
+                                {% else %}
+                                    <span class="no-variations">Aucune variation</span>
+                                {% endif %}
+                                
+                                {% if product.category %}
+                                    <span class="text-sm text-color-text-secondary">
+                                        {{ product.category.name }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
                         <div class="product-actions">
                             <a href="{% url 'edit_product' product.id %}" class="edit-btn">
                                 <i class="fas fa-edit"></i> Modifier
                             </a>
-                            <a href="{% url 'delete_product' product.id %}" class="delete-btn">
+                            <a href="{% url 'delete_product' product.id %}" class="delete-btn" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')">
                                 <i class="fas fa-trash-alt"></i> Supprimer
                             </a>
                         </div>

@@ -1,231 +1,451 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier un produit - DEANNA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Modifier {{ product.name }} - DEANNA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styles CSS pour le formulaire de modification */
-        :root {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
             --color-bg-light: #FAF9F6;
             --color-text: #2C2C2C;
             --color-text-secondary: #6C6C6C;
-            --color-hover: #E0CBA3;
             --color-border: #1A3B57;
             --color-error: #800020;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
-            color: var(--color-text);
-            margin: 0;
-            padding: 2rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .border-color-border { border-color: var(--color-border); }
 
-        .container {
-            max-width: 600px;
-            width: 100%;
-            padding: 2rem;
-            background-color: #fff;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.25rem;
+        .btn-submit {
+            background-color: var(--color-accent);
             color: var(--color-primary);
-            margin-bottom: 2rem;
-            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--color-text);
+        .variation-section {
+            border: 2px dashed var(--color-border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #f8fafc;
+        }
+
+        .remove-variation {
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .remove-variation:hover {
+            background-color: #a0001a;
+        }
+
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            border: 2px solid #e2e8f0;
         }
 
         input[type="text"],
         input[type="number"],
-        input[type="file"],
-        textarea {
-            width: 100%;
+        textarea,
+        select,
+        input[type="file"] {
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
             padding: 0.75rem;
-            border: 1px solid var(--color-border);
-            border-radius: 0.5rem;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--color-accent);
-        }
-        
-        .btn-submit {
             width: 100%;
-            padding: 1rem 2rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            background-color: var(--color-primary);
-            color: var(--color-bg-light);
-            border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .global-error {
-            color: var(--color-error);
-            background-color: #ffe8e8;
-            border: 1px solid var(--color-error);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .current-media {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .media-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            border: 1px solid var(--color-border);
-        }
-
-        .media-item img, .media-item video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: rgba(128, 0, 32, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #fff;
+            color: var(--color-text);
         }
     </style>
 </head>
-<body>
 
-    <div class="container">
-        <h1 class="title">Modifier le produit : {{ product.name }}</h1>
-
-        {% if error_message %}
-            <div class="global-error">{{ error_message }}</div>
+<body class="bg-color-bg-light text-color-text">
+    <div class="container mx-auto p-4 md:p-8">
+        <h1 class="text-3xl font-bold mb-6 text-center text-color-primary">Modifier {{ product.name }}</h1>
+        
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
         {% endif %}
 
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
+            <form action="{% url 'edit_product' product.id %}" method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
 
-            <div class="form-group">
-                <label for="name">Nom du produit :</label>
-                <input type="text" id="name" name="name" value="{{ product.name }}" required>
-            </div>
-            <div class="form-group">
-                <label for="description">Description :</label>
-                <textarea id="description" name="description">{{ product.description }}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="price">Prix (CFA) :</label>
-                <input type="number" id="price" name="price" step="0.01" value="{{ product.price }}" required>
-            </div>
-            <div class="form-group">
-                <label for="stock">Stock :</label>
-                <input type="number" id="stock" name="stock" value="{{ product.stock }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Images actuelles :</label>
-                <div class="current-media">
-                    {% for image in product.images.all %}
-                        <div class="media-item">
-                            <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}">
-                            <!-- Ajouter un bouton pour supprimer l'image -->
-                        </div>
-                    {% empty %}
-                        <p>Aucune image actuelle.</p>
-                    {% endfor %}
+                <!-- Informations de base du produit -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-color-text-secondary mb-1">Nom du produit *</label>
+                        <input type="text" id="name" name="name" value="{{ product.name }}" required class="w-full border border-gray-300 rounded-lg p-3">
+                    </div>
+
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-color-text-secondary mb-1">Prix (CFA) *</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" value="{{ product.price }}" required class="w-full border border-gray-300 rounded-lg p-3">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="images">Ajouter de nouvelles images :</label>
-                <input type="file" id="images" name="images" multiple accept="image/*">
-            </div>
-
-            <div class="form-group">
-                <label>Vidéos actuelles :</label>
-                <div class="current-media">
-                    {% for video in product.videos.all %}
-                        <div class="media-item">
-                            <video controls muted>
-                                <source src="{{ video.video.url }}" type="video/mp4">
-                                Votre navigateur ne supporte pas la balise vidéo.
-                            </video>
-                            <!-- Ajouter un bouton pour supprimer la vidéo -->
-                        </div>
-                    {% empty %}
-                        <p>Aucune vidéo actuelle.</p>
-                    {% endfor %}
+                <!-- Catégorie et Sous-catégorie -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-color-text-secondary mb-1">Catégorie *</label>
+                        <select id="category" name="category" required class="w-full border border-gray-300 rounded-lg p-3">
+                            <option value="">Sélectionner une catégorie</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if product.category.id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subcategory" class="block text-sm font-medium text-color-text-secondary mb-1">Sous-catégorie *</label>
+                        <select id="subcategory" name="subcategory" required class="w-full border border-gray-300 rounded-lg p-3">
+                            <option value="">Sélectionner une sous-catégorie</option>
+                            {% if product.subcategory %}
+                            <option value="{{ product.subcategory.id }}" selected>{{ product.subcategory.name }}</option>
+                            {% endif %}
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="videos">Ajouter de nouvelles vidéos :</label>
-                <input type="file" id="videos" name="videos" multiple accept="video/*">
-            </div>
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-color-text-secondary mb-1">Description</label>
+                    <textarea id="description" name="description" rows="4" class="w-full border border-gray-300 rounded-lg p-3">{{ product.description }}</textarea>
+                </div>
 
-            <button type="submit" class="btn-submit">Sauvegarder les modifications</button>
-        </form>
+                <!-- Stock -->
+                <div>
+                    <label for="stock" class="block text-sm font-medium text-color-text-secondary mb-1">Stock *</label>
+                    <input type="number" id="stock" name="stock" min="0" value="{{ product.stock }}" required class="w-full border border-gray-300 rounded-lg p-3">
+                </div>
+                
+                <!-- Images existantes -->
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Images existantes</label>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        {% for image in product.images.all %}
+                        <div class="border rounded-lg p-2 text-center">
+                            <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" class="image-preview mx-auto">
+                            <div class="mt-2">
+                                <input type="checkbox" id="keep_image_{{ image.id }}" name="keep_images" value="{{ image.id }}" checked>
+                                <label for="keep_image_{{ image.id }}" class="text-sm">Conserver</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <label for="new_images" class="block text-sm font-medium text-color-text-secondary mb-1">Nouvelles images</label>
+                    <input type="file" id="new_images" name="new_images" accept="image/*" multiple 
+                           class="w-full border border-gray-300 rounded-lg p-3">
+                </div>
+
+                <!-- Vidéos existantes -->
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Vidéos existantes</label>
+                    <div class="mb-4">
+                        {% for video in product.videos.all %}
+                        <div class="border rounded-lg p-2 mb-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm">{{ video.video.name }}</span>
+                                <div>
+                                    <input type="checkbox" id="keep_video_{{ video.id }}" name="keep_videos" value="{{ video.id }}" checked>
+                                    <label for="keep_video_{{ video.id }}" class="text-sm">Conserver</label>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <label for="new_videos" class="block text-sm font-medium text-color-text-secondary mb-1">Nouvelles vidéos</label>
+                    <input type="file" id="new_videos" name="new_videos" accept="video/*" multiple 
+                           class="w-full border border-gray-300 rounded-lg p-3">
+                </div>
+
+                <!-- Section des variations existantes -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h3 class="text-xl font-bold text-color-primary mb-4">Variations existantes</h3>
+                    
+                    <div id="existing-variations-container">
+                        {% for variation in existing_variations %}
+                        <div class="variation-section existing-variation">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-lg font-semibold text-color-primary">Variation: {{ variation.type }} - {{ variation.value }}</h4>
+                                <button type="button" class="remove-variation" data-variation-id="{{ variation.id }}">Supprimer</button>
+                            </div>
+                            
+                            <input type="hidden" name="existing_variation_id[]" value="{{ variation.id }}">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Type *</label>
+                                    <input type="text" name="existing_variation_type[]" value="{{ variation.type }}" required 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Valeur *</label>
+                                    <input type="text" name="existing_variation_value[]" value="{{ variation.value }}" required 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Modificateur de prix (CFA)</label>
+                                    <input type="number" name="existing_variation_price[]" step="0.01" value="{{ variation.price_modifier }}" 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Stock additionnel</label>
+                                    <input type="number" name="existing_variation_stock[]" min="0" value="{{ variation.stock_variation }}" 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">SKU/Référence</label>
+                                    <input type="text" name="existing_variation_sku[]" value="{{ variation.sku|default:'' }}" 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Image spécifique</label>
+                                    {% if variation.image %}
+                                    <div class="mb-2">
+                                        <img src="{{ variation.image.url }}" alt="{{ variation.value }}" class="image-preview">
+                                    </div>
+                                    {% endif %}
+                                    <input type="file" name="existing_variation_image[]" accept="image/*" 
+                                           class="w-full border border-gray-300 rounded-lg p-2">
+                                    <div class="image-preview-container mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Section des nouvelles variations -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h3 class="text-xl font-bold text-color-primary mb-4">Nouvelles variations</h3>
+                    
+                    <div id="new-variations-container">
+                        <!-- Les nouvelles variations seront ajoutées ici -->
+                    </div>
+                    
+                    <button type="button" id="add-new-variation" class="bg-color-accent text-color-primary font-bold py-2 px-4 rounded-lg hover:opacity-80 transition-opacity">
+                        + Ajouter une nouvelle variation
+                    </button>
+                </div>
+
+                <div class="flex justify-center pt-6">
+                    <button type="submit" class="btn-submit px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:shadow-lg">
+                        Mettre à jour le produit
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- Template pour une nouvelle variation -->
+    <template id="new-variation-template">
+        <div class="variation-section new-variation">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-semibold text-color-primary">Nouvelle variation</h4>
+                <button type="button" class="remove-variation">Supprimer</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Type *</label>
+                    <input type="text" name="new_variation_type[]" placeholder="Ex: Couleur, Taille" required 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Valeur *</label>
+                    <input type="text" name="new_variation_value[]" placeholder="Ex: Rouge, XL" required 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Modificateur de prix (CFA)</label>
+                    <input type="number" name="new_variation_price[]" step="0.01" value="0" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Stock additionnel</label>
+                    <input type="number" name="new_variation_stock[]" min="0" value="0" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">SKU/Référence</label>
+                    <input type="text" name="new_variation_sku[]" placeholder="Référence unique" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Image spécifique</label>
+                    <input type="file" name="new_variation_image[]" accept="image/*" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                    <div class="image-preview-container mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const newVariationsContainer = document.getElementById('new-variations-container');
+            const addNewVariationBtn = document.getElementById('add-new-variation');
+            const newVariationTemplate = document.getElementById('new-variation-template');
+            
+            let newVariationCount = 0;
+            
+            // Fonction pour ajouter une nouvelle variation
+            function addNewVariation() {
+                const variationClone = newVariationTemplate.content.cloneNode(true);
+                const variationElement = variationClone.querySelector('.new-variation');
+                
+                newVariationCount++;
+                variationElement.dataset.variationId = 'new_' + newVariationCount;
+                
+                // Gérer la suppression
+                const removeBtn = variationElement.querySelector('.remove-variation');
+                removeBtn.addEventListener('click', function() {
+                    variationElement.remove();
+                });
+                
+                // Gérer l'aperçu de l'image
+                const imageInput = variationElement.querySelector('input[type="file"]');
+                const previewContainer = variationElement.querySelector('.image-preview-container');
+                
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Aperçu">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                newVariationsContainer.appendChild(variationElement);
+            }
+            
+            // Événement pour ajouter une nouvelle variation
+            addNewVariationBtn.addEventListener('click', addNewVariation);
+            
+            // Gérer la suppression des variations existantes
+            document.querySelectorAll('.existing-variation .remove-variation').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const variationElement = this.closest('.existing-variation');
+                    variationElement.remove();
+                });
+            });
+            
+            // Gérer l'aperçu des images pour les variations existantes
+            document.querySelectorAll('.existing-variation input[type="file"]').forEach(input => {
+                const previewContainer = input.parentElement.querySelector('.image-preview-container');
+                input.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Aperçu">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+            
+            // Gestion des sous-catégories dynamiques
+            const categorySelect = document.getElementById('category');
+            const subcategorySelect = document.getElementById('subcategory');
+            
+            async function loadSubcategories(categoryId) {
+                subcategorySelect.innerHTML = '<option value="">Chargement...</option>';
+                subcategorySelect.disabled = true;
+                
+                if (!categoryId) {
+                    subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                    subcategorySelect.disabled = false;
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/categories/${categoryId}/subcategories/`);
+                    if (!response.ok) throw new Error('Erreur de réseau');
+                    
+                    const subcategories = await response.json();
+                    
+                    subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
+                    subcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub.id;
+                        option.textContent = sub.name;
+                        subcategorySelect.appendChild(option);
+                    });
+                    
+                    // Restaurer la sous-catégorie sélectionnée
+                    const currentSubcategoryId = '{{ product.subcategory.id }}';
+                    if (currentSubcategoryId) {
+                        subcategorySelect.value = currentSubcategoryId;
+                    }
+                    
+                    subcategorySelect.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    subcategorySelect.innerHTML = '<option value="">Erreur de chargement</option>';
+                }
+            }
+            
+            categorySelect.addEventListener('change', (event) => {
+                loadSubcategories(event.target.value);
+            });
+            
+            // Chargement initial
+            loadSubcategories(categorySelect.value);
+        });
+    </script>
 </body>
 </html>

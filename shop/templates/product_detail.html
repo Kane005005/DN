@@ -5,212 +5,726 @@
 
 {% block extra_css %}
 <style>
-    .modal-overlay {
-        background-color: rgba(0, 0, 0, 0.5);
+    .product-gallery-image {
+        transition: transform 0.3s ease;
     }
     
-    .thumbnail-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 1rem;
+    .product-gallery-image:hover {
+        transform: scale(1.05);
     }
     
-    .thumbnail {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: border-color 0.3s ease;
+    .variation-option {
+        transition: all 0.3s ease;
     }
     
-    .thumbnail:hover {
+    .variation-option.selected {
         border-color: var(--color-accent);
+        background-color: rgba(207, 175, 112, 0.1);
     }
     
-    .main-media-container {
-        border: 4px solid var(--color-border);
-        border-radius: 1rem;
+    .variation-option.out-of-stock {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+    }
+    
+    /* Amélioration de l'affichage des images */
+    .main-image-container {
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 8px;
         overflow: hidden;
-        margin-bottom: 1rem;
     }
     
-    .main-media-container img,
-    .main-media-container video {
-        width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
+    @media (max-width: 768px) {
+        .main-image-container {
+            height: 300px;
+        }
+    }
+    
+    .main-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    
+    .thumbnail.active {
+        border-color: var(--color-accent) !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-xl shadow-md p-6 lg:p-12 flex flex-col lg:flex-row gap-8">
-    <!-- Galerie d'images et de vidéos -->
-    <div class="lg:w-1/2">
-        <div class="main-media-container">
-            {% if product.videos.first %}
-            <video id="main-product-video" controls autoplay class="w-full h-auto">
-                <source src="{{ product.videos.first.video.url }}" type="video/mp4">
-                Votre navigateur ne supporte pas la vidéo.
-            </video>
-            <img id="main-product-image" src="" alt="{{ product.name }}" class="w-full h-auto hidden">
-            {% elif product.images.first %}
-            <img id="main-product-image" src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-auto">
-            <video id="main-product-video" controls class="w-full h-auto hidden"></video>
-            {% else %}
-            <img id="main-product-image" src="https://placehold.co/800x600/E8E8E8/6C6C6C?text=Image+non+disponible" alt="Image non disponible" class="w-full h-auto">
-            <video id="main-product-video" controls class="w-full h-auto hidden"></video>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Breadcrumb -->
+    <nav class="flex py-4 text-sm text-gray-600">
+        <ol class="flex items-center space-x-2">
+            <li><a href="{% url 'index' %}" class="hover:text-color-primary transition-colors">Accueil</a></li>
+            <li class="flex items-center">
+                <span class="mx-2">/</span>
+            </li>
+            {% if has_valid_category %}
+            <li><a href="{% url 'products_by_category' product.category.slug %}" class="hover:text-color-primary transition-colors">{{ product.category.name }}</a></li>
+            <li class="flex items-center">
+                <span class="mx-2">/</span>
+            </li>
             {% endif %}
+            {% if has_valid_subcategory %}
+            <li><a href="{% url 'products_by_subcategory' product.category.slug product.subcategory.slug %}" class="hover:text-color-primary transition-colors">{{ product.subcategory.name }}</a></li>
+            <li class="flex items-center">
+                <span class="mx-2">/</span>
+            </li>
+            {% endif %}
+            <li class="text-color-primary font-medium">{{ product.name|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+        {% for message in messages %}
+        <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% else %}bg-red-50 text-red-800 border border-red-200{% endif %}">
+            {{ message }}
         </div>
-        <div class="thumbnail-gallery">
-            {% for image in product.images.all %}
-            <img src="{{ image.image.url }}" alt="Miniature {{ forloop.counter }}" class="thumbnail" data-media-type="image" data-media-url="{{ image.image.url }}">
-            {% endfor %}
-            {% for video in product.videos.all %}
-            <video class="thumbnail" data-media-type="video" data-media-url="{{ video.video.url }}">
-                <source src="{{ video.video.url }}" type="video/mp4">
-            </video>
-            {% endfor %}
-        </div>
+        {% endfor %}
     </div>
+    {% endif %}
 
-    <!-- Détails du produit et actions -->
-    <div class="lg:w-1/2">
-        <h2 class="text-4xl font-bold text-color-primary mb-2">{{ product.name }}</h2>
-        <p class="text-sm text-color-text-secondary mb-4">
-            Boutique: <a href="#" class="hover:underline">{{ product.shop.merchant.first_name }}</a> |
-            Catégorie: <a href="{% url 'products_by_category' category_slug=product.category.slug %}" class="hover:underline">{{ product.category.name }}</a>
-            {% if product.subcategory %}
-            / <a href="{% url 'products_by_subcategory' category_slug=product.category.slug subcategory_slug=product.subcategory.slug %}" class="hover:underline">{{ product.subcategory.name }}</a>
-            {% endif %}
-        </p>
-
-        <!-- Affichage de la note moyenne -->
-        {% if average_rating %}
-        <div class="flex items-center space-x-2 mb-4">
-            <div class="flex">
-                {% for i in "54321"|make_list %}
-                <svg class="h-5 w-5 {% if average_rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.631-.921 1.932 0l1.848 5.686a1 1 极0 00.95.691h5.992c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c极.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
-                </svg>
-                {% endfor %}
-            </div>
-            <p class="text-sm text-color-text-secondary">({{ average_rating|floatformat:1 }}/5)</p>
-        </div>
-        {% endif %}
-        
-        <p class="text-3xl font-bold text-color-accent mb-4">{{ product.price }} CFA</p>
-        <p class="text-lg text-color-text mb-6 leading-relaxed">{{ product.description }}</p>
-        
-        {% if product.stock > 0 %}
-        <span class="text-green-600 font-semibold">En stock ({{ product.stock }})</span>
-        {% else %}
-        <span class="text-red-600 font-semibold">Stock épuisé</span>
-        {% endif %}
-
-        <div class="flex space-x-4 mt-6">
-            <a href="{% url 'add_to_cart' product.id %}" class="bg-color-accent text-color-primary font-bold py-3 px-6 rounded-full hover:opacity-80 transition-opacity flex-1 text-center">
-                Ajouter au panier
-            </a>
-            <a href="{% url 'start_negotiation' product.id %}" class="bg-gray-200 text-color-text font-bold py-3 px-6 rounded-full hover:bg-gray-300 transition-colors flex-1 text-center">
-                Discuter
-            </a>
-        </div>
-
-        <!-- Section pour les avis -->
-        <div class="mt-12">
-            <h3 class="text-2xl font-bold text-color-primary mb-4">Avis des clients ({{ reviews|length }})</h3>
-            {% if user.is_authenticated and not is_merchant %}
-            <!-- Formulaire d'avis -->
-            <div class="bg-gray-100 rounded-lg p-6 mb-8">
-                <h4 class="text-lg font-semibold mb-4">Laisser un avis</h4>
-                <form action="{% url 'add_review' product.id %}" method="post" class="space-y-4">
-                    {% csrf_token %}
-                    <div>
-                        <label for="rating" class="block text-sm font-medium text-color-text-secondary">Note (1-5 étoiles)</label>
-                        <select name="rating" id="rating" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent">
-                            <option value="5">5 - Excellent</option>
-                            <option value="4">4 - Très bien</option>
-                            <option value="3">3 - Moyen</option>
-                            <option value="2">2 - Passable</option>
-                            <option value="1">1 - Très mauvais</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="comment" class="block text-sm font-medium text-color-text-secondary">Commentaire</label>
-                        <textarea name="comment" id="comment" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-color-accent focus:ring-color-accent" placeholder="Partagez votre avis sur ce produit..."></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-color-primary text-color-bg-light font-bold py-2 px-4 rounded-full hover:bg-opacity-80 transition-opacity">
-                        Soumettre l'avis
-                    </button>
-                </form>
-            </div>
-            {% elif user.is_authenticated %}
-                <p class="text-sm text-color-text-secondary italic mb-4">En tant que commerçant, vous ne pouvez pas laisser d'avis sur ce produit.</p>
-            {% else %}
-                <p class="text-sm text-color-text-secondary italic mb-4">Connectez-vous pour laisser un avis.</p>
-            {% endif %}
-
-            {% for review in reviews %}
-            <div class="border-t border-gray-200 pt-6 mt-6">
-                <div class="flex items-center space-x-2 mb-2">
-                    <span class="font-semibold">{{ review.user.username }}</span>
-                    <span class="text-sm text-color-text-secondary">- {{ review.date_created|date:"d M Y" }}</span>
+    <!-- Product Detail Section -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-4 sm:p-6">
+            <!-- Product Images -->
+            <div class="space-y-4">
+                <!-- Main Image -->
+                <div class="main-image-container">
+                    {% if product.images.first %}
+                        <img id="main-product-image" 
+                             src="{{ product.images.first.image.url }}" 
+                             alt="{{ product.name }}"
+                             class="main-image product-gallery-image">
+                    {% else %}
+                        <img id="main-product-image" 
+                             src="{% static 'images/placeholder-product.jpg' %}" 
+                             alt="Image non disponible"
+                             class="main-image product-gallery-image">
+                    {% endif %}
                 </div>
-                <div class="flex">
-                    {% for i in "54321"|make_list %}
-                    <svg class="h-5 w-5 {% if review.rating >= i|add:0 %}text-yellow-400{% else %}text-gray-300{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M9.049 2.927c.3-.921 1.631-.921 1.932 极0l1.848 5.686a1 1 0 00.95.691h5.992极c.969 0 1.371 1.24.588 1.81l-4.85 3.525a1 1 0 00-.364 1.118l1.848 5.686c.3.921-.755 1.688-1.54 1.118l-4.85-3.525a1 1 0 00-1.175 0l-4.85 3.525c-.784.57-1.84-.197-1.54-1.118l1.848-5.686a1 1 0 00-.364-1.118L2.57 11.114c-.783-.极.57-.381-1.81.588-1.81h5.992a1 1 0 00.95-.691l1.848-5.686z" />
-                    </svg>
+
+                <!-- Thumbnails -->
+                {% if product.images.count > 1 or product.videos.exists or variations_with_images %}
+                <div class="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                    {% for image in product.images.all %}
+                    <div class="cursor-pointer border-2 {% if forloop.first %}border-color-accent{% else %}border-transparent{% endif %} rounded-lg overflow-hidden thumbnail">
+                        <img src="{{ image.image.url }}" 
+                             alt="{{ product.name }}"
+                             class="w-full h-16 sm:h-20 object-cover"
+                             data-image="{{ image.image.url }}"
+                             onclick="changeMainImage('{{ image.image.url }}', this)">
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Images des variations -->
+                    {% for variation in variations_with_images %}
+                    <div class="cursor-pointer border-2 border-transparent rounded-lg overflow-hidden thumbnail">
+                        <img src="{{ variation.image.url }}" 
+                             alt="{{ variation.value }}"
+                             class="w-full h-16 sm:h-20 object-cover"
+                             data-image="{{ variation.image.url }}"
+                             onclick="changeMainImage('{{ variation.image.url }}', this)">
+                        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
+                            {{ variation.value }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if product.videos.first %}
+                    <div class="cursor-pointer border-2 border-transparent rounded-lg overflow-hidden relative thumbnail">
+                        <img src="{% static 'images/video-thumbnail.jpg' %}" 
+                             alt="Vidéo du produit"
+                             class="w-full h-16 sm:h-20 object-cover opacity-70">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-play text-color-accent text-lg"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="space-y-6">
+                <!-- Title and Shop -->
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-color-primary mb-2">{{ product.name }}</h1>
+                    <div class="flex items-center space-x-2 text-color-text-secondary">
+                        <i class="fas fa-store text-sm"></i>
+                        <span>Vendu par </span>
+                        <a href="{% url 'shop_detail_by_slug' product.shop.merchant.user.username %}" class="text-color-accent hover:underline">
+                            {{ product.shop.merchant.user.username }}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-1">
+                        {% if average_rating %}
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= average_rating %}
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                {% else %}
+                                    <i class="far fa-star text-yellow-400"></i>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {% for i in "12345" %}
+                                <i class="far fa-star text-yellow-400"></i>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <span class="text-color-text-secondary text-sm sm:text-base">
+                        {% if reviews %}
+                            {{ average_rating|floatformat:1 }} ({{ reviews.count }} avis)
+                        {% else %}
+                            Aucun avis
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="flex items-center space-x-4">
+                    <span id="product-price" class="text-2xl sm:text-3xl font-bold text-color-primary">
+                        {{ product.price }} CFA
+                    </span>
+                    {% if product.stock <= 10 and product.stock > 0 %}
+                    <span class="bg-orange-100 text-orange-800 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full">
+                        Stock faible
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Stock Status -->
+                <div class="flex items-center space-x-2">
+                    {% if product.stock > 10 %}
+                        <i class="fas fa-check-circle text-green-500"></i>
+                        <span class="text-green-600 font-medium">En stock</span>
+                    {% elif product.stock > 0 %}
+                        <i class="fas fa-exclamation-triangle text-orange-500"></i>
+                        <span class="text-orange-600 font-medium">{{ product.stock }} restant(s)</span>
+                    {% else %}
+                        <i class="fas fa-times-circle text-red-500"></i>
+                        <span class="text-red-600 font-medium">Rupture de stock</span>
+                    {% endif %}
+                </div>
+
+                <!-- Product Variations -->
+                {% if variations_by_type %}
+                <div class="space-y-4">
+                    {% for type, variations in variations_by_type.items %}
+                    <div class="variation-group">
+                        <label class="block text-sm font-medium text-color-text mb-2">{{ type }} :</label>
+                        <div class="flex flex-wrap gap-2">
+                            {% for variation in variations %}
+                            <div class="variation-option {% if variation.total_stock <= 0 %}out-of-stock{% endif %} 
+                                border-2 border-gray-200 rounded-lg px-3 py-2 cursor-pointer transition-all duration-200 flex items-center space-x-2"
+                                data-variation-id="{{ variation.id }}"
+                                data-price-modifier="{{ variation.price_modifier }}"
+                                data-stock="{{ variation.total_stock }}"
+                                data-image="{% if variation.image %}{{ variation.image.url }}{% endif %}"
+                                onclick="selectVariation(this, '{{ variation.id }}')">
+                                
+                                {% if variation.image %}
+                                <img src="{{ variation.image.url }}" 
+                                     alt="{{ variation.value }}"
+                                     class="w-6 h-6 rounded-full object-cover">
+                                {% endif %}
+                                
+                                <span class="text-sm">{{ variation.value }}</span>
+                                
+                                {% if variation.price_modifier != 0 %}
+                                <span class="text-xs text-color-text-secondary">
+                                    ({{ variation.price_modifier }} CFA)
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
-                <p class="mt-2 text-color-text-secondary">{{ review.comment }}</p>
+                {% endif %}
+
+                <!-- Description (version courte) -->
+                <div class="prose max-w-none">
+                    <p class="text-color-text leading-relaxed text-sm sm:text-base">
+                        {{ product.description|truncatewords:30|linebreaksbr }}
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-4">
+                    <!-- Add to Cart Form -->
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <!-- Selected Variations (Hidden) -->
+                        <div id="selected-variations-inputs"></div>
+                        
+                        <!-- Quantity and Actions -->
+                        <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                            <!-- Quantity Selector -->
+                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden w-fit">
+                                <button type="button" 
+                                        onclick="decreaseQuantity()" 
+                                        class="px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-minus text-sm"></i>
+                                </button>
+                                <input type="number" 
+                                       name="quantity" 
+                                       id="product-quantity" 
+                                       value="1" 
+                                       min="1" 
+                                       max="{{ product.stock }}"
+                                       class="w-12 sm:w-16 text-center border-0 focus:ring-0 text-sm sm:text-base">
+                                <button type="button" 
+                                        onclick="increaseQuantity()" 
+                                        class="px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-plus text-sm"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 flex-1">
+                                {% if product.stock > 0 %}
+                                <button type="submit" 
+                                        class="btn-primary flex-1 py-3 px-4 sm:px-6 rounded-lg font-semibold flex items-center justify-center space-x-2 text-sm sm:text-base">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span>Ajouter au panier</span>
+                                </button>
+                                {% else %}
+                                <button type="button" 
+                                        disabled
+                                        class="bg-gray-300 text-gray-500 flex-1 py-3 px-4 sm:px-6 rounded-lg font-semibold cursor-not-allowed text-sm sm:text-base">
+                                    Rupture de stock
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Secondary Action Buttons -->
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                        <!-- Chat with Seller Button -->
+                        {% if user.is_authenticated %}
+                            {% if is_merchant and request.user.merchant.shop == product.shop %}
+                                <!-- Le propriétaire du produit peut voir les conversations existantes -->
+                                <a href="{% url 'list_conversations' %}" 
+                                   class="bg-blue-600 text-white py-3 px-4 sm:px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Voir les discussions</span>
+                                </a>
+                            {% elif not is_merchant or is_merchant and request.user.merchant.shop != product.shop %}
+                                <!-- Client ou autre commerçant peut démarrer une négociation -->
+                                <a href="{% url 'start_negotiation' product.id %}" 
+                                   class="bg-color-primary text-white py-3 px-4 sm:px-6 rounded-lg font-semibold hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Discuter avec le vendeur</span>
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <!-- Lien de connexion pour les utilisateurs non connectés -->
+                            <a href="{% url 'login_view' %}?next={{ request.path }}" 
+                               class="bg-color-primary text-white py-3 px-4 sm:px-6 rounded-lg font-semibold hover:bg-opacity-90 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base">
+                                <i class="fas fa-comments"></i>
+                                <span>Se connecter pour discuter</span>
+                            </a>
+                        {% endif %}
+
+                        <!-- Add Review Button (mobile) -->
+                        {% if user.is_authenticated and not is_merchant or user.is_authenticated and is_merchant and request.user.merchant.shop != product.shop %}
+                        <button onclick="switchTab('reviews')" 
+                                class="bg-green-600 text-white py-3 px-4 sm:px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base sm:hidden">
+                            <i class="fas fa-star"></i>
+                            <span>Ajouter un avis</span>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm text-color-text-secondary">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-shipping-fast"></i>
+                        <span>Livraison gratuite</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-undo-alt"></i>
+                        <span>Retours 30 jours</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Paiement sécurisé</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-headset"></i>
+                        <span>Support 24/7</span>
+                    </div>
+                </div>
             </div>
-            {% empty %}
-            <p class="text-sm text-color-text-secondary italic">Soyez le premier à laisser un avis pour ce produit !</p>
+        </div>
+    </div>
+
+    <!-- Product Details Tabs -->
+    <div class="mt-6 sm:mt-8 bg-white rounded-lg shadow-lg overflow-hidden">
+        <!-- Tabs Header -->
+        <div class="border-b border-gray-200 overflow-x-auto">
+            <nav class="flex min-w-max">
+                <button onclick="switchTab('description')" 
+                        class="tab-button py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 border-color-accent font-medium text-color-accent whitespace-nowrap text-sm sm:text-base">
+                    Description
+                </button>
+                <button onclick="switchTab('specifications')" 
+                        class="tab-button py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 border-transparent font-medium text-color-text-secondary hover:text-color-primary whitespace-nowrap text-sm sm:text-base">
+                    Spécifications
+                </button>
+                <button onclick="switchTab('reviews')" 
+                        class="tab-button py-3 sm:py-4 px-4 sm:px-6 text-center border-b-2 border-transparent font-medium text-color-text-secondary hover:text-color-primary whitespace-nowrap text-sm sm:text-base">
+                    Avis ({{ reviews.count }})
+                </button>
+            </nav>
+        </div>
+
+        <!-- Tabs Content -->
+        <div class="p-4 sm:p-6">
+            <!-- Description Tab -->
+            <div id="description-tab" class="tab-content active">
+                <div class="prose max-w-none text-sm sm:text-base">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Specifications Tab -->
+            <div id="specifications-tab" class="tab-content">
+                <div class="space-y-4 text-sm sm:text-base">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="font-medium">Catégorie</span>
+                            <span class="text-color-text-secondary">
+                                {% if product.category %}{{ product.category.name }}{% else %}Non spécifiée{% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="font-medium">Sous-catégorie</span>
+                            <span class="text-color-text-secondary">
+                                {% if product.subcategory %}{{ product.subcategory.name }}{% else %}Non spécifiée{% endif %}
+                            </span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="font-medium">Stock initial</span>
+                            <span class="text-color-text-secondary">{{ product.stock }} unités</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b">
+                            <span class="font-medium">Date d'ajout</span>
+                            <span class="text-color-text-secondary">{{ product.date_added|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Tab -->
+            <div id="reviews-tab" class="tab-content">
+                <!-- Add Review Section -->
+                <div class="mb-6 p-4 sm:p-6 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg sm:text-xl font-semibold text-color-primary mb-4">
+                        {% if user.is_authenticated and not is_merchant or user.is_authenticated and is_merchant and request.user.merchant.shop != product.shop %}
+                            Donnez votre avis
+                        {% else %}
+                            Avis des clients
+                        {% endif %}
+                    </h3>
+                    
+                    {% if user.is_authenticated and not is_merchant or user.is_authenticated and is_merchant and request.user.merchant.shop != product.shop %}
+                    <form method="post" action="{% url 'add_review' product.id %}">
+                        {% csrf_token %}
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-color-text mb-2">Votre note :</label>
+                                <div class="flex space-x-1" id="rating-stars">
+                                    {% for i in "12345" %}
+                                    <button type="button" 
+                                            onclick="setRating({{ forloop.counter }})" 
+                                            class="text-xl sm:text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="{{ forloop.counter }}">
+                                        <i class="far fa-star"></i>
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="rating" id="selected-rating" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-color-text mb-2">Votre commentaire :</label>
+                                <textarea name="comment" 
+                                          rows="4" 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-color-accent focus:border-color-accent text-sm sm:text-base"
+                                          placeholder="Partagez votre expérience avec ce produit..."></textarea>
+                            </div>
+                            <button type="submit" 
+                                    class="btn-primary py-2 px-4 sm:px-6 rounded-lg font-semibold text-sm sm:text-base">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Publier mon avis
+                            </button>
+                        </div>
+                    </form>
+                    {% elif not user.is_authenticated %}
+                    <div class="text-center py-4">
+                        <p class="text-color-text-secondary mb-4">Connectez-vous pour laisser un avis sur ce produit</p>
+                        <a href="{% url 'login_view' %}?next={{ request.path }}" 
+                           class="btn-primary py-2 px-6 rounded-lg font-semibold inline-flex items-center space-x-2">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Se connecter</span>
+                        </a>
+                    </div>
+                    {% elif is_merchant and request.user.merchant.shop == product.shop %}
+                    <div class="text-center py-4">
+                        <p class="text-color-text-secondary">En tant que propriétaire de ce produit, vous ne pouvez pas donner d'avis.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Reviews List -->
+                <div class="space-y-4 sm:space-y-6">
+                    {% if reviews %}
+                    <h4 class="text-lg font-semibold text-color-primary">Avis des clients ({{ reviews.count }})</h4>
+                    
+                    {% for review in reviews %}
+                    <div class="border-b border-gray-200 pb-4 sm:pb-6 last:border-b-0">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 space-y-2 sm:space-y-0">
+                            <div>
+                                <span class="font-medium text-color-text text-sm sm:text-base">{{ review.user.username }}</span>
+                                <div class="flex items-center space-x-1 mt-1">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star text-yellow-400 text-xs sm:text-sm"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-yellow-400 text-xs sm:text-sm"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <span class="text-xs sm:text-sm text-color-text-secondary">{{ review.date_created|date:"d/m/Y" }}</span>
+                        </div>
+                        {% if review.comment %}
+                        <p class="text-color-text mt-2 text-sm sm:text-base">{{ review.comment }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-6 sm:py-8">
+                        <i class="fas fa-comment-slash text-3xl sm:text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-color-text-secondary text-sm sm:text-base">Aucun avis pour ce produit.</p>
+                        <p class="text-xs sm:text-sm text-color-text-secondary mt-1">Soyez le premier à donner votre avis !</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Products -->
+    {% if similar_products %}
+    <div class="mt-8 sm:mt-12">
+        <h2 class="text-xl sm:text-2xl font-bold text-color-primary mb-4 sm:mb-6">Produits similaires</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            {% for similar_product in similar_products %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <a href="{% url 'product_detail' similar_product.id %}">
+                    <div class="aspect-w-1 aspect-h-1 bg-gray-100">
+                        {% if similar_product.images.first %}
+                            <img src="{{ similar_product.images.first.image.url }}" 
+                                 alt="{{ similar_product.name }}"
+                                 class="w-full h-32 sm:h-48 object-cover">
+                        {% else %}
+                            <img src="{% static 'images/placeholder-product.jpg' %}" 
+                                 alt="Image non disponible"
+                                 class="w-full h-32 sm:h-48 object-cover">
+                        {% endif %}
+                    </div>
+                    <div class="p-3 sm:p-4">
+                        <h3 class="font-semibold text-color-text mb-2 line-clamp-2 text-xs sm:text-sm">{{ similar_product.name }}</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm sm:text-lg font-bold text-color-primary">{{ similar_product.price }} CFA</span>
+                            {% if similar_product.stock > 0 %}
+                            <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">En stock</span>
+                            {% else %}
+                            <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">Rupture</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
             {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    // Variables globales
+    let selectedVariations = new Set();
+    const basePrice = parseFloat('{{ product.price }}');
+    
+    // Fonction pour changer l'image principale
+    function changeMainImage(imageUrl, element) {
+        document.getElementById('main-product-image').src = imageUrl;
+        
+        // Mettre à jour les bordures des miniatures
         const thumbnails = document.querySelectorAll('.thumbnail');
-        const mainImage = document.getElementById('main-product-image');
-        const mainVideo = document.getElementById('main-product-video');
-
-        thumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', function () {
-                const mediaType = this.getAttribute('data-media-type');
-                const mediaUrl = this.getAttribute('data-media-url');
-
-                if (mediaType === 'image') {
-                    mainImage.src = mediaUrl;
-                    mainImage.classList.remove('hidden');
-                    mainVideo.classList.add('hidden');
-                    mainVideo.pause();
-                } else if (mediaType === 'video') {
-                    mainVideo.src = mediaUrl;
-                    mainImage.classList.add('hidden');
-                    mainVideo.classList.remove('hidden');
-                    mainVideo.play();
-                }
-            });
+        thumbnails.forEach(thumb => {
+            thumb.classList.remove('border-color-accent');
+            thumb.classList.add('border-transparent');
         });
-
-        // Gère l'affichage initial au chargement de la page
-        const initialVideo = document.querySelector('.thumbnail[data-media-type="video"]');
-        if (initialVideo) {
-            mainImage.classList.add('hidden');
-            mainVideo.classList.remove('hidden');
-            mainVideo.src = initialVideo.getAttribute('data-media-url');
+        
+        element.parentElement.classList.remove('border-transparent');
+        element.parentElement.classList.add('border-color-accent');
+    }
+    
+    // Fonctions pour la quantité
+    function decreaseQuantity() {
+        const quantityInput = document.getElementById('product-quantity');
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
         }
+    }
+    
+    function increaseQuantity() {
+        const quantityInput = document.getElementById('product-quantity');
+        let currentValue = parseInt(quantityInput.value);
+        const maxStock = parseInt('{{ product.stock }}');
+        if (currentValue < maxStock) {
+            quantityInput.value = currentValue + 1;
+        }
+    }
+    
+    // Fonction pour sélectionner une variation
+    function selectVariation(element, variationId) {
+        if (element.classList.contains('out-of-stock')) return;
+        
+        const variationGroup = element.closest('.variation-group');
+        const options = variationGroup.querySelectorAll('.variation-option');
+        
+        // Désélectionner toutes les options du groupe
+        options.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.classList.remove('border-color-accent');
+            opt.classList.add('border-gray-200');
+        });
+        
+        // Sélectionner l'option cliquée
+        element.classList.add('selected');
+        element.classList.add('border-color-accent');
+        element.classList.remove('border-gray-200');
+        
+        // Mettre à jour les variations sélectionnées
+        selectedVariations.add(variationId);
+        updateSelectedVariationsInputs();
+        updatePrice();
+        
+        // Changer l'image principale si la variation a une image
+        const variationImage = element.getAttribute('data-image');
+        if (variationImage) {
+            changeMainImage(variationImage, element);
+        }
+    }
+    
+    // Mettre à jour les champs cachés des variations
+    function updateSelectedVariationsInputs() {
+        const container = document.getElementById('selected-variations-inputs');
+        container.innerHTML = '';
+        
+        selectedVariations.forEach(variationId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'variations';
+            input.value = variationId;
+            container.appendChild(input);
+        });
+    }
+    
+    // Mettre à jour le prix affiché
+    function updatePrice() {
+        let totalPrice = basePrice;
+        
+        // Ajouter les modificateurs de prix des variations sélectionnées
+        selectedVariations.forEach(variationId => {
+            const variationElement = document.querySelector(`[data-variation-id="${variationId}"]`);
+            if (variationElement) {
+                const priceModifier = parseFloat(variationElement.getAttribute('data-price-modifier'));
+                totalPrice += priceModifier;
+            }
+        });
+        
+        // Mettre à jour l'affichage du prix
+        document.getElementById('product-price').textContent = totalPrice.toFixed(2) + ' CFA';
+    }
+    
+    // Fonctions pour les onglets
+    function switchTab(tabName) {
+        // Masquer tous les contenus d'onglets
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Désactiver tous les boutons d'onglets
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('border-color-accent', 'text-color-accent');
+            button.classList.add('border-transparent', 'text-color-text-secondary');
+        });
+        
+        // Activer l'onglet sélectionné
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        event.target.classList.add('border-color-accent', 'text-color-accent');
+        event.target.classList.remove('border-transparent', 'text-color-text-secondary');
+    }
+    
+    // Fonction pour la notation
+    function setRating(rating) {
+        const stars = document.querySelectorAll('#rating-stars button');
+        const ratingInput = document.getElementById('selected-rating');
+        
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.innerHTML = '<i class="fas fa-star"></i>';
+                star.classList.add('text-yellow-400');
+                star.classList.remove('text-gray-300');
+            } else {
+                star.innerHTML = '<i class="far fa-star"></i>';
+                star.classList.add('text-gray-300');
+                star.classList.remove('text-yellow-400');
+            }
+        });
+        
+        ratingInput.value = rating;
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSelectedVariationsInputs();
+        
+        // Activer le premier onglet par défaut
+        switchTab('description');
     });
 </script>
 {% endblock %}

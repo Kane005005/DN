@@ -69,5 +69,6 @@ urlpatterns = [
     
     # Détail d'une commande client
     path('ma-commande/<int:order_id>/', views.client_order_detail, name='client_order_detail'),
+    path('api/product/<int:product_id>/variations/', views.get_product_variations, name='product_variations_api'),
 
 ]

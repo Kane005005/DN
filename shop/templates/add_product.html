@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un produit - DEANNA</title>
-    <!-- Inclure Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -21,33 +20,13 @@
             --color-error: #800020;
         }
 
-        .bg-color-primary {
-            background-color: var(--color-primary);
-        }
-
-        .text-color-primary {
-            color: var(--color-primary);
-        }
-
-        .bg-color-accent {
-            background-color: var(--color-accent);
-        }
-
-        .text-color-accent {
-            color: var(--color-accent);
-        }
-
-        .bg-color-bg-light {
-            background-color: var(--color-bg-light);
-        }
-
-        .text-color-bg-light {
-            color: var(--color-bg-light);
-        }
-
-        .border-color-border {
-            border-color: var(--color-border);
-        }
+        .bg-color-primary { background-color: var(--color-primary); }
+        .text-color-primary { color: var(--color-primary); }
+        .bg-color-accent { background-color: var(--color-accent); }
+        .text-color-accent { color: var(--color-accent); }
+        .bg-color-bg-light { background-color: var(--color-bg-light); }
+        .text-color-bg-light { color: var(--color-bg-light); }
+        .border-color-border { border-color: var(--color-border); }
 
         .btn-submit {
             background-color: var(--color-accent);
@@ -58,6 +37,28 @@
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .variation-section {
+            border: 2px dashed var(--color-border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            background-color: #f8fafc;
+        }
+
+        .remove-variation {
+            background-color: var(--color-error);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .remove-variation:hover {
+            background-color: #a0001a;
         }
 
         input[type="text"],
@@ -73,49 +74,53 @@
             color: var(--color-text);
         }
 
-        input[type="file"]::-webkit-file-upload-button {
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            padding: 0.5rem 1rem;
-            border: none;
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
             border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        input[type="file"]::-webkit-file-upload-button:hover {
-            background-color: #A3965E;
+            margin: 0.5rem 0;
+            border: 2px solid #e2e8f0;
         }
     </style>
 </head>
 
 <body class="bg-color-bg-light text-color-text">
-
     <div class="container mx-auto p-4 md:p-8">
         <h1 class="text-3xl font-bold mb-6 text-center text-color-primary">Ajouter un produit</h1>
-        <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
+        
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-            <!-- Formulaire d'ajout de produit -->
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-10">
             <form action="{% url 'add_product' %}" method="post" enctype="multipart/form-data" class="space-y-6">
                 {% csrf_token %}
 
-                <!-- Nom du produit -->
-                <div>
-                    <label for="name" class="block text-sm font-medium text-color-text-secondary mb-1">Nom du produit</label>
-                    <input type="text" id="name" name="name" required class="w-full">
-                </div>
+                <!-- Informations de base du produit -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-color-text-secondary mb-1">Nom du produit *</label>
+                        <input type="text" id="name" name="name" required class="w-full border border-gray-300 rounded-lg p-3" placeholder="Nom du produit">
+                    </div>
 
-                <!-- Prix -->
-                <div>
-                    <label for="price" class="block text-sm font-medium text-color-text-secondary mb-1">Prix (CFA)</label>
-                    <input type="number" id="price" name="price" step="0.01" required class="w-full">
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-color-text-secondary mb-1">Prix (CFA) *</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required class="w-full border border-gray-300 rounded-lg p-3" placeholder="0.00">
+                    </div>
                 </div>
 
                 <!-- Catégorie et Sous-catégorie -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="category" class="block text-sm font-medium text-color-text-secondary mb-1">Catégorie</label>
-                        <select id="category" name="category" required class="w-full">
+                        <label for="category" class="block text-sm font-medium text-color-text-secondary mb-1">Catégorie *</label>
+                        <select id="category" name="category" required class="w-full border border-gray-300 rounded-lg p-3">
                             <option value="">Sélectionner une catégorie</option>
                             {% for category in categories %}
                             <option value="{{ category.id }}">{{ category.name }}</option>
@@ -123,8 +128,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="subcategory" class="block text-sm font-medium text-color-text-secondary mb-1">Sous-catégorie</label>
-                        <select id="subcategory" name="subcategory" required class="w-full">
+                        <label for="subcategory" class="block text-sm font-medium text-color-text-secondary mb-1">Sous-catégorie *</label>
+                        <select id="subcategory" name="subcategory" required class="w-full border border-gray-300 rounded-lg p-3">
                             <option value="">Sélectionner une sous-catégorie</option>
                         </select>
                     </div>
@@ -133,58 +138,177 @@
                 <!-- Description -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-color-text-secondary mb-1">Description</label>
-                    <textarea id="description" name="description" rows="4" class="w-full"></textarea>
+                    <textarea id="description" name="description" rows="4" class="w-full border border-gray-300 rounded-lg p-3" placeholder="Description du produit..."></textarea>
                 </div>
 
                 <!-- Stock -->
                 <div>
-                    <label for="stock" class="block text-sm font-medium text-color-text-secondary mb-1">Stock</label>
-                    <input type="number" id="stock" name="stock" required class="w-full">
+                    <label for="stock" class="block text-sm font-medium text-color-text-secondary mb-1">Stock *</label>
+                    <input type="number" id="stock" name="stock" min="0" required class="w-full border border-gray-300 rounded-lg p-3" placeholder="0">
                 </div>
                 
-                <!-- Images (permet plusieurs fichiers) -->
+                <!-- Images principales -->
                 <div>
-                    <label for="images" class="block text-sm font-medium text-color-text-secondary mb-1">Images du produit (plusieurs fichiers possibles)</label>
-                    <input type="file" id="images" name="images" accept="image/*" multiple required>
+                    <label for="images" class="block text-sm font-medium text-color-text-secondary mb-1">
+                        Images du produit * (plusieurs fichiers possibles)
+                    </label>
+                    <input type="file" id="images" name="images" accept="image/*" multiple required 
+                           class="w-full border border-gray-300 rounded-lg p-3">
+                    <p class="text-sm text-gray-500 mt-1">Maintenez Ctrl pour sélectionner plusieurs images</p>
                 </div>
 
-                <!-- Vidéos (permet plusieurs fichiers) -->
+                <!-- Vidéos -->
                 <div>
-                    <label for="videos" class="block text-sm font-medium text-color-text-secondary mb-1">Vidéos du produit (plusieurs fichiers possibles)</label>
-                    <input type="file" id="videos" name="videos" accept="video/*" multiple>
+                    <label for="videos" class="block text-sm font-medium text-color-text-secondary mb-1">
+                        Vidéos du produit (plusieurs fichiers possibles)
+                    </label>
+                    <input type="file" id="videos" name="videos" accept="video/*" multiple 
+                           class="w-full border border-gray-300 rounded-lg p-3">
                 </div>
 
-                <div class="flex justify-center">
-                    <button type="submit" class="btn-submit px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:shadow-lg">Ajouter le produit</button>
+                <!-- Section des variations -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h3 class="text-xl font-bold text-color-primary mb-4">Variations du produit</h3>
+                    <p class="text-sm text-color-text-secondary mb-4">
+                        Ajoutez des variations comme la couleur, taille, matériau, etc.
+                    </p>
+
+                    <div id="variations-container">
+                        <!-- Les variations seront ajoutées ici dynamiquement -->
+                    </div>
+
+                    <button type="button" id="add-variation" class="bg-color-accent text-color-primary font-bold py-2 px-4 rounded-lg hover:opacity-80 transition-opacity">
+                        + Ajouter une variation
+                    </button>
+                </div>
+
+                <div class="flex justify-center pt-6">
+                    <button type="submit" class="btn-submit px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:shadow-lg">
+                        Ajouter le produit
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Script pour les sous-catégories dynamiques -->
+    <!-- Template pour une nouvelle variation -->
+    <template id="variation-template">
+        <div class="variation-section">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-semibold text-color-primary">Nouvelle variation</h4>
+                <button type="button" class="remove-variation">Supprimer</button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Type *</label>
+                    <input type="text" name="variation_type[]" placeholder="Ex: Couleur, Taille" required 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Valeur *</label>
+                    <input type="text" name="variation_value[]" placeholder="Ex: Rouge, XL" required 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Modificateur de prix (CFA)</label>
+                    <input type="number" name="variation_price[]" step="0.01" value="0" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Stock additionnel</label>
+                    <input type="number" name="variation_stock[]" min="0" value="0" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">SKU/Référence</label>
+                    <input type="text" name="variation_sku[]" placeholder="Référence unique" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-color-text-secondary mb-1">Image spécifique</label>
+                    <input type="file" name="variation_image[]" accept="image/*" 
+                           class="w-full border border-gray-300 rounded-lg p-2">
+                    <div class="image-preview-container mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function() {
+            const variationsContainer = document.getElementById('variations-container');
+            const addVariationBtn = document.getElementById('add-variation');
+            const variationTemplate = document.getElementById('variation-template');
+            
+            let variationCount = 0;
+            
+            // Fonction pour ajouter une nouvelle variation
+            function addVariation() {
+                const variationClone = variationTemplate.content.cloneNode(true);
+                const variationElement = variationClone.querySelector('.variation-section');
+                
+                // Ajouter un identifiant unique
+                variationCount++;
+                variationElement.dataset.variationId = variationCount;
+                
+                // Gérer la suppression
+                const removeBtn = variationElement.querySelector('.remove-variation');
+                removeBtn.addEventListener('click', function() {
+                    variationElement.remove();
+                });
+                
+                // Gérer l'aperçu de l'image
+                const imageInput = variationElement.querySelector('input[type="file"]');
+                const previewContainer = variationElement.querySelector('.image-preview-container');
+                
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Aperçu">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                variationsContainer.appendChild(variationElement);
+            }
+            
+            // Événement pour ajouter une variation
+            addVariationBtn.addEventListener('click', addVariation);
+            
+            // Ajouter une variation vide au chargement
+            addVariation();
+            
+            // Gestion des sous-catégories dynamiques
             const categorySelect = document.getElementById('category');
             const subcategorySelect = document.getElementById('subcategory');
             
-            // Fonction pour charger les sous-catégories
-            const loadSubcategories = async (categoryId) => {
+            async function loadSubcategories(categoryId) {
                 subcategorySelect.innerHTML = '<option value="">Chargement...</option>';
                 subcategorySelect.disabled = true;
-
+                
                 if (!categoryId) {
                     subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
                     subcategorySelect.disabled = false;
                     return;
                 }
-
+                
                 try {
                     const response = await fetch(`/api/categories/${categoryId}/subcategories/`);
-                    if (!response.ok) {
-                        throw new Error('Erreur de réseau ou de serveur.');
-                    }
+                    if (!response.ok) throw new Error('Erreur de réseau');
+                    
                     const subcategories = await response.json();
-
+                    
                     subcategorySelect.innerHTML = '<option value="">Sélectionner une sous-catégorie</option>';
                     subcategories.forEach(sub => {
                         const option = document.createElement('option');
@@ -193,23 +317,20 @@
                         subcategorySelect.appendChild(option);
                     });
                     subcategorySelect.disabled = false;
-
+                    
                 } catch (error) {
-                    console.error('Erreur lors du chargement des sous-catégories:', error);
+                    console.error('Erreur:', error);
                     subcategorySelect.innerHTML = '<option value="">Erreur de chargement</option>';
                 }
-            };
-
-            // Écouteur d'événement pour le changement de catégorie
+            }
+            
             categorySelect.addEventListener('change', (event) => {
-                const selectedCategoryId = event.target.value;
-                loadSubcategories(selectedCategoryId);
+                loadSubcategories(event.target.value);
             });
             
-            // Charger les sous-catégories initiales si une catégorie est déjà sélectionnée
+            // Chargement initial
             loadSubcategories(categorySelect.value);
         });
     </script>
 </body>
-
 </html>

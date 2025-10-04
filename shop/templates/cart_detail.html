@@ -78,11 +78,27 @@
         .item-details h3 {
             font-size: 1.2rem;
             margin: 0 0 0.5rem;
+            color: var(--color-primary);
         }
 
         .item-details p {
             margin: 0;
             color: var(--color-text-secondary);
+        }
+        
+        .variations-list {
+            margin: 0.5rem 0;
+        }
+        
+        .variation-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .item-price {
@@ -171,6 +187,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            margin-top: 0.5rem;
         }
         
         .quantity-input {
@@ -188,6 +205,7 @@
             border: none;
             border-radius: 0.25rem;
             cursor: pointer;
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -196,9 +214,9 @@
     <header class="bg-white shadow-md py-4">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-color-primary">
-                <a href极="{% url 'index' %}" class="flex items-center space-x-2">
+                <a href="{% url 'index' %}" class="flex items-center space-x-2">
                     <svg class="h-8 w-8 text-color-accent" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.极72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15极.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor"/>
+                        <path d="M3 6.94C3 5.42 4.09 4.19 5.58 4.04L19.58 2.04C20.47 1.91 21.32 2.51 21.45 3.4L21.99 7.03C22.28 8.92 20.89 10.58 19 10.92L6.34 13.06C5.06 13.28 4.01 12.27 4.01 10.98V6.94H3ZM20.94 14.58L10.94 16.27C9.37 16.54 8.01 18 8.01 19.66V20.73C8.01 21.43 8.57 22.02 9.28 22.02H18.72C19.43 22.02 19.99 21.43 19.99 20.73V15.77C19.99 15.19 20.48 14.71 21.05 14.82C21.6 14.93 22 15.42 22 15.98V20.73C22 22.58 20.57 24 18.72 24H9.28C7.43 24 6 22.58 6 20.73V19.66C6 17.15 7.82 15.02 10.29 14.61L20.29 12.92C21.57 12.7 22.62 13.71 22.62 15V19.14L21.45 14.58H20.94Z" fill="currentColor"/>
                     </svg>
                     <span>DEANNA</span>
                 </a>
@@ -220,7 +238,7 @@
                 {% endif %}
                 <a href="{% url 'cart_detail' %}" class="text-color-primary font-semibold relative">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.76.707 1.76H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 极0 2 2 0 014 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.76.707 1.76H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                     {% if user.is_authenticated and cart.items.count > 0 %}
                     <span class="absolute -top-2 -right-2 bg-color-accent text-color-primary text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -249,6 +267,21 @@
                             <p>Prix unitaire : {{ item.product.price }} CFA</p>
                             <p>Boutique : {{ item.product.shop.merchant.first_name }} {{ item.product.shop.merchant.last_name }}</p>
                             
+                            <!-- NOUVEAU : Affichage des variations -->
+                            {% if item.selected_variations.exists %}
+                            <div class="variations-list">
+                                <strong>Variations :</strong>
+                                {% for variation in item.selected_variations.all %}
+                                <span class="variation-tag">
+                                    {{ variation.type }}: {{ variation.value }}
+                                    {% if variation.price_modifier != 0 %}
+                                    ({% if variation.price_modifier > 0 %}+{% endif %}{{ variation.price_modifier }} CFA)
+                                    {% endif %}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
                             <form action="{% url 'update_cart_item' item.id %}" method="post" class="quantity-form">
                                 {% csrf_token %}
                                 <label for="quantity-{{ item.id }}">Quantité :</label>
@@ -260,7 +293,7 @@
                             <span class="item-price">{{ item.get_total }} CFA</span>
                             <form action="{% url 'remove_from_cart' item.id %}" method="post" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="remove-btn">X</button>
+                                <button type="submit" class="remove-btn" onclick="return confirm('Supprimer cet article du panier ?')">X</button>
                             </form>
                         </div>
                     </li>
@@ -288,7 +321,7 @@
                 <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Contact</a>
                 <a href="#" class="text-color-text-secondary hover:text-color-bg-light transition-colors">Politique de confidentialité</a>
             </div>
-            <p class="text-gray极-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
+            <p class="text-gray-500 text-sm">&copy; 2024 DEANNA E-commerce. Tous droits réservés.</p>
         </div>
     </footer>
 </body>

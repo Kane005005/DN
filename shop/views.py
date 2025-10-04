@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Sum, F, Avg, Q
-from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings, ShopSettings, Client
+from .models import Merchant, Shop, Product, ProductImage, ProductVideo, Cart, CartItem, Order, OrderItem, Category, SubCategory, Review, NegotiationSettings, ShopSettings, Client, ProductVariation, VariationOption,VariationGroup
 from django.core.files.storage import FileSystemStorage
 from decimal import Decimal, InvalidOperation
 import json
@@ -213,13 +213,15 @@ def dashboard(request):
         }
         return render(request, 'dashboard.html', context)
     
+# Fichier : shop/views.py - MODIFICATION de manage_products
+
 @login_required(login_url='login_view')
 @merchant_required
 def manage_products(request):
     try:
         merchant = request.user.merchant
         shop = merchant.shop
-        products = Product.objects.filter(shop=shop)
+        products = Product.objects.filter(shop=shop).prefetch_related('variations')
         context = {
             'products': products,
             'is_merchant': True,
@@ -230,6 +232,9 @@ def manage_products(request):
         return redirect('dashboard')
     
     return render(request, 'manage_products.html', context)
+
+@login_required(login_url='login_view')
+# Fichier : shop/views.py - MODIFICATION de add_product
 
 @login_required(login_url='login_view')
 @merchant_required
@@ -250,6 +255,7 @@ def add_product(request):
         category_id = request.POST.get('category')
         subcategory_id = request.POST.get('subcategory')
         
+        # Création du produit
         product = Product.objects.create(
             shop=shop,
             name=product_name,
@@ -260,15 +266,42 @@ def add_product(request):
             subcategory_id=subcategory_id
         )
 
+        # Gestion des images
         images = request.FILES.getlist('images')
-        videos = request.FILES.getlist('videos')
-
         for image_file in images:
             ProductImage.objects.create(product=product, image=image_file)
 
+        # Gestion des vidéos
+        videos = request.FILES.getlist('videos')
         for video_file in videos:
             ProductVideo.objects.create(product=product, video=video_file)
 
+        # NOUVEAU : Gestion des variations
+        variation_types = request.POST.getlist('variation_type[]')
+        variation_values = request.POST.getlist('variation_value[]')
+        variation_prices = request.POST.getlist('variation_price[]')
+        variation_stocks = request.POST.getlist('variation_stock[]')
+        variation_skus = request.POST.getlist('variation_sku[]')
+        variation_images = request.FILES.getlist('variation_image[]')
+
+        # Créer les variations
+        for i in range(len(variation_types)):
+            if variation_types[i] and variation_values[i]:  # S'assurer que les champs requis sont remplis
+                variation = ProductVariation.objects.create(
+                    product=product,
+                    type=variation_types[i],
+                    value=variation_values[i],
+                    price_modifier=variation_prices[i] if i < len(variation_prices) else 0,
+                    stock_variation=variation_stocks[i] if i < len(variation_stocks) else 0,
+                    sku=variation_skus[i] if i < len(variation_skus) else ''
+                )
+                
+                # Gérer l'image de variation si fournie
+                if i < len(variation_images) and variation_images[i]:
+                    variation.image = variation_images[i]
+                    variation.save()
+
+        messages.success(request, 'Produit ajouté avec succès avec ses variations!')
         return redirect('manage_products')
 
     context = {
@@ -283,16 +316,23 @@ def add_product(request):
 @merchant_required
 def edit_product(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    
+    # S'assurer que l'utilisateur est le propriétaire de la boutique
+    if request.user.merchant.shop != product.shop:
+        return redirect('manage_products')
+    
+    categories = Category.objects.all()
+    
+    # NOUVEAU : Récupérer les variations existantes
+    existing_variations = product.variations.all()
+
     if request.method == 'POST':
         try:
-            # S'assure que l'utilisateur est le propriétaire de la boutique
-            if request.user.merchant.shop != product.shop:
-                return redirect('manage_products')
-            
+            # Mettre à jour les informations de base du produit
             product.name = request.POST.get('name')
             product.price = Decimal(request.POST.get('price'))
             product.description = request.POST.get('description')
-            product.stock = request.POST.get('stock')
+            product.stock = int(request.POST.get('stock'))
             
             # Mise à jour des catégories
             category_id = request.POST.get('category')
@@ -302,12 +342,101 @@ def edit_product(request, product_id):
             
             product.save()
 
-            # Gère les images et vidéos existantes et nouvelles
-            # ... (la logique de gestion des images/vidéos reste la même)
+            # Gestion des images existantes
+            keep_images = request.POST.getlist('keep_images')
+            # Supprimer les images non conservées
+            for image in product.images.all():
+                if str(image.id) not in keep_images:
+                    image.delete()
+            
+            # Ajouter de nouvelles images
+            new_images = request.FILES.getlist('new_images')
+            for image_file in new_images:
+                ProductImage.objects.create(product=product, image=image_file)
 
+            # Gestion des vidéos existantes
+            keep_videos = request.POST.getlist('keep_videos')
+            for video in product.videos.all():
+                if str(video.id) not in keep_videos:
+                    video.delete()
+            
+            # Ajouter de nouvelles vidéos
+            new_videos = request.FILES.getlist('new_videos')
+            for video_file in new_videos:
+                ProductVideo.objects.create(product=product, video=video_file)
+
+            # NOUVEAU : Gestion des variations existantes
+            existing_variation_ids = request.POST.getlist('existing_variation_id[]')
+            existing_variation_types = request.POST.getlist('existing_variation_type[]')
+            existing_variation_values = request.POST.getlist('existing_variation_value[]')
+            existing_variation_prices = request.POST.getlist('existing_variation_price[]')
+            existing_variation_stocks = request.POST.getlist('existing_variation_stock[]')
+            existing_variation_skus = request.POST.getlist('existing_variation_sku[]')
+            existing_variation_images = request.FILES.getlist('existing_variation_image[]')
+
+            # Mettre à jour les variations existantes
+            for i, variation_id in enumerate(existing_variation_ids):
+                try:
+                    variation = ProductVariation.objects.get(id=variation_id, product=product)
+                    variation.type = existing_variation_types[i]
+                    variation.value = existing_variation_values[i]
+                    variation.price_modifier = existing_variation_prices[i] if i < len(existing_variation_prices) else 0
+                    variation.stock_variation = existing_variation_stocks[i] if i < len(existing_variation_stocks) else 0
+                    variation.sku = existing_variation_skus[i] if i < len(existing_variation_skus) else ''
+                    
+                    # Gérer l'image de variation
+                    if i < len(existing_variation_images) and existing_variation_images[i]:
+                        variation.image = existing_variation_images[i]
+                    
+                    variation.save()
+                except ProductVariation.DoesNotExist:
+                    continue
+
+            # NOUVEAU : Ajouter de nouvelles variations
+            new_variation_types = request.POST.getlist('new_variation_type[]')
+            new_variation_values = request.POST.getlist('new_variation_value[]')
+            new_variation_prices = request.POST.getlist('new_variation_price[]')
+            new_variation_stocks = request.POST.getlist('new_variation_stock[]')
+            new_variation_skus = request.POST.getlist('new_variation_sku[]')
+            new_variation_images = request.FILES.getlist('new_variation_image[]')
+
+            for i in range(len(new_variation_types)):
+                if new_variation_types[i] and new_variation_values[i]:
+                    variation = ProductVariation.objects.create(
+                        product=product,
+                        type=new_variation_types[i],
+                        value=new_variation_values[i],
+                        price_modifier=new_variation_prices[i] if i < len(new_variation_prices) else 0,
+                        stock_variation=new_variation_stocks[i] if i < len(new_variation_stocks) else 0,
+                        sku=new_variation_skus[i] if i < len(new_variation_skus) else ''
+                    )
+                    
+                    if i < len(new_variation_images) and new_variation_images[i]:
+                        variation.image = new_variation_images[i]
+                        variation.save()
+
+            # NOUVEAU : Supprimer les variations non présentes dans le formulaire
+            submitted_variation_ids = [int(vid) for vid in existing_variation_ids if vid]
+            for variation in existing_variations:
+                if variation.id not in submitted_variation_ids:
+                    variation.delete()
+
+            messages.success(request, 'Produit mis à jour avec succès!')
             return redirect('manage_products')
-        except (Merchant.DoesNotExist, InvalidOperation):
-            return redirect('dashboard')
+
+        except (Merchant.DoesNotExist, InvalidOperation) as e:
+            messages.error(request, f'Erreur lors de la mise à jour: {str(e)}')
+            return redirect('edit_product', product_id=product_id)
+    
+    context = {
+        'product': product,
+        'categories': categories,
+        'existing_variations': existing_variations,  # NOUVEAU
+        'is_merchant': True,
+        'is_client': is_client(request.user),
+        'user_type': get_user_type(request.user)
+    }
+    return render(request, 'edit_product.html', context)
     
     # Récupère les catégories et sous-catégories pour le formulaire
     categories = Category.objects.all()
@@ -477,6 +606,7 @@ def visit_shops(request):
     }
     return render(request, 'visit_shops.html', context)
 
+# MODIFICATION de product_detail pour inclure les variations organisées
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
@@ -487,8 +617,12 @@ def product_detail(request, product_id):
     # Récupération des produits similaires
     similar_products = product.similar_products.all()
     
-    # Récupération des variations de produits
-    variations = product.variations.all()
+    # NOUVEAU : Récupération organisée des variations actives
+    variations_by_type = {}
+    for variation in product.variations.filter(is_active=True):
+        if variation.type not in variations_by_type:
+            variations_by_type[variation.type] = []
+        variations_by_type[variation.type].append(variation)
     
     # Vérifier si la catégorie et le slug existent
     has_valid_category = product.category and product.category.slug
@@ -499,7 +633,7 @@ def product_detail(request, product_id):
         'reviews': reviews,
         'average_rating': average_rating,
         'similar_products': similar_products,
-        'variations': variations,
+        'variations_by_type': variations_by_type,  # NOUVEAU
         'is_merchant': is_merchant(request.user),
         'is_client': is_client(request.user),
         'user_type': get_user_type(request.user),
@@ -639,22 +773,71 @@ def cart_detail(request):
     }
     return render(request, 'cart_detail.html', context)
 
+
 @login_required(login_url='login_view')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart, created = Cart.objects.get_or_create(user=request.user)
     
-    # Vérifier si l'article est déjà dans le panier
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+    # NOUVEAU : Récupérer les variations sélectionnées
+    selected_variation_ids = request.POST.getlist('variations')
+    selected_variations = ProductVariation.objects.filter(id__in=selected_variation_ids)
     
-    if not created:
-        cart_item.quantity += 1
+    # NOUVEAU : Vérifier la disponibilité des variations
+    for variation in selected_variations:
+        if variation.total_stock <= 0:
+            messages.error(request, f"La variation {variation.type}: {variation.value} n'est plus en stock.")
+            return redirect('product_detail', product_id=product_id)
+    
+    # NOUVEAU : Créer une clé unique pour cet article avec ses variations
+    variation_keys = sorted([f"{v.id}" for v in selected_variations])
+    cart_key = f"{product_id}_{'_'.join(variation_keys)}"
+    
+    # NOUVEAU : Vérifier si l'article avec ces variations existe déjà
+    existing_item = None
+    for item in cart.items.all():
+        item_variation_keys = sorted([f"{v.id}" for v in item.selected_variations.all()])
+        item_key = f"{item.product.id}_{'_'.join(item_variation_keys)}"
+        if item_key == cart_key:
+            existing_item = item
+            break
+    
+    if existing_item:
+        # Incrémenter la quantité si l'article existe déjà
+        existing_item.quantity += 1
+        existing_item.save()
     else:
-        cart_item.quantity = 1
-        
-    cart_item.save()
+        # Créer un nouvel article
+        cart_item = CartItem.objects.create(cart=cart, product=product, quantity=1)
+        cart_item.selected_variations.set(selected_variations)
+        cart_item.save()
     
+    messages.success(request, "Produit ajouté au panier avec succès!")
     return redirect('cart_detail')
+
+# NOUVELLE VUE : API pour les variations
+def get_product_variations(request, product_id):
+    """API pour récupérer les variations d'un produit"""
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Organiser les variations par type
+    variations_by_type = {}
+    for variation in product.variations.filter(is_active=True):
+        if variation.type not in variations_by_type:
+            variations_by_type[variation.type] = []
+        
+        variations_by_type[variation.type].append({
+            'id': variation.id,
+            'value': variation.value,
+            'price_modifier': str(variation.price_modifier),
+            'image_url': variation.image.url if variation.image else None,
+            'stock': variation.total_stock
+        })
+    
+    return JsonResponse({
+        'variations': variations_by_type,
+        'base_price': str(product.price)
+    })
     
 @login_required(login_url='login_view')
 def remove_from_cart(request, item_id):
@@ -725,15 +908,24 @@ def process_order(request):
         
         # Déplace les articles du panier à la commande
         for item in cart.items.all():
-            OrderItem.objects.create(
+            order_item = OrderItem.objects.create(
                 product=item.product,
                 order=order,
                 quantity=item.quantity
             )
-            # Met à jour le stock du produit
+            # NOUVEAU : Copier les variations sélectionnées
+            order_item.selected_variations.set(item.selected_variations.all())
+            order_item.save()
+            
+            # Met à jour le stock du produit et des variations
             product = item.product
             product.stock -= item.quantity
             product.save()
+            
+            # NOUVEAU : Mettre à jour le stock des variations
+            for variation in item.selected_variations.all():
+                variation.stock_variation -= item.quantity
+                variation.save()
             
         # Vide le panier
         cart.items.all().delete()
