@@ -3,20 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Négociation - {{ product.name }}</title>
+    <title>Négociation IA - {{ product.name }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --color-primary: #0B1C2A;
             --color-accent: #CFAF70;
+            --color-accent-hover: #B89450;
             --color-bg-light: #FAF9F6;
+            --color-bg-white: #FFFFFF;
             --color-text: #2C2C2C;
             --color-text-secondary: #6C6C6C;
-            --color-border: #1A3B57;
-            --color-alert: #800020;
+            --color-text-light: #8B8B8B;
+            --color-border: #E8E8E8;
+            --color-border-dark: #1A3B57;
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-ai: #1A3B57;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
         }
 
         * {
@@ -27,347 +41,765 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg-light);
+            background: linear-gradient(135deg, #0B1C2A 0%, #1A3B57 100%);
             color: var(--color-text);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .negotiation-wrapper {
+            display: flex;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--color-bg-white);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Sidebar Produit */
+        .product-sidebar {
+            width: 350px;
+            background: var(--color-primary);
+            color: white;
             padding: 2rem;
-        }
-
-        .cta-btn {
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .cta-btn:hover {
-            background-color: #e0b982;
-            transform: translateY(-2px);
-        }
-
-        /* Styles spécifiques au chat */
-        .negotiation-container {
-            max-width: 900px;
-            margin: auto;
-            background-color: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
-            height: 80vh;
+            border-right: 1px solid var(--color-border-dark);
         }
 
-        .negotiation-header {
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--color-accent-hover);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: var(--color-border-dark);
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-image .placeholder {
+            color: var(--color-text-light);
+            font-size: 3rem;
+        }
+
+        .product-info h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .product-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-stock {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-text-light);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .product-stock.in-stock {
+            color: var(--color-success);
+        }
+
+        .product-stock.low-stock {
+            color: var(--color-warning);
+        }
+
+        .product-description {
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+        }
+
+        .negotiation-info {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: auto;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-success);
+        }
+
+        .status-dot.online {
+            background: var(--color-success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: var(--color-text-light);
+        }
+
+        .status-dot.away {
+            background: var(--color-warning);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Zone de Chat Principale */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--color-bg-light);
+        }
+
+        .chat-header {
+            background: var(--color-bg-white);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--color-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
         }
 
-        .negotiation-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            color: var(--color-primary);
-            margin: 0;
-        }
-
-        .product-details {
+        .chat-partner {
             display: flex;
+            align-items: center;
             gap: 1rem;
-            font-size: 0.9rem;
-            color: var(--color-text-secondary);
-            margin-top: 0.25rem;
         }
 
-        .negotiation-status .status-badge {
-            background-color: #D1FAE5;
-            color: #065F46;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+        .partner-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .partner-info h2 {
+            font-size: 1.2rem;
             font-weight: 600;
-            font-size: 0.8rem;
         }
 
-        .chat-box {
-            flex-grow: 1;
-            padding: 1.5rem;
+        .partner-status {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .ai-badge {
+            background: var(--color-ai);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .message {
             display: flex;
-            align-items: flex-start;
             gap: 1rem;
+            max-width: 70%;
         }
 
-        .message.my-message {
+        .message.user-message {
+            align-self: flex-end;
             flex-direction: row-reverse;
         }
-        
-        .message-content {
-            padding: 0.75rem 1.25rem;
-            border-radius: 1.5rem;
-            max-width: 70%;
-            position: relative;
+
+        .message.ai-message {
+            align-self: flex-start;
         }
 
-        .my-message .message-content {
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-        }
-
-        .other-message .message-content {
-            background-color: var(--color-border);
-            color: white;
-        }
-        
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .sender-name {
-            font-weight: bold;
-            font-size: 0.9rem;
-            color: inherit;
-        }
-
-        .message-timestamp {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .my-message .message-timestamp {
-             color: rgba(11, 28, 42, 0.7);
-        }
-
-        .message-text {
-            margin-top: 0.25rem;
-            word-wrap: break-word;
-        }
-        
         .message-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--color-primary);
-            color: white;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-weight: bold;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
         }
 
-        .input-area {
+        .user-message .message-avatar {
+            background: var(--color-accent);
+            color: var(--color-primary);
+        }
+
+        .ai-message .message-avatar {
+            background: var(--color-ai);
+            color: white;
+        }
+
+        .message-content {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .user-message .message-content {
+            background: var(--color-accent);
+            border-bottom-right-radius: var(--radius-sm);
+        }
+
+        .ai-message .message-content {
+            background: white;
+            border-bottom-left-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+        }
+
+        .message-header {
             display: flex;
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sender-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--color-text-light);
+        }
+
+        .message-text {
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .offer-highlight {
+            background: rgba(207, 175, 112, 0.1);
+            border: 1px solid var(--color-accent);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .offer-price {
+            font-weight: 700;
+            color: var(--color-accent);
+            font-size: 1.1rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
             gap: 0.5rem;
+            color: var(--color-text-light);
+            font-style: italic;
+            padding: 1rem;
         }
 
-        .input-area textarea {
-            flex-grow: 1;
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--color-text-light);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .chat-input-area {
+            background: var(--color-bg-white);
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .chat-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            min-height: 50px;
+            max-height: 120px;
             padding: 0.75rem 1rem;
-            border-radius: 1.5rem;
-            border: 1px solid #e2e8f0;
-            font-family: 'Inter', sans-serif;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-xl);
             resize: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        .input-area button {
-            background-color: var(--color-primary);
+        .message-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.1);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--color-accent);
+            color: var(--color-primary);
+            border-color: var(--color-accent);
+        }
+
+        .send-btn {
+            background: var(--color-primary);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            font-size: 1.5rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.2s;
+            flex-shrink: 0;
         }
 
-        .input-area button:hover {
-            background-color: #1A3B57;
-        }
-        
-        .typing-indicator {
-            padding: 0.5rem 1.25rem;
-            color: var(--color-text-secondary);
-            font-style: italic;
+        .send-btn:hover {
+            background: var(--color-ai);
+            transform: translateY(-2px);
         }
 
-        .offer-message {
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-        }
-        
-        .ai-message {
-            background-color: var(--color-border) !important;
-            color: white !important;
-        }
-        
-        .ai-message .sender-name {
-            color: white;
+        .send-btn:active {
+            transform: translateY(0);
         }
 
-        .ai-message .message-timestamp {
-            color: rgba(255, 255, 255, 0.7);
+        /* Responsive */
+        @media (max-width: 768px) {
+            .negotiation-wrapper {
+                flex-direction: column;
+            }
+            
+            .product-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--color-border-dark);
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .chat-header, .chat-input-area {
+                padding: 1rem;
+            }
+            
+            .chat-messages {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="negotiation-wrapper">
+        <!-- Sidebar Produit -->
+        <div class="product-sidebar">
+            <a href="{% url 'product_detail' product.id %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Retour au produit
+            </a>
 
-<div class="negotiation-container">
-    <!-- En-tête avec informations du produit -->
-    <div class="negotiation-header">
-        <a href="javascript:history.back()" class="cta-btn">
-            Retour
-        </a>
-        <div class="product-info">
-            <h1>Négociation : {{ product.name }}</h1>
-            <div class="product-details">
-                <span class="price">Prix: {{ product.price }} CFA</span>
-                <span class="stock">Stock: {{ product.stock }}</span>
+            <div class="product-image">
+                {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
             </div>
-        </div>
-        <div class="negotiation-status">
-            <span class="status-badge">En cours</span>
-        </div>
-    </div>
 
-    <!-- Zone de chat améliorée -->
-    <div id="chat-box" class="chat-box">
-        {% for message in messages %}
-        <div class="message {% if message.sender == request.user %}my-message{% else %}other-message{% endif %} {% if message.is_ai_response %}ai-message{% endif %}">
-            <div class="message-avatar">
-                {{ message.sender.username|first|upper }}
-            </div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="sender-name">{% if message.is_ai_response %}DEANNA{% else %}{{ message.sender.username }}{% endif %}</span>
-                    <span class="message-timestamp">{{ message.timestamp|date:"H:i" }}</span>
+            <div class="product-info">
+                <h1>{{ product.name }}</h1>
+                <div class="product-price">{{ product.price }} CFA</div>
+                <div class="product-stock {% if product.stock > 10 %}in-stock{% else %}low-stock{% endif %}">
+                    <i class="fas fa-{% if product.stock > 10 %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                    {% if product.stock > 10 %}
+                        En stock ({{ product.stock }} disponibles)
+                    {% else %}
+                        Stock limité ({{ product.stock }} restants)
+                    {% endif %}
                 </div>
-                <div class="message-text">
-                    {{ message.text|linebreaksbr }}
+                
+                {% if product.description %}
+                <div class="product-description">
+                    {{ product.description|truncatewords:30 }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="negotiation-info">
+                <div class="status-indicator">
+                    <div class="status-dot {% if ai_status.merchant_status.status == 'en_ligne_actif' %}online{% elif ai_status.merchant_status.status == 'en_ligne_inactif' %}away{% else %}offline{% endif %}"></div>
+                    <div>
+                        <div style="font-weight: 600;">
+                            {% if ai_status.merchant_status.status == 'en_ligne_actif' %}
+                                {{ conversation.merchant.first_name }} est en ligne
+                            {% elif ai_status.merchant_status.status == 'en_ligne_inactif' %}
+                                {{ conversation.merchant.first_name }} est absent
+                            {% else %}
+                                {{ conversation.merchant.first_name }} est hors ligne
+                            {% endif %}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #CFAF70;">
+                            {% if ai_status.ai_enabled and ai_status.can_use_ai %}
+                                <i class="fas fa-robot"></i> IA de négociation active
+                            {% else %}
+                                <i class="fas fa-user"></i> Réponses manuelles
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Zone de Chat Principale -->
+        <div class="chat-main">
+            <div class="chat-header">
+                <div class="chat-partner">
+                    <div class="partner-avatar">
+                        {{ conversation.merchant.first_name|first|upper }}{{ conversation.merchant.last_name|first|upper }}
+                    </div>
+                    <div class="partner-info">
+                        <h2>{{ conversation.merchant.first_name }} {{ conversation.merchant.last_name }}</h2>
+                        <div class="partner-status">
+                            Boutique {{ conversation.merchant.shop.description }}
+                        </div>
+                    </div>
+                </div>
+                {% if ai_status.ai_enabled %}
+                <div class="ai-badge">
+                    <i class="fas fa-robot"></i> IA Assistée
+                </div>
+                {% endif %}
+            </div>
+
+            <div id="chat-messages" class="chat-messages">
+                {% for message in messages %}
+                <div class="message {% if message.sender == request.user %}user-message{% else %}ai-message{% endif %} {% if message.is_ai_response %}ai-message{% endif %}">
+                    <div class="message-avatar">
+                        {% if message.sender == request.user %}
+                            {{ request.user.username|first|upper }}
+                        {% else %}
+                            {% if message.is_ai_response %}
+                                <i class="fas fa-robot"></i>
+                            {% else %}
+                                {{ conversation.merchant.first_name|first|upper }}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="sender-name">
+                                {% if message.sender == request.user %}
+                                    Vous
+                                {% else %}
+                                    {% if message.is_ai_response %}
+                                        DEANNA IA
+                                    {% else %}
+                                        {{ conversation.merchant.first_name }}
+                                    {% endif %}
+                                {% endif %}
+                            </span>
+                            <span class="message-time">{{ message.timestamp|date:"H:i" }}</span>
+                        </div>
+                        <div class="message-text">
+                            {{ message.text|linebreaksbr }}
+                        </div>
+                        {% if "CFA" in message.text and message.sender == request.user %}
+                        <div class="offer-highlight">
+                            <i class="fas fa-tag"></i> 
+                            <span class="offer-price">
+                                Offre envoyée : {{ message.text|slice:":20" }}...
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Indicateur de frappe (caché par défaut) -->
+                <div id="typing-indicator" class="typing-indicator" style="display: none;">
+                    <div class="partner-avatar" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        DEANNA IA rédige...
+                    </div>
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <form id="chat-form" method="post" action="{% url 'conversation_detail' conversation_id=conversation.id %}">
+                    {% csrf_token %}
+                    <div class="chat-form">
+                        <div class="input-wrapper">
+                            <textarea 
+                                id="message-input" 
+                                name="message" 
+                                class="message-input" 
+                                placeholder="Tapez votre message... Vous pouvez négocier le prix, poser des questions techniques ou demander des détails sur le produit." 
+                                rows="1"
+                                required
+                            ></textarea>
+                            
+                            <div class="quick-actions">
+                                <button type="button" class="quick-action-btn" data-text="Quel est votre meilleur prix pour ce produit ?">
+                                    <i class="fas fa-tag"></i> Meilleur prix
+                                </button>
+                                <button type="button" class="quick-action-btn" data-text="Pouvez-vous me donner plus de détails techniques ?">
+                                    <i class="fas fa-cogs"></i> Détails techniques
+                                </button>
+                                <button type="button" class="quick-action-btn" data-text="Quelles sont les conditions de livraison ?">
+                                    <i class="fas fa-truck"></i> Livraison
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="send-btn" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- Zone de saisie du message -->
-    <div class="input-area">
-        <form id="chat-form" method="post" action="{% url 'negotiation_chat' conversation_id=conversation.id %}">
-            {% csrf_token %}
-            <textarea id="message-input" name="message" placeholder="Tapez votre message ici..." rows="1" required></textarea>
-            <button type="submit" id="send-btn"><i class="fas fa-paper-plane"></i></button>
-        </form>
-    </div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const chatForm = document.getElementById('chat-form');
+            const messageInput = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+            const typingIndicator = document.getElementById('typing-indicator');
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatBox = document.getElementById('chat-box');
-        const chatForm = document.getElementById('chat-form');
-        const messageInput = document.getElementById('message-input');
-        
-        // Fonction pour ajouter un message à la boîte de chat
-        function addMessageToChat(sender, text, isMine, isAI) {
-            const messageElement = document.createElement('div');
-            messageElement.className = 'message ' + (isMine ? 'my-message' : 'other-message') + (isAI ? ' ai-message' : '');
-
-            const avatarElement = document.createElement('div');
-            avatarElement.className = 'message-avatar';
-            avatarElement.textContent = sender.charAt(0).toUpperCase();
-
-            const contentElement = document.createElement('div');
-            contentElement.className = 'message-content';
-
-            const headerElement = document.createElement('div');
-            headerElement.className = 'message-header';
-
-            const senderNameElement = document.createElement('span');
-            senderNameElement.className = 'sender-name';
-            senderNameElement.textContent = isAI ? 'DEANNA' : sender;
-            
-            const timestampElement = document.createElement('span');
-            timestampElement.className = 'message-timestamp';
-            timestampElement.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            const textElement = document.createElement('div');
-            textElement.className = 'message-text';
-            textElement.textContent = text;
-            
-            headerElement.appendChild(senderNameElement);
-            headerElement.appendChild(timestampElement);
-            contentElement.appendChild(headerElement);
-            contentElement.appendChild(textElement);
-            messageElement.appendChild(avatarElement);
-            messageElement.appendChild(contentElement);
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // Gestion de la soumission du formulaire
-        chatForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const messageText = messageInput.value.trim();
-            if (messageText === '') return;
-
-            // Ajoute le message de l'utilisateur de manière "optimiste"
-            addMessageToChat('{{ request.user.username }}', messageText, true, false);
-
-            // Envoie le message au serveur via Fetch API
-            const formData = new FormData(chatForm);
-            fetch(chatForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    messageInput.value = ''; // Efface le champ de saisie
-                    
-                    // Si l'IA répond, afficher sa réponse
-                    if (data.ai_response) {
-                        setTimeout(() => {
-                            addMessageToChat('DEANNA', data.ai_response, false, true);
-                        }, 1000);
-                    }
-                } else {
-                    console.error(data.error || 'Erreur inconnue');
-                    // Gérer l'erreur côté client, par exemple en affichant un message
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                // Gérer l'erreur de connexion
-            });
-        });
-        
-        // Focus automatique sur le champ de message
-        messageInput.focus();
-        
-        // Permet d'envoyer le message avec la touche Entrée
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                chatForm.dispatchEvent(new Event('submit'));
+            // Auto-scroll vers le bas
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
+
+            // Ajustement automatique de la hauteur du textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Actions rapides
+            document.querySelectorAll('.quick-action-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    messageInput.value = this.getAttribute('data-text');
+                    messageInput.focus();
+                    messageInput.dispatchEvent(new Event('input'));
+                });
+            });
+
+            // Soumission du formulaire
+            chatForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const messageText = messageInput.value.trim();
+                if (!messageText) return;
+
+                // Désactiver le bouton d'envoi
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                try {
+                    const formData = new FormData(this);
+                    
+                    // Ajout optimiste du message utilisateur
+                    addMessageToChat('Vous', messageText, true, false);
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+
+                    const response = await fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Recharger la page pour voir la réponse de l'IA
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 500);
+                    } else {
+                        throw new Error('Erreur lors de l\'envoi du message');
+                    }
+
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    // Afficher un message d'erreur
+                    alert('Erreur lors de l\'envoi du message. Veuillez réessayer.');
+                } finally {
+                    // Réactiver le bouton
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                }
+            });
+
+            // Fonction pour ajouter un message au chat
+            function addMessageToChat(sender, text, isUser = false, isAI = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'message-avatar';
+                
+                if (isUser) {
+                    avatarDiv.textContent = '{{ request.user.username|first|upper }}';
+                } else {
+                    avatarDiv.innerHTML = isAI ? '<i class="fas fa-robot"></i>' : '{{ conversation.merchant.first_name|first|upper }}';
+                }
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'message-header';
+
+                const senderSpan = document.createElement('span');
+                senderSpan.className = 'sender-name';
+                senderSpan.textContent = isUser ? 'Vous' : (isAI ? 'DEANNA IA' : '{{ conversation.merchant.first_name }}');
+
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'message-time';
+                timeSpan.textContent = new Date().toLocaleTimeString('fr-FR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'message-text';
+                textDiv.textContent = text;
+
+                headerDiv.appendChild(senderSpan);
+                headerDiv.appendChild(timeSpan);
+                contentDiv.appendChild(headerDiv);
+                contentDiv.appendChild(textDiv);
+
+                // Ajouter le highlight pour les offres
+                if (isUser && text.includes('CFA')) {
+                    const offerDiv = document.createElement('div');
+                    offerDiv.className = 'offer-highlight';
+                    offerDiv.innerHTML = '<i class="fas fa-tag"></i> <span class="offer-price">Offre envoyée</span>';
+                    contentDiv.appendChild(offerDiv);
+                }
+
+                messageDiv.appendChild(avatarDiv);
+                messageDiv.appendChild(contentDiv);
+                chatMessages.appendChild(messageDiv);
+
+                scrollToBottom();
+            }
+
+            // Touche Entrée pour envoyer (sans Shift)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // Focus initial
+            messageInput.focus();
+            scrollToBottom();
         });
-    });
-</script>
+    </script>
 </body>
 </html>

@@ -363,3 +363,46 @@ class HeroSlide(models.Model):
         elif self.external_url:
             return self.external_url
         return '#'
+    
+
+## Dans models.py, ajoutez cette classe
+# models.py - Ajoutez cette classe
+class MerchantActivity(models.Model):
+    merchant = models.OneToOneField(Merchant, on_delete=models.CASCADE, related_name='activity')
+    last_seen = models.DateTimeField(auto_now=True)
+    last_login = models.DateTimeField(null=True, blank=True)
+    is_online = models.BooleanField(default=False)
+    is_active_in_chat = models.BooleanField(default=False)  # Spécifique aux conversations
+    current_session_key = models.CharField(max_length=40, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Activité du commerçant"
+        verbose_name_plural = "Activités des commerçants"
+    
+    def __str__(self):
+        status = "En ligne" if self.is_online else "Hors ligne"
+        return f"{self.merchant} - {status}"
+    
+    @property
+    def minutes_since_last_seen(self):
+        from django.utils import timezone
+        if self.last_seen:
+            return (timezone.now() - self.last_seen).total_seconds() / 60
+        return 999  # Très grand nombre si jamais vu
+    
+    @classmethod
+    def update_activity(cls, merchant, session_key=None):
+        """Met à jour l'activité d'un commerçant"""
+        activity, created = cls.objects.get_or_create(merchant=merchant)
+        activity.last_seen = timezone.now()
+        activity.is_online = True
+        
+        if session_key:
+            activity.current_session_key = session_key
+            
+        # Si c'est une nouvelle session, on met à jour last_login
+        if created or not activity.is_online:
+            activity.last_login = timezone.now()
+            
+        activity.save()
+        return activity

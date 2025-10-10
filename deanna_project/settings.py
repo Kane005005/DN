@@ -56,7 +56,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shop',
+    'background_task',
 ]
+
+
+# Configuration pour les tâches en arrière-plan
+BACKGROUND_TASK_RUN_ASYNC = True
+BACKGROUND_TASK_ASYNC_THREADS = 2
+MAX_ATTEMPTS = 3
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
