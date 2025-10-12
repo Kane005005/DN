@@ -16,17 +16,23 @@ from .models import (
 # Configuration du logger
 logger = logging.getLogger(__name__)
 
+# services.py - CORRECTION de la fonction should_use_ai
+
 def should_use_ai(conversation):
     """
     Détermine si l'IA doit répondre en fonction de l'activité réelle du commerçant
     """
     try:
         # Vérifie si la négociation IA est activée
-        negotiation_settings = NegotiationSettings.objects.get(shop=conversation.merchant.shop)
-        if not negotiation_settings.is_active:
-            logger.debug(f"Négociation IA désactivée pour {conversation.merchant}")
+        try:
+            negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
+            if not negotiation_settings.is_active:
+                logger.debug(f"Négociation IA désactivée pour {conversation.merchant}")
+                return False
+        except NegotiationSettings.DoesNotExist:
+            logger.debug(f"Paramètres de négociation non trouvés pour {conversation.merchant.shop}")
             return False
-        
+
         # Vérifie l'activité du commerçant
         try:
             activity = MerchantActivity.objects.get(merchant=conversation.merchant)
@@ -34,17 +40,17 @@ def should_use_ai(conversation):
             # L'IA n'intervient PAS si :
             # 1. Le commerçant est en ligne ET actif récemment (moins de 2 minutes)
             if activity.is_online and activity.minutes_since_last_seen < 2:
-                logger.debug(f"Commerçant {conversation.merchant} en ligne et actif - IA ne intervient pas")
+                logger.debug(f"Commerçant {conversation.merchant} en ligne et actif - IA n'intervient pas")
                 return False
             
             # 2. Le commerçant a été actif dans le chat récemment (moins de 10 minutes)
-            if activity.is_active_in_chat:
-                logger.debug(f"Commerçant {conversation.merchant} actif dans le chat - IA ne intervient pas")
-                return False
-            
-            # 3. Le commerçant s'est connecté récemment (moins de 5 minutes)
-            if activity.minutes_since_last_seen < 5:
-                logger.debug(f"Commerçant {conversation.merchant} connecté récemment - IA ne intervient pas")
+            recent_messages = Message.objects.filter(
+                conversation__merchant=conversation.merchant,
+                sender=conversation.merchant.user,
+                timestamp__gte=timezone.now() - timedelta(minutes=10)
+            )
+            if recent_messages.exists():
+                logger.debug(f"Commerçant {conversation.merchant} actif dans le chat - IA n'intervient pas")
                 return False
                 
         except MerchantActivity.DoesNotExist:
@@ -56,8 +62,8 @@ def should_use_ai(conversation):
         logger.info(f"IA autorisée à répondre pour la conversation {conversation.id}")
         return True
         
-    except NegotiationSettings.DoesNotExist:
-        logger.debug(f"Paramètres de négociation non trouvés pour {conversation.merchant.shop}")
+    except Exception as e:
+        logger.error(f"Erreur dans should_use_ai: {e}")
         return False
 
 def extract_price_from_message(message):

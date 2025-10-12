@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Charge les variables d'environnement
@@ -21,19 +21,22 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'clé-par-défaut-pour-développement')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-votre-clé-secrète-par-défaut-pour-développement')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = True
 
-# Permet à Django de savoir quels domaines sont autorisés à servir l'application
-# Ajoute ton domaine PythonAnywhere
 ALLOWED_HOSTS = [
-    'deana.pythonanywhere.com',  # Ton nom d'utilisateur PythonAnywhere
+    'deana.pythonanywhere.com',
     'www.deana.pythonanywhere.com',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    '0.0.0.0',
+    '8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
+    '8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev',
+    '8000-firebase-dn2-1756640636083.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
 ]
+
 # Configure les domaines de confiance pour la sécurité CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://deana.pythonanywhere.com',
@@ -43,7 +46,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,21 +54,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shop',
-    'django_apscheduler',  # Ajoute cette ligne
+    'django_apscheduler',
 ]
-
-# Configuration APScheduler
-APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
-APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Secondes
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'shop.middleware.MerchantActivityMiddleware',
 ]
 
 ROOT_URLCONF = 'deanna_project.urls'
@@ -78,9 +78,11 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -114,25 +116,139 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'fr-fr'
-TIME_ZONE = 'Africa/Bamako' 
+TIME_ZONE = 'Africa/Bamako'
 USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'shop/static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Fichiers statiques pour le déploiement
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Configuration pour les fichiers téléchargés par les utilisateurs (images, vidéos, etc.)
+# Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Récupère la clé d'API
+# Configuration APScheduler
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Secondes
+
+# Configuration WhiteNoise pour les fichiers statiques
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Configuration pour les sessions
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
+
+# Configuration de sécurité pour développement
+if DEBUG:
+    # En développement, désactiver certaines sécurités pour faciliter le développement
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    # En production, activer les sécurités
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Configuration des logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'shop': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
+
+# Configuration OpenRouter
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+
+# Configuration email (pour développement)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Configuration des messages
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
+
+# Configuration de la taille maximale de téléchargement
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
+
+# Configuration pour les tests
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# Configuration CORS pour le développement
+CORS_ALLOW_ALL_ORIGINS = DEBUG
+
+# Configuration du cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Configuration pour les fichiers de langue
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+# Configuration pour les fixtures
+FIXTURE_DIRS = [
+    BASE_DIR / 'fixtures',
+]
+
+print("✅ Configuration Django chargée avec succès!")
+print(f"🔑 Clé API OpenRouter: {'✅ Présente' if OPENROUTER_API_KEY else '❌ Absente'}")
+print(f"🐛 Debug: {DEBUG}")
+print(f"🌐 Allowed Hosts: {ALLOWED_HOSTS}")

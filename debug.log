@@ -1,0 +1,257 @@
+INFO 2025-10-12 16:41:44,650 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:44,651 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:44,651 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:41:44,653 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:41:44,653 base Scheduler started
+INFO 2025-10-12 16:41:44,656 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:41:44,657 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:41:44,658 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:41:44,658 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:41:44,716 autoreload Watching for file changes with StatReloader
+INFO 2025-10-12 16:41:50,112 base Scheduler has been shut down
+INFO 2025-10-12 16:41:53,537 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:53,538 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:53,539 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:41:53,539 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:41:53,540 base Scheduler started
+INFO 2025-10-12 16:41:53,541 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:41:53,542 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:41:53,542 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:41:53,542 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:41:54,486 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:54,487 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:41:54,488 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:41:54,488 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:41:54,488 base Scheduler started
+INFO 2025-10-12 16:41:54,490 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:41:54,491 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:41:54,491 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:41:54,491 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:41:54,527 autoreload Watching for file changes with StatReloader
+INFO 2025-10-12 16:42:23,538 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:42:53 GMT)" (scheduled at 2025-10-12 16:42:23.537418+00:00)
+INFO 2025-10-12 16:42:23,562 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:42:23,564 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:42:53 GMT)" executed successfully
+INFO 2025-10-12 16:42:24,487 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:42:24 GMT)" (scheduled at 2025-10-12 16:42:24.486099+00:00)
+INFO 2025-10-12 16:42:24,503 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:42:24,504 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:42:54 GMT)" executed successfully
+INFO 2025-10-12 16:42:53,538 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:43:23 GMT)" (scheduled at 2025-10-12 16:42:53.537418+00:00)
+INFO 2025-10-12 16:42:53,545 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:42:53 GMT)" (scheduled at 2025-10-12 16:42:53.538079+00:00)
+INFO 2025-10-12 16:42:53,561 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:42:53,564 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:43:23 GMT)" executed successfully
+INFO 2025-10-12 16:42:53,567 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:42:53,575 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:43:53 GMT)" executed successfully
+INFO 2025-10-12 16:42:54,487 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:43:24 GMT)" (scheduled at 2025-10-12 16:42:54.486099+00:00)
+INFO 2025-10-12 16:42:54,494 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:42:54,495 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:43:24 GMT)" executed successfully
+INFO 2025-10-12 16:42:54,500 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:43:54 GMT)" (scheduled at 2025-10-12 16:42:54.486765+00:00)
+INFO 2025-10-12 16:42:54,528 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:42:54,529 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:43:54 GMT)" executed successfully
+INFO 2025-10-12 16:43:15,993 base Scheduler has been shut down
+INFO 2025-10-12 16:43:16,248 base Scheduler has been shut down
+INFO 2025-10-12 16:43:52,545 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:43:52,588 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:43:52,616 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:43:52,633 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:43:52,635 base Scheduler started
+INFO 2025-10-12 16:43:52,681 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:43:52,682 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:43:52,682 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:43:52,683 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:43:55,950 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:43:55,953 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:43:55,960 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:43:55,968 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:43:55,969 base Scheduler started
+INFO 2025-10-12 16:43:55,971 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:43:55,972 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:43:55,972 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:43:55,973 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:43:56,161 autoreload Watching for file changes with StatReloader
+INFO 2025-10-12 16:44:06,258 basehttp "GET / HTTP/1.1" 200 21491
+WARNING 2025-10-12 16:44:10,989 log Not Found: /favicon.ico
+INFO 2025-10-12 16:44:16,637 basehttp "GET /produits/ HTTP/1.1" 200 31149
+INFO 2025-10-12 16:44:17,819 basehttp "GET /media/product_images/Bake_It.jpeg HTTP/1.1" 200 166516
+INFO 2025-10-12 16:44:17,824 basehttp "GET /media/product_images/Bake_It_RxdVvDX.jpeg HTTP/1.1" 200 166516
+INFO 2025-10-12 16:44:17,833 basehttp "GET /media/product_images/Bake_It_rPIWg9w.jpeg HTTP/1.1" 200 166516
+INFO 2025-10-12 16:44:17,845 basehttp "GET /media/product_images/Bake_It_QEZ2Hs9.jpeg HTTP/1.1" 200 166516
+INFO 2025-10-12 16:44:17,875 basehttp "GET /media/product_images/Gemini_Generated_Image_ttzkhottzkhottzk.png HTTP/1.1" 200 1160094
+INFO 2025-10-12 16:44:22,545 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:44:52 GMT)" (scheduled at 2025-10-12 16:44:22.544691+00:00)
+INFO 2025-10-12 16:44:22,566 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:44:22,567 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:44:52 GMT)" executed successfully
+INFO 2025-10-12 16:44:25,954 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:44:55 GMT)" (scheduled at 2025-10-12 16:44:25.940848+00:00)
+INFO 2025-10-12 16:44:25,971 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:44:25,972 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:44:55 GMT)" executed successfully
+INFO 2025-10-12 16:44:52,545 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:22 GMT)" (scheduled at 2025-10-12 16:44:52.544691+00:00)
+INFO 2025-10-12 16:44:52,553 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:44:52,554 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:22 GMT)" executed successfully
+INFO 2025-10-12 16:44:52,589 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:45:52 GMT)" (scheduled at 2025-10-12 16:44:52.588345+00:00)
+INFO 2025-10-12 16:44:52,601 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:44:52,601 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:45:52 GMT)" executed successfully
+INFO 2025-10-12 16:44:55,942 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:25 GMT)" (scheduled at 2025-10-12 16:44:55.940848+00:00)
+INFO 2025-10-12 16:44:55,951 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:44:55,951 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:25 GMT)" executed successfully
+INFO 2025-10-12 16:44:55,954 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:45:55 GMT)" (scheduled at 2025-10-12 16:44:55.953265+00:00)
+INFO 2025-10-12 16:44:55,966 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:44:55,967 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:45:55 GMT)" executed successfully
+INFO 2025-10-12 16:45:02,607 basehttp "GET /admin/test-ai/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:45:02,722 basehttp "GET /admin/login/?next=/admin/test-ai/ HTTP/1.1" 200 4245
+INFO 2025-10-12 16:45:03,096 basehttp "GET /static/admin/css/dark_mode.css HTTP/1.1" 200 2808
+INFO 2025-10-12 16:45:03,098 basehttp "GET /static/admin/css/base.css HTTP/1.1" 200 22120
+INFO 2025-10-12 16:45:03,132 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 200 2810
+INFO 2025-10-12 16:45:03,141 basehttp "GET /static/admin/css/login.css HTTP/1.1" 200 951
+INFO 2025-10-12 16:45:03,142 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 200 16565
+INFO 2025-10-12 16:45:03,163 basehttp "GET /static/admin/js/theme.js HTTP/1.1" 200 1653
+INFO 2025-10-12 16:45:03,169 basehttp "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 200 3063
+INFO 2025-10-12 16:45:11,172 basehttp "POST /admin/login/?next=/admin/test-ai/ HTTP/1.1" 302 0
+WARNING 2025-10-12 16:45:11,236 log Not Found: /admin/test-ai/
+WARNING 2025-10-12 16:45:11,237 basehttp "GET /admin/test-ai/ HTTP/1.1" 404 10321
+INFO 2025-10-12 16:45:22,546 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:52 GMT)" (scheduled at 2025-10-12 16:45:22.544691+00:00)
+INFO 2025-10-12 16:45:22,567 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:45:22,569 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:52 GMT)" executed successfully
+INFO 2025-10-12 16:45:25,942 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:55 GMT)" (scheduled at 2025-10-12 16:45:25.940848+00:00)
+INFO 2025-10-12 16:45:25,963 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:45:25,964 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:45:55 GMT)" executed successfully
+INFO 2025-10-12 16:45:52,546 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:22 GMT)" (scheduled at 2025-10-12 16:45:52.544691+00:00)
+INFO 2025-10-12 16:45:52,563 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:45:52,565 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:22 GMT)" executed successfully
+INFO 2025-10-12 16:45:52,592 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:46:52 GMT)" (scheduled at 2025-10-12 16:45:52.588345+00:00)
+INFO 2025-10-12 16:45:52,600 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:45:52,600 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:46:52 GMT)" executed successfully
+INFO 2025-10-12 16:45:53,669 basehttp "GET /admin/login/?next=/admin/test-ai/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:45:53,814 basehttp "GET /admin/ HTTP/1.1" 200 19534
+INFO 2025-10-12 16:45:54,065 basehttp "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2025-10-12 16:45:54,096 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2025-10-12 16:45:54,113 basehttp "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2025-10-12 16:45:55,941 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:25 GMT)" (scheduled at 2025-10-12 16:45:55.940848+00:00)
+INFO 2025-10-12 16:45:55,950 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:45:55,950 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:25 GMT)" executed successfully
+INFO 2025-10-12 16:45:55,954 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:46:55 GMT)" (scheduled at 2025-10-12 16:45:55.953265+00:00)
+INFO 2025-10-12 16:45:55,967 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:45:55,968 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:46:55 GMT)" executed successfully
+INFO 2025-10-12 16:45:58,138 basehttp "GET /produit/4/ HTTP/1.1" 200 35476
+INFO 2025-10-12 16:46:05,862 basehttp "GET /produit/7/ HTTP/1.1" 200 37234
+INFO 2025-10-12 16:46:06,119 basehttp "GET /media/variation_images/Capture_d%C3%A9cran_du_2025-09-24_07-30-54.png HTTP/1.1" 200 509684
+INFO 2025-10-12 16:46:12,832 basehttp "GET /chat/7/demarrer/ HTTP/1.1" 302 0
+ERROR 2025-10-12 16:46:13,042 log Internal Server Error: /chat/3/
+Traceback (most recent call last):
+  File "/home/mkane/env/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mkane/env/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mkane/env/lib/python3.11/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mkane/Mes projet/DN/shop/views.py", line 1030, in conversation_detail_view
+    from .services import get_conversation_ai_status
+  File "/home/mkane/Mes projet/DN/shop/services.py", line 6, in <module>
+    from openai import OpenAI
+ModuleNotFoundError: No module named 'openai'
+ERROR 2025-10-12 16:46:13,054 basehttp "GET /chat/3/ HTTP/1.1" 500 86430
+INFO 2025-10-12 16:46:22,444 base Scheduler has been shut down
+INFO 2025-10-12 16:46:22,545 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:52 GMT)" (scheduled at 2025-10-12 16:46:22.544691+00:00)
+INFO 2025-10-12 16:46:22,554 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:46:22,555 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:46:52 GMT)" executed successfully
+INFO 2025-10-12 16:46:22,691 base Scheduler has been shut down
+INFO 2025-10-12 16:47:15,578 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:47:15,588 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:47:15,589 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:47:15,590 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:47:15,591 base Scheduler started
+INFO 2025-10-12 16:47:15,595 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:47:15,596 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:47:15,596 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:47:15,602 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:47:19,286 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:47:19,288 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-10-12 16:47:19,290 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-10-12 16:47:19,291 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-10-12 16:47:19,292 base Scheduler started
+INFO 2025-10-12 16:47:19,294 apps ✅ APScheduler démarré avec succès
+INFO 2025-10-12 16:47:19,295 apps 📋 Tâches planifiées :
+INFO 2025-10-12 16:47:19,296 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-10-12 16:47:19,297 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-10-12 16:47:19,354 autoreload Watching for file changes with StatReloader
+INFO 2025-10-12 16:47:44,007 basehttp "GET /deconnexion/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:47:44,295 basehttp "GET / HTTP/1.1" 200 21491
+INFO 2025-10-12 16:47:45,640 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:15 GMT)" (scheduled at 2025-10-12 16:47:45.578461+00:00)
+INFO 2025-10-12 16:47:45,792 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:47:45,811 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:15 GMT)" executed successfully
+INFO 2025-10-12 16:47:49,304 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:19 GMT)" (scheduled at 2025-10-12 16:47:49.281767+00:00)
+INFO 2025-10-12 16:47:49,340 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:47:49,341 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:19 GMT)" executed successfully
+INFO 2025-10-12 16:47:56,331 basehttp "GET /acceder-boutique/ HTTP/1.1" 200 14414
+INFO 2025-10-12 16:48:06,004 basehttp "POST /acceder-boutique/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:48:06,068 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 200 7690
+INFO 2025-10-12 16:48:08,949 basehttp "GET /produits/ HTTP/1.1" 200 30857
+INFO 2025-10-12 16:48:13,592 basehttp "GET /produit/7/ HTTP/1.1" 200 37696
+INFO 2025-10-12 16:48:15,579 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:45 GMT)" (scheduled at 2025-10-12 16:48:15.578461+00:00)
+INFO 2025-10-12 16:48:15,587 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:48:15,589 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:49:15 GMT)" (scheduled at 2025-10-12 16:48:15.588006+00:00)
+INFO 2025-10-12 16:48:15,589 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:45 GMT)" executed successfully
+INFO 2025-10-12 16:48:15,603 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:48:15,604 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:49:15 GMT)" executed successfully
+INFO 2025-10-12 16:48:17,291 basehttp "GET /chat/7/demarrer/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:48:17,359 basehttp "GET /chat/4/ HTTP/1.1" 200 24127
+INFO 2025-10-12 16:48:19,283 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:49 GMT)" (scheduled at 2025-10-12 16:48:19.281767+00:00)
+INFO 2025-10-12 16:48:19,289 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:48:19 GMT)" (scheduled at 2025-10-12 16:48:19.287970+00:00)
+INFO 2025-10-12 16:48:19,309 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:48:19,310 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:48:49 GMT)" executed successfully
+INFO 2025-10-12 16:48:19,321 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-10-12 16:48:19,322 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:49:19 GMT)" executed successfully
+INFO 2025-10-12 16:48:25,903 services IA autorisée à répondre pour la conversation 4
+INFO 2025-10-12 16:48:25,908 services IA autorisée à répondre pour la conversation 4
+INFO 2025-10-12 16:48:30,769 _client HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2025-10-12 16:48:31,158 services ✅ Clé API OpenRouter validée
+INFO 2025-10-12 16:48:31,209 services 🔗 Appel API Mistral pour conversation 4
+INFO 2025-10-12 16:48:32,611 _client HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2025-10-12 16:48:39,510 services ✅ Réponse Mistral générée: Le Chevalier Impérial est un char lourd de l'armée allemande utilisé pendant la Seconde Guerre mondiale. Il est officiellement désigné sous le nom de Panzerkampfwagen VI Ausf. B, mais il est plus connu sous son surnom "Tigre II". Il est équipé d'un canon de 88 mm KwK 43 L/71, capable de percer les blindages ennemis à longue distance, et il possède un blindage frontal de 180 mm,
+INFO 2025-10-12 16:48:39,542 views ✅ Réponse IA envoyée pour la conversation 4
+INFO 2025-10-12 16:48:39,544 basehttp "POST /chat/4/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:48:39,617 basehttp "GET /chat/4/ HTTP/1.1" 200 26389
+INFO 2025-10-12 16:48:40,302 basehttp "GET /chat/4/ HTTP/1.1" 200 26389
+INFO 2025-10-12 16:48:45,580 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:15 GMT)" (scheduled at 2025-10-12 16:48:45.578461+00:00)
+INFO 2025-10-12 16:48:45,604 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:48:45,626 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:15 GMT)" executed successfully
+INFO 2025-10-12 16:48:49,283 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:19 GMT)" (scheduled at 2025-10-12 16:48:49.281767+00:00)
+INFO 2025-10-12 16:48:49,306 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:48:49,308 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:19 GMT)" executed successfully
+INFO 2025-10-12 16:49:15,579 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:45 GMT)" (scheduled at 2025-10-12 16:49:15.578461+00:00)
+INFO 2025-10-12 16:49:15,586 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:49:15,587 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:45 GMT)" executed successfully
+INFO 2025-10-12 16:49:15,588 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:50:15 GMT)" (scheduled at 2025-10-12 16:49:15.588006+00:00)
+INFO 2025-10-12 16:49:15,600 tasks Activité chat vérifiée: 1 commerçants actifs
+INFO 2025-10-12 16:49:15,601 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:50:15 GMT)" executed successfully
+INFO 2025-10-12 16:49:19,282 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:49 GMT)" (scheduled at 2025-10-12 16:49:19.281767+00:00)
+INFO 2025-10-12 16:49:19,289 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:50:19 GMT)" (scheduled at 2025-10-12 16:49:19.287970+00:00)
+INFO 2025-10-12 16:49:19,304 tasks Activité chat vérifiée: 1 commerçants actifs
+INFO 2025-10-12 16:49:19,305 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:49:19,311 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:49:49 GMT)" executed successfully
+INFO 2025-10-12 16:49:19,309 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-10-12 16:50:19 GMT)" executed successfully
+INFO 2025-10-12 16:49:22,348 basehttp "GET /produit/2/ HTTP/1.1" 200 37540
+INFO 2025-10-12 16:49:22,618 basehttp "GET /media/variation_images/Gemini_Generated_Image_uariy6uariy6uari.png HTTP/1.1" 200 1267833
+INFO 2025-10-12 16:49:26,840 basehttp "GET /chat/2/demarrer/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:49:27,062 basehttp "GET /chat/1/ HTTP/1.1" 200 70459
+INFO 2025-10-12 16:49:32,020 services IA autorisée à répondre pour la conversation 1
+INFO 2025-10-12 16:49:32,026 services IA autorisée à répondre pour la conversation 1
+INFO 2025-10-12 16:49:34,665 _client HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2025-10-12 16:49:35,063 services ✅ Clé API OpenRouter validée
+INFO 2025-10-12 16:49:35,087 services 🔗 Appel API Mistral pour conversation 1
+INFO 2025-10-12 16:49:38,966 _client HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+INFO 2025-10-12 16:49:40,401 services ✅ Réponse Mistral générée: Bonjour ! Merci de vous intéresser au Chevalier Impérial. Concernant les conditions de livraison, voici ce que nous proposons :
+
+1. Livraison en France métropolitaine et en Europe : Nous offrons des délais de livraison de 3 à 5 jours ouvrables pour la France métropolitaine et de 5 à 7 jours ouvrables pour l'Europe.
+2. Frais de livraison : Les frais de livraison varient en fonction du poids
+INFO 2025-10-12 16:49:40,431 views ✅ Réponse IA envoyée pour la conversation 1
+INFO 2025-10-12 16:49:40,433 basehttp "POST /chat/1/ HTTP/1.1" 302 0
+INFO 2025-10-12 16:49:40,647 basehttp "GET /chat/1/ HTTP/1.1" 200 72716
+INFO 2025-10-12 16:49:41,432 basehttp "GET /chat/1/ HTTP/1.1" 200 72716
+INFO 2025-10-12 16:49:45,580 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:50:15 GMT)" (scheduled at 2025-10-12 16:49:45.578461+00:00)
+INFO 2025-10-12 16:49:45,596 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:49:45,596 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:50:15 GMT)" executed successfully
+INFO 2025-10-12 16:49:49,283 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:50:19 GMT)" (scheduled at 2025-10-12 16:49:49.281767+00:00)
+INFO 2025-10-12 16:49:49,303 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-10-12 16:49:49,304 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-10-12 16:50:19 GMT)" executed successfully
+INFO 2025-10-12 16:50:11,602 base Scheduler has been shut down
+INFO 2025-10-12 16:50:11,850 base Scheduler has been shut down

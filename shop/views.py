@@ -965,8 +965,10 @@ def start_negotiation_view(request, product_id):
         )
         return redirect('conversation_detail', conversation_id=conversation.id)
 
+# views.py - CORRECTION de la partie IA dans conversation_detail_view
+
 @login_required(login_url='login_view')
-def conversation_detail_view(request, conversation_id):  # ✅ Le nom de la fonction
+def conversation_detail_view(request, conversation_id):
     conversation = get_object_or_404(Conversation, id=conversation_id)
     
     # Vérification des permissions
@@ -978,7 +980,8 @@ def conversation_detail_view(request, conversation_id):  # ✅ Le nom de la fonc
     if request.method == 'POST':
         message_text = request.POST.get('message', '').strip()
         if not message_text:
-            return JsonResponse({'error': 'Message vide.'}, status=400)
+            messages.error(request, 'Le message ne peut pas être vide.')
+            return redirect('conversation_detail', conversation_id=conversation.id)
 
         # Création du message de l'utilisateur
         Message.objects.create(
@@ -987,32 +990,39 @@ def conversation_detail_view(request, conversation_id):  # ✅ Le nom de la fonc
             text=message_text
         )
 
-        # NOUVELLE LOGIQUE AMÉLIORÉE : Utilise le service complet
-        if not is_user_merchant:
+        # LOGIQUE IA AMÉLIORÉE
+        if not is_user_merchant:  # Si c'est le client qui envoie un message
             try:
-                from .services import get_ai_negotiation_response
+                from .services import get_ai_negotiation_response, should_use_ai
                 
-                # Appel du service amélioré qui gère tous les types de messages
-                ai_response_text = get_ai_negotiation_response(
-                    conversation.product, 
-                    message_text,
-                    conversation
-                )
-                
-                # Si l'IA a généré une réponse, on la sauvegarde
-                if ai_response_text:
-                    Message.objects.create(
-                        conversation=conversation,
-                        sender=conversation.merchant.user,
-                        text=ai_response_text,
-                        is_ai_response=True
+                # Vérifier si l'IA doit répondre
+                if should_use_ai(conversation):
+                    # Appel du service amélioré
+                    ai_response_text = get_ai_negotiation_response(
+                        conversation.product, 
+                        message_text,
+                        conversation
                     )
-                    logger.info(f"Réponse IA envoyée pour la conversation {conversation.id}")
+                    
+                    # Si l'IA a généré une réponse, on la sauvegarde
+                    if ai_response_text:
+                        Message.objects.create(
+                            conversation=conversation,
+                            sender=conversation.merchant.user,
+                            text=ai_response_text,
+                            is_ai_response=True
+                        )
+                        logger.info(f"✅ Réponse IA envoyée pour la conversation {conversation.id}")
+                    else:
+                        logger.info(f"❌ Aucune réponse IA générée pour la conversation {conversation.id}")
+                else:
+                    logger.info(f"⏸️ IA non autorisée à répondre pour la conversation {conversation.id}")
                 
             except Exception as e:
-                logger.error(f"Erreur lors de l'appel à l'IA : {e}")
+                logger.error(f"❌ Erreur lors de l'appel à l'IA : {e}")
+                # En cas d'erreur, on continue sans bloquer la conversation
 
-        return redirect('conversation_detail', conversation_id=conversation.id)  # ✅ Redirection correcte
+        return redirect('conversation_detail', conversation_id=conversation.id)
     
     messages_list = conversation.messages.all().order_by('timestamp')
     
@@ -1030,7 +1040,6 @@ def conversation_detail_view(request, conversation_id):  # ✅ Le nom de la fonc
         'ai_status': ai_status,
     }
     return render(request, 'conversation_detail.html', context)
-
 @login_required(login_url='login_view')
 def chat_api(request, conversation_id):
     if request.method == 'POST':
@@ -1494,3 +1503,52 @@ def my_status_api(request):
         'minutes_since_last_seen': activity.minutes_since_last_seen,
         'is_active_in_chat': activity.is_active_in_chat
     })
+
+
+# views.py - AJOUTEZ cette vue pour tester l'IA
+
+def test_ai_chat(request):
+    """Vue pour tester le fonctionnement de l'IA"""
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Accès réservé aux administrateurs")
+    
+    from .services import get_openai_client, get_ai_negotiation_response
+    from .models import Product, Conversation, Merchant
+    
+    # Test du client OpenAI
+    client = get_openai_client()
+    if client:
+        client_status = "✅ Client OpenAI configuré"
+    else:
+        client_status = "❌ Client OpenAI non configuré"
+    
+    # Test avec un produit et une conversation exemple
+    try:
+        product = Product.objects.first()
+        merchant = Merchant.objects.first()
+        
+        if product and merchant:
+            # Créer une conversation de test
+            conversation, created = Conversation.objects.get_or_create(
+                product=product,
+                client=request.user,
+                merchant=merchant
+            )
+            
+            # Test de l'IA
+            test_message = "Bonjour, je suis intéressé par ce produit. Quel est votre meilleur prix ?"
+            ai_response = get_ai_negotiation_response(product, test_message, conversation)
+            
+            test_result = f"✅ IA fonctionnelle: {ai_response}"
+        else:
+            test_result = "❌ Impossible de tester - pas de produit ou marchand"
+            
+    except Exception as e:
+        test_result = f"❌ Erreur lors du test: {str(e)}"
+    
+    context = {
+        'client_status': client_status,
+        'test_result': test_result,
+        'openrouter_key': bool(os.environ.get("OPENROUTER_API_KEY"))
+    }
+    return render(request, 'admin/test_ai.html', context)
