@@ -52,14 +52,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'shop',
-    'background_task',
+    'django_apscheduler',  # Ajoute cette ligne
 ]
 
-
-# Configuration pour les tâches en arrière-plan
-BACKGROUND_TASK_RUN_ASYNC = True
-BACKGROUND_TASK_ASYNC_THREADS = 2
-MAX_ATTEMPTS = 3
+# Configuration APScheduler
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Secondes
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
