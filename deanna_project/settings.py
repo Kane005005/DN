@@ -29,12 +29,11 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 # Permet à Django de savoir quels domaines sont autorisés à servir l'application
 # Ajoute ton domaine PythonAnywhere
 ALLOWED_HOSTS = [
-    'Deanna0025.pythonanywhere.com',  # Ton domaine sur PythonAnywhere
-    '8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
-    '8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev',
+    'deana.pythonanywhere.com',  # Ton nom d'utilisateur PythonAnywhere
+    'www.deana.pythonanywhere.com',
+    'localhost',
     '127.0.0.1'
 ]
-
 # Configure les domaines de confiance pour la sécurité CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://deana.pythonanywhere.com',
