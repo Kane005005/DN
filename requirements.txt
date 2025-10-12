@@ -1,0 +1,5 @@
+Django==5.2.5
+python-dotenv==1.0.0
+openai==1.30.5
+django-background-tasks==1.2.5
+Pillow==10.0.1

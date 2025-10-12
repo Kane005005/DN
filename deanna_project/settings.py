@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
 
 # Configure les domaines de confiance pour la sécurité CSRF
 CSRF_TRUSTED_ORIGINS = [
-    'https://Deanna0025.pythonanywhere.com',
+    'https://deana.pythonanywhere.com',
     'https://8000-firebase-deanna-1755850912213.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
     'https://8000-firebase-dn-1756411287077.cluster-cbeiita7rbe7iuwhvjs5zww2i4.cloudworkstations.dev',
     'https://8000-firebase-dn2-1756640636083.cluster-64pjnskmlbaxowh5lzq6i7v4ra.cloudworkstations.dev',
