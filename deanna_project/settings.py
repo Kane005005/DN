@@ -14,20 +14,17 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# Charge les variables d'environnement depuis le fichier .env
+# Charge les variables d'environnement
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=uo)hy5(*66%3m*-fy6z61^)m_js3*usn5+3#(_@o3yged-vf7'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'clé-par-défaut-pour-développement')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Permet à Django de savoir quels domaines sont autorisés à servir l'application
 # Ajoute ton domaine PythonAnywhere
