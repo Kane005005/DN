@@ -1507,48 +1507,8 @@ def my_status_api(request):
 
 # views.py - AJOUTEZ cette vue pour tester l'IA
 
-def test_ai_chat(request):
-    """Vue pour tester le fonctionnement de l'IA"""
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("Accès réservé aux administrateurs")
-    
-    from .services import get_openai_client, get_ai_negotiation_response
-    from .models import Product, Conversation, Merchant
-    
-    # Test du client OpenAI
-    client = get_openai_client()
-    if client:
-        client_status = "✅ Client OpenAI configuré"
-    else:
-        client_status = "❌ Client OpenAI non configuré"
-    
-    # Test avec un produit et une conversation exemple
-    try:
-        product = Product.objects.first()
-        merchant = Merchant.objects.first()
-        
-        if product and merchant:
-            # Créer une conversation de test
-            conversation, created = Conversation.objects.get_or_create(
-                product=product,
-                client=request.user,
-                merchant=merchant
-            )
-            
-            # Test de l'IA
-            test_message = "Bonjour, je suis intéressé par ce produit. Quel est votre meilleur prix ?"
-            ai_response = get_ai_negotiation_response(product, test_message, conversation)
-            
-            test_result = f"✅ IA fonctionnelle: {ai_response}"
-        else:
-            test_result = "❌ Impossible de tester - pas de produit ou marchand"
-            
-    except Exception as e:
-        test_result = f"❌ Erreur lors du test: {str(e)}"
-    
-    context = {
-        'client_status': client_status,
-        'test_result': test_result,
-        'openrouter_key': bool(os.environ.get("OPENROUTER_API_KEY"))
-    }
-    return render(request, 'admin/test_ai.html', context)
+# Dans views.py
+def test_ai_service(request):
+    from .services import test_ai_connection, openrouter_client
+    test_result = test_ai_connection()
+    return JsonResponse(test_result)

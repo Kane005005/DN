@@ -72,6 +72,6 @@ urlpatterns = [
     path('api/product/<int:product_id>/variations/', views.get_product_variations, name='product_variations_api'),
     path('api/merchant/<int:merchant_id>/status/', views.merchant_status_api, name='merchant_status_api'),
     path('api/my-status/', views.my_status_api, name='my_status_api'),
-    path('admin/test-ai/', views.test_ai_chat, name='test_ai_chat'),
+    path('test-ai/', views.test_ai_service, name='test_ai_service'),
 
 ]
