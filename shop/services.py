@@ -2,86 +2,74 @@
 import os
 import re
 import logging
-import requests
 from decimal import Decimal, InvalidOperation
+from openai import OpenAI
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q, Avg
 from .models import (
     Product, NegotiationSettings, Conversation, Message, 
     MerchantActivity, ProductImage, ProductVideo, ProductVariation,
-    Review, Category, SubCategory, Shop
+    Review, Category, SubCategory
 )
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
 
-class OpenRouterClient:
+def get_openai_client():
     """
-    Client HTTP simple pour OpenRouter pour éviter les problèmes de compatibilité
+    Retourne le client OpenAI configuré pour OpenRouter - VERSION CORRIGÉE
     """
-    def __init__(self):
-        self.api_key = os.environ.get("OPENROUTER_API_KEY")
-        self.base_url = "https://openrouter.ai/api/v1"
-        self.headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://deanna-ecommerce.com",
-            "X-Title": "DEANNA E-commerce",
-        }
+    api_key = os.environ.get("OPENROUTER_API_KEY")
     
-    def is_configured(self):
-        """Vérifie si le client est correctement configuré"""
-        return bool(self.api_key)
-    
-    def chat_completion(self, messages, model="mistralai/mistral-small-3.1-24b-instruct:free", max_tokens=150, temperature=0.7):
-        """
-        Envoie une requête de chat completion à l'API OpenRouter
-        """
-        if not self.is_configured():
-            raise Exception("Clé API OpenRouter non configurée")
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        }
-        
-        try:
-            response = requests.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json=payload,
-                timeout=30  # 30 secondes timeout
-            )
-            
-            if response.status_code == 200:
-                data = response.json()
-                return data["choices"][0]["message"]["content"].strip()
-            elif response.status_code == 401:
-                raise Exception("Clé API invalide - vérifiez votre clé OpenRouter")
-            elif response.status_code == 429:
-                raise Exception("Quota API épuisé - vérifiez votre compte OpenRouter")
-            else:
-                raise Exception(f"Erreur API {response.status_code}: {response.text}")
-                
-        except requests.exceptions.Timeout:
-            raise Exception("Timeout de l'API OpenRouter")
-        except requests.exceptions.ConnectionError:
-            raise Exception("Erreur de connexion à l'API OpenRouter")
-        except Exception as e:
-            raise Exception(f"Erreur inconnue: {str(e)}")
+    if not api_key:
+        logger.error("❌ CLÉ API OPENROUTER NON CONFIGURÉE")
+        logger.error("💡 Pour configurer :")
+        logger.error("1. Allez sur https://openrouter.ai/")
+        logger.error("2. Créez un compte et générez une clé API")
+        logger.error("3. Définissez la variable d'environnement : export OPENROUTER_API_KEY='votre_clé'")
+        return None
 
-# Instance globale du client
-openrouter_client = OpenRouterClient()
+    try:
+        # CORRECTION : Configuration simplifiée sans paramètres problématiques
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+        )
+        
+        # Test simple de la clé
+        try:
+            test_response = client.chat.completions.create(
+                model="mistralai/mistral-small-3.1-24b-instruct:free",
+                messages=[{"role": "user", "content": "Test"}],
+                max_tokens=5
+            )
+            logger.info("✅ Clé API OpenRouter validée avec succès")
+            return client
+            
+        except Exception as test_error:
+            if "401" in str(test_error):
+                logger.error("❌ CLÉ API OPENROUTER INVALIDE")
+                logger.error("💡 Vérifiez votre clé API sur https://openrouter.ai/keys")
+                return None
+            elif "quota" in str(test_error).lower():
+                logger.warning("⚠️  Quota OpenRouter épuisé, utilisation du mode secours")
+                return None
+            else:
+                # Pour les autres erreurs, on continue quand même
+                logger.warning(f"⚠️  Avertissement test API: {test_error}")
+                return client
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur création client OpenAI: {e}")
+        return None
 
 def should_use_ai(conversation):
     """
     Détermine si l'IA doit répondre en fonction de l'activité réelle du commerçant
     """
     try:
-        # Vérifie si la négociation IA est activée pour cette boutique
+        # Vérifie si la négociation IA est activée
         try:
             negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
             if not negotiation_settings.is_active:
@@ -333,242 +321,199 @@ def get_negotiation_parameters(conversation):
             'original_price': conversation.product.price
         }
 
-def analyze_user_intent(message, user_price_offer=None):
+def get_fallback_response(product, user_message, conversation):
     """
-    Analyse l'intention de l'utilisateur à partir de son message
+    Réponse de secours intelligente quand l'IA n'est pas disponible
     """
-    intent = {
-        'type': 'general',
-        'confidence': 0.5,
-        'needs_response': True
-    }
+    user_price_offer = extract_price_from_message(user_message)
     
-    if not message:
-        return intent
-    
-    message_lower = message.lower()
-    
-    # Détection de la négociation
     if user_price_offer is not None:
-        intent.update({
-            'type': 'price_negotiation',
-            'confidence': 0.9,
-            'price_offer': user_price_offer
-        })
-    elif is_negotiation_message(message):
-        intent.update({
-            'type': 'negotiation_inquiry',
-            'confidence': 0.8
-        })
-    elif is_technical_question(message):
-        intent.update({
-            'type': 'technical_question',
-            'confidence': 0.7
-        })
-    elif is_greeting_message(message):
-        intent.update({
-            'type': 'greeting',
-            'confidence': 0.9
-        })
-    elif 'merci' in message_lower:
-        intent.update({
-            'type': 'thanks',
-            'confidence': 0.8
-        })
-    elif any(word in message_lower for word in ['disponible', 'stock', 'livraison']):
-        intent.update({
-            'type': 'logistics',
-            'confidence': 0.7
-        })
-    
-    return intent
+        try:
+            negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
+            min_price = negotiation_settings.min_price_threshold or Decimal(product.price * Decimal('0.7'))
+        except NegotiationSettings.DoesNotExist:
+            min_price = Decimal(product.price * Decimal('0.7'))
 
-def generate_ai_response(product, user_message, conversation, user_price_offer=None):
-    """
-    Génère une réponse IA en fonction du contexte et de l'intention de l'utilisateur
-    """
-    # Analyse de l'intention
-    intent = analyze_user_intent(user_message, user_price_offer)
-    negotiation_params = get_negotiation_parameters(conversation)
-    product_context = build_product_context(product)
-    
-    # Construction du prompt en fonction de l'intention
-    if intent['type'] == 'price_negotiation':
-        return handle_price_negotiation(product, user_price_offer, negotiation_params, conversation)
-    elif intent['type'] == 'negotiation_inquiry':
-        return handle_negotiation_inquiry(product, user_message, negotiation_params, conversation)
-    elif intent['type'] == 'technical_question':
-        return handle_technical_question(product, user_message, conversation)
-    elif intent['type'] == 'greeting':
-        return handle_greeting(conversation, product)
-    elif intent['type'] == 'thanks':
-        return handle_thanks()
-    elif intent['type'] == 'logistics':
-        return handle_logistics_question(product, user_message)
-    else:
-        return handle_general_message(conversation, product, user_message)
-
-def handle_price_negotiation(product, user_price_offer, negotiation_params, conversation):
-    """
-    Gère la négociation de prix
-    """
-    original_price = negotiation_params['original_price']
-    min_price = negotiation_params['min_price']
-    
-    if user_price_offer >= original_price:
-        return f"🎉 Excellente nouvelle ! J'accepte votre offre de {user_price_offer} CFA. Le produit '{product.name}' est à vous !"
-    
-    elif user_price_offer >= min_price:
-        # Calculer un prix intermédiaire
-        counter_offer = (user_price_offer + original_price) / 2
-        counter_offer = counter_offer.quantize(Decimal('0.01'))
-        
-        return f"💰 Je apprécie votre offre de {user_price_offer} CFA. Que diriez-vous de {counter_offer} CFA ? C'est un excellent compromis pour ce produit de qualité !"
-    
-    else:
-        return f"⚖️ Je comprends votre budget, mais {user_price_offer} CFA est en dessous de mon prix minimum de {min_price} CFA. Je peux vous proposer {min_price} CFA si cela vous convient mieux."
-
-def handle_negotiation_inquiry(product, user_message, negotiation_params, conversation):
-    """
-    Gère les demandes de négociation
-    """
-    merchant_name = conversation.merchant.first_name
-    
-    responses = [
-        f"🔍 Je comprends que vous souhaitez discuter du prix. Le produit '{product.name}' est actuellement à {product.price} CFA. Avez-vous un budget spécifique en tête ?",
-        f"💬 Je suis ouvert à la discussion ! Le prix de '{product.name}' est {product.price} CFA. Quelle offre envisagez-vous ?",
-        f"🎯 Merci pour votre intérêt ! Le prix affiché pour '{product.name}' est {product.price} CFA. Je suis prêt à trouver un arrangement qui convienne à nous deux.",
-    ]
-    
-    import random
-    return random.choice(responses)
-
-def handle_technical_question(product, user_message, conversation):
-    """
-    Gère les questions techniques
-    """
-    return f"🔧 Merci pour votre question technique concernant '{product.name}'. Le commerçant {conversation.merchant.first_name} vous fournira une réponse détaillée dès son retour. En attendant, n'hésitez pas à consulter les photos et descriptions disponibles !"
-
-def handle_greeting(conversation, product):
-    """
-    Gère les salutations
-    """
-    merchant_name = conversation.merchant.first_name
-    
-    greetings = [
-        f"👋 Bonjour ! Je suis l'assistant de {merchant_name}. Je vous aide en attendant son retour. Vous regardez '{product.name}' à {product.price} CFA. Comment puis-je vous aider ?",
-        f"🛍️ Bienvenue ! {merchant_name} est actuellement indisponible, mais je peux vous aider avec '{product.name}'. Le prix est de {product.price} CFA. Avez-vous des questions ?",
-        f"💼 Bonjour ! Je suis le assistant commercial de {merchant_name}. Le produit '{product.name}' est disponible au prix de {product.price} CFA. Que souhaitez-vous savoir ?",
-    ]
-    
-    import random
-    return random.choice(greetings)
-
-def handle_thanks():
-    """
-    Gère les remerciements
-    """
-    return "🤝 Je vous en prie ! N'hésitez pas si vous avez d'autres questions. Le commerçant vous contactera bientôt pour finaliser votre achat."
-
-def handle_logistics_question(product, user_message):
-    """
-    Gère les questions logistiques
-    """
-    if 'disponible' in user_message.lower() or 'stock' in user_message.lower():
-        if product.stock > 0:
-            return f"✅ Oui, le produit '{product.name}' est en stock ({product.stock} unités disponibles)."
+        if user_price_offer >= product.price:
+            return f"🎉 J'accepte votre offre de {user_price_offer} CFA ! Le produit '{product.name}' est à vous !"
+        elif user_price_offer >= min_price:
+            # Calculer un prix intermédiaire
+            counter_offer = (user_price_offer + product.price) / 2
+            counter_offer = counter_offer.quantize(Decimal('0.01'))
+            return f"💰 Je apprécie votre offre de {user_price_offer} CFA. Que diriez-vous de {counter_offer} CFA ? C'est un excellent compromis !"
         else:
-            return f"❌ Désolé, le produit '{product.name}' est actuellement en rupture de stock."
-    
-    elif 'livraison' in user_message.lower():
-        return "🚚 Les détails de livraison (frais, délais) vous seront communiqués par le commerçant lors de la finalisation de la commande."
-    
+            return f"⚖️ Je comprends votre budget, mais {user_price_offer} CFA est en dessous de mon prix minimum de {min_price} CFA."
+            
+    elif is_technical_question(user_message):
+        return f"🔧 Merci pour votre question technique concernant '{product.name}'. Le commerçant vous répondra dès son retour avec les informations détaillées."
+        
+    elif is_greeting_message(user_message):
+        return f"👋 Bonjour ! Je suis l'assistant de {conversation.merchant.first_name}. Comment puis-je vous aider avec '{product.name}' ?"
+        
+    elif "merci" in user_message.lower():
+        return "🤝 Je vous en prie ! N'hésitez pas si vous avez d'autres questions."
+        
     else:
-        return "📦 Pour les questions de disponibilité et livraison, le commerçant vous donnera toutes les informations nécessaires à son retour."
-
-def handle_general_message(conversation, product, user_message):
-    """
-    Gère les messages généraux
-    """
-    return f"💬 Merci pour votre message concernant '{product.name}'. Le commerçant {conversation.merchant.first_name} vous répondra personnellement très soon."
+        return f"💬 Merci pour votre message concernant '{product.name}'. Le commerçant {conversation.merchant.first_name} vous répondra rapidement."
 
 def get_ai_negotiation_response(product: Product, user_message: str, conversation: Conversation):
     """
-    Point d'entrée principal pour obtenir une réponse IA de négociation
+    Appelle l'API Mistral via OpenRouter pour générer une réponse contextuelle et intelligente
     """
-    # Vérification préalable
+    # Vérifie si l'IA doit répondre
     if not should_use_ai(conversation):
         logger.debug("⏸️ IA non autorisée à répondre")
         return None
 
-    # Vérification de la configuration OpenRouter
-    if not openrouter_client.is_configured():
-        logger.error("❌ OpenRouter non configuré - utilisation du mode secours")
-        return generate_ai_response(product, user_message, conversation)
+    # Récupère le client OpenAI
+    client = get_openai_client()
+    if not client:
+        logger.error("❌ Impossible d'initialiser le client API - utilisation du mode secours")
+        return get_fallback_response(product, user_message, conversation)
 
-    # Extraction du prix
-    user_price_offer = extract_price_from_message(user_message)
-    
+    # Récupère les paramètres de négociation
     try:
-        # Construction du contexte
-        product_context = build_product_context(product)
-        negotiation_params = get_negotiation_parameters(conversation)
-        intent = analyze_user_intent(user_message, user_price_offer)
+        negotiation_settings = NegotiationSettings.objects.get(shop=conversation.product.shop)
+        min_price = negotiation_settings.min_price_threshold or Decimal(product.price * Decimal('0.7'))
+        max_discount_percentage = negotiation_settings.max_discount_percentage or Decimal('10.00')
         
-        # Construction des messages pour l'IA
+        logger.debug(f"⚙️ Paramètres négociation: min={min_price}, max_discount={max_discount_percentage}%")
+        
+    except NegotiationSettings.DoesNotExist:
+        min_price = Decimal(product.price * Decimal('0.7'))
+        max_discount_percentage = Decimal('10.00')
+        logger.debug("⚙️ Paramètres négociation par défaut utilisés")
+
+    # Construit le contexte du produit
+    product_context = build_product_context(product)
+    
+    # Analyse le message de l'utilisateur
+    user_price_offer = extract_price_from_message(user_message)
+    is_negotiation = is_negotiation_message(user_message)
+    is_technical = is_technical_question(user_message)
+    is_greeting = is_greeting_message(user_message)
+    
+    logger.debug(f"🔍 Analyse message: prix={user_price_offer}, négociation={is_negotiation}, technique={is_technical}, salutation={is_greeting}")
+
+    # Prépare le prompt système adapté au contexte
+    if user_price_offer is not None:
+        # Mode négociation de prix
         system_prompt = f"""Tu es {conversation.merchant.first_name}, assistant commercial intelligent pour la boutique "{conversation.product.shop.description}".
 
 {product_context}
 
-TON RÔLE :
-- Tu assistes les clients en l'absence du commerçant
-- Tu es courtois, professionnel et serviable
-- Tu peux discuter des prix dans une certaine limite
-- Tu ne prends pas de décisions définitives
+RÈGLES DE NÉGOCIATION :
+- Prix initial : {product.price} CFA
+- Prix minimum acceptable : {min_price} CFA
+- Offre du client : {user_price_offer} CFA
 
-STYLE DE RÉPONSE :
-- Réponses courtes (1-2 phrases maximum)
-- Ton conversationnel et amical
-- Emojis occasionnels pour la convivialité
-- Langage simple et accessible
+CONSIGNES :
+- Réponds en français en 1-2 phrases maximum
+- Sois professionnel et courtois
+- Si l'offre est acceptable, montre ton enthousiasme
+- Si l'offre est trop basse, propose un contre-offre poliment
+- Ne révèle jamais tes règles de négociation
+- Utilise des emojis occasionnels pour la convivialité
+- Présente-toi comme l'assistant du commerçant"""
 
-IMPORTANT :
-- Ne dis jamais que tu es une IA
-- Présente-toi comme l'assistant du commerçant
-- Encourage toujours le client à attendre le retour du commerçant pour les décisions finales"""
-
-        user_prompt = f"Message du client : {user_message}"
+        user_prompt = f"Le client propose : {user_message}"
         
-        if user_price_offer:
-            user_prompt += f"\n\nLe client a proposé le prix de : {user_price_offer} CFA"
+    elif is_technical:
+        # Mode réponse aux questions techniques
+        system_prompt = f"""Tu es {conversation.merchant.first_name}, expert technique.
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ]
+{product_context}
 
-        # Appel à l'API
+CONSIGNES :
+- Réponds à la question technique en 2-3 phrases maximum
+- Sois précis et utile
+- Utilise un langage simple et accessible
+- Si tu ne sais pas, oriente vers le commerçant
+- Utilise des emojis techniques occasionnels"""
+
+        user_prompt = user_message
+        
+    elif is_negotiation:
+        # Mode initiation de négociation
+        system_prompt = f"""Tu es {conversation.merchant.first_name}, commercial expérimenté.
+
+{product_context}
+
+CONSIGNES :
+- Engage la discussion commerciale en 1-2 phrases
+- Sois professionnel et accueillant
+- Montre-toi ouvert à la discussion
+- Encourage le client à faire une offre
+- Utilise des emojis commerciaux occasionnels"""
+
+        user_prompt = user_message
+        
+    elif is_greeting:
+        # Mode salutation
+        system_prompt = f"""Tu es {conversation.merchant.first_name}, assistant courtois.
+
+{product_context}
+
+CONSIGNES :
+- Accueille le client chaleureusement en 1-2 phrases
+- Présente le produit brièvement
+- Encourage le client à poser des questions
+- Sois amical et professionnel
+- Utilise des emojis d'accueil"""
+
+        user_prompt = user_message
+        
+    else:
+        # Mode conversation générale
+        system_prompt = f"""Tu es {conversation.merchant.first_name}, assistant serviable.
+
+{product_context}
+
+CONSIGNES :
+- Réponds au message en 1-2 phrases maximum
+- Sois courtois et professionnel
+- Montre de l'intérêt pour aider le client
+- Utilise des emojis occasionnels
+- Encourage à attendre le retour du commerçant pour les détails importants"""
+
+        user_prompt = user_message
+
+    # Construit les messages pour l'API
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
+
+    try:
         logger.info(f"🔗 Appel API OpenRouter pour conversation {conversation.id}")
-        ai_response = openrouter_client.chat_completion(
+        
+        completion = client.chat.completions.create(
+            model="mistralai/mistral-small-3.1-24b-instruct:free",
             messages=messages,
-            max_tokens=120,
-            temperature=0.7
+            max_tokens=150,
+            temperature=0.7,
+            # Pas de paramètre 'proxies' qui causait l'erreur
         )
         
-        logger.info(f"✅ Réponse IA générée: {ai_response}")
-        return ai_response
-
+        ai_message = completion.choices[0].message.content.strip()
+        logger.info(f"✅ Réponse IA générée: {ai_message}")
+        
+        return ai_message
+        
     except Exception as e:
-        logger.error(f"❌ Erreur lors de l'appel IA: {e}")
-        # Retour au mode secours en cas d'erreur
-        return generate_ai_response(product, user_message, conversation, user_price_offer)
-
-def get_fallback_response(product, user_message, conversation):
-    """
-    Réponse de secours quand l'IA n'est pas disponible
-    """
-    user_price_offer = extract_price_from_message(user_message)
-    return generate_ai_response(product, user_message, conversation, user_price_offer)
+        logger.error(f"❌ Erreur API OpenRouter: {e}")
+        
+        # Gestion spécifique des erreurs courantes
+        if "401" in str(e) or "auth" in str(e).lower():
+            logger.error("🚨 ERREUR D'AUTHENTIFICATION - Vérifiez votre clé API OpenRouter")
+        elif "quota" in str(e).lower():
+            logger.error("🚨 QUOTA ÉPUISÉ - Vérifiez votre compte OpenRouter")
+        elif "timeout" in str(e).lower():
+            logger.error("⏰ TIMEOUT API - Le serveur a mis trop de temps à répondre")
+        else:
+            logger.error(f"🚨 ERREUR INCONNUE: {e}")
+        
+        return get_fallback_response(product, user_message, conversation)
 
 def update_merchant_activity(user):
     """
@@ -681,50 +626,59 @@ def get_conversation_ai_status(conversation):
     except NegotiationSettings.DoesNotExist:
         ai_enabled = False
     
+    # Vérifie si OpenRouter est configuré
+    openrouter_configured = bool(os.environ.get("OPENROUTER_API_KEY"))
+    
     return {
         'merchant_status': merchant_status,
         'ai_enabled': ai_enabled,
         'can_use_ai': merchant_status['can_use_ai'] and ai_enabled,
         'merchant_name': f"{conversation.merchant.first_name} {conversation.merchant.last_name}",
         'shop_name': conversation.merchant.shop.description or "Boutique",
-        'openrouter_configured': openrouter_client.is_configured()
+        'openrouter_configured': openrouter_configured
     }
 
-def test_ai_connection():
+def test_openai_connection():
     """
-    Teste la connexion à l'API OpenRouter
+    Teste la connexion à l'API OpenRouter via OpenAI
     """
-    if not openrouter_client.is_configured():
+    client = get_openai_client()
+    
+    if not client:
         return {
             'success': False,
-            'message': '❌ Clé API OpenRouter non configurée',
-            'details': 'Vérifiez la variable d\'environnement OPENROUTER_API_KEY'
+            'message': '❌ Client OpenAI non configuré',
+            'details': 'Vérifiez la variable OPENROUTER_API_KEY'
         }
     
     try:
-        test_response = openrouter_client.chat_completion(
+        test_response = client.chat.completions.create(
+            model="mistralai/mistral-small-3.1-24b-instruct:free",
             messages=[{"role": "user", "content": "Réponds simplement 'TEST OK'"}],
             max_tokens=10,
             temperature=0.1
         )
         
+        response_text = test_response.choices[0].message.content
+        
         return {
             'success': True,
-            'message': '✅ Connexion OpenRouter fonctionnelle',
-            'response': test_response,
-            'details': 'L\'IA est correctement configurée'
+            'message': '✅ Connexion OpenAI/OpenRouter fonctionnelle',
+            'response': response_text,
+            'details': 'L\'IA est correctement configurée avec la bibliothèque OpenAI'
         }
         
     except Exception as e:
         return {
             'success': False,
-            'message': '❌ Erreur de connexion OpenRouter',
+            'message': '❌ Erreur de connexion OpenAI',
             'details': str(e)
         }
 
 # Initialisation au chargement du module
-logger.info("🔄 Initialisation des services IA...")
-if openrouter_client.is_configured():
-    logger.info("✅ Service OpenRouter configuré")
+logger.info("🔄 Initialisation des services IA avec OpenAI...")
+client = get_openai_client()
+if client:
+    logger.info("✅ Service OpenAI/OpenRouter configuré avec succès")
 else:
-    logger.warning("⚠️ Service OpenRouter non configuré - mode secours activé")
+    logger.warning("⚠️ Service OpenAI/OpenRouter non configuré - mode secours activé")
