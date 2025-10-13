@@ -98,7 +98,7 @@
                 <div class极="shop-info">
                     <h2>{{ shop.merchant.user.username }}</h2>
                     <p>{{ shop.description|default:"Cette boutique n'a pas encore de description." }}</p>
-                    <a href="{% url 'shop_detail_by_slug' shop_slug=shop.merchant.user.username %}" class="cta-button">Visiter la boutique</a>
+                    <a href="{% url 'shop_detail_by_slug' shop_slug=shop.merchant.user.username|slugify %}" class="cta-button">Visiter la boutique</a>
                 </div>
             </div>
         {% empty %}
