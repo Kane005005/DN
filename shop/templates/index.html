@@ -41,6 +41,15 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         border-color: var(--color-accent);
     }
+
+    /* Styles pour les boutons */
+    .btn-custom {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom:hover {
+        transform: translateY(-2px);
+    }
 </style>
 {% endblock %}
 
@@ -55,16 +64,48 @@
             <p id="slogan-text" class="text-xl md:text-2xl text-white max-w-2xl mx-auto mt-6 opacity-0 animate-fadeIn delay-200">
                 Vendez plus, stressez moins. Lancez votre boutique en ligne avec facilité.
             </p>
+            
             <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary animate-fadeIn delay-400">
-                    <i class="fas fa-shopping-bag mr-2"></i>Découvrir les produits
-                </a>
-                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fade极In delay-600">
-                    <i class="fas fa-store mr-2"></i>Commencer à vendre
-                </a>
-                <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
-                    Voir les boutiques
-                </a>
+                {% if user.is_authenticated %}
+                    <!-- Utilisateur connecté -->
+                    {% if user.merchant and user.merchant.shop %}
+                        <!-- Vendeur connecté (a une boutique) -->
+                        <a href="{% url 'dashboard' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom animate-fadeIn delay-400">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                        </a>
+                        <a href="{% url 'manage_products' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fadeIn delay-600">
+                            <i class="fas fa-box-open mr-2"></i>Mes produits
+                        </a>
+                        <a href="{% url 'manage_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                            <i class="fas fa-store mr-2"></i>Ma boutique
+                        </a>
+                    {% else %}
+                        <!-- Client connecté (n'a pas de boutique) -->
+                        <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom animate-fadeIn delay-400">
+                            <i class="fas fa-shopping-bag mr-2"></i>Découvrir les produits
+                        </a>
+                        <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fadeIn delay-600">
+                            <i class="fas fa-store mr-2"></i>Voir les boutiques
+                        </a>
+                        <a href="{% url 'client_dashboard' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                            <i class="fas fa-user mr-2"></i>Mon compte
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <!-- Utilisateur non connecté -->
+                    <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom animate-fadeIn delay-400">
+                        <i class="fas fa-shopping-bag mr-2"></i>Découvrir les produits
+                    </a>
+                    <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300 animate-fadeIn delay-600">
+                        <i class="fas fa-store mr-2"></i>Commencer à vendre
+                    </a>
+                    <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        Voir les boutiques
+                    </a>
+                    <a href="{% url 'create_client' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        <i class="fas fa-user-plus mr-2"></i>Créer un compte client
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -88,7 +129,7 @@
                 <div class="w-16 h-16 bg-color-accent rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-rocket text-2xl text-color-primary"></i>
                 </div>
-                <h3 class="text-xl font-semib极old text-color-primary mb-2">Lancement rapide</h3>
+                <h3 class="text-xl font-semibold text-color-primary mb-2">Lancement rapide</h3>
                 <p class="text-color-text-secondary">Créez votre boutique en quelques minutes seulement, sans compétences techniques requises.</p>
             </div>
             
@@ -112,9 +153,21 @@
         </div>
         
         <div class="text-center mt-12">
-            <a href="{% url 'create_shop' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
-                Commencer gratuitement
-            </a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                    Commencer gratuitement
+                </a>
+            {% else %}
+                {% if user.merchant and user.merchant.shop %}
+                    <a href="{% url 'dashboard' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                        Accéder à mon tableau de bord
+                    </a>
+                {% else %}
+                    <a href="{% url 'product_list' %}" class="inline-block px-8 py-3 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                        Découvrir nos produits
+                    </a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 </section>
@@ -159,18 +212,69 @@
 <!-- CTA final -->
 <section class="py-16 bg-color-primary text-white">
     <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3极xl md:text-4xl font-bold mb-4">Prêt à lancer votre boutique ?</h2>
-        <p class="text-xl max-w-2xl mx-auto mb-8">Rejoignez des milliers de commerçants qui font grandir leur business avec DEANNA.</p>
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+            {% if user.is_authenticated %}
+                {% if user.merchant and user.merchant.shop %}
+                    Prêt à développer votre boutique ?
+                {% else %}
+                    Heureux de vous revoir !
+                {% endif %}
+            {% else %}
+                Prêt à lancer votre boutique ?
+            {% endif %}
+        </h2>
+        <p class="text-xl max-w-2xl mx-auto mb-8">
+            {% if user.is_authenticated %}
+                {% if user.merchant and user.merchant.shop %}
+                    Continuez à développer votre business avec DEANNA.
+                {% else %}
+                    Profitez de toutes nos fonctionnalités pour faire vos achats.
+                {% endif %}
+            {% else %}
+                Rejoignez des milliers de commerçants qui font grandir leur business avec DEANNA.
+            {% endif %}
+        </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-primary">
-                Créer ma boutique
-            </a>
-            <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
-                Voir les produits
-            </a>
-            <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
-                Voir les boutiques
-            </a>
+            {% if not user.is_authenticated %}
+                <!-- Boutons pour utilisateurs non connectés -->
+                <a href="{% url 'create_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                    Créer ma boutique
+                </a>
+                <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                    Voir les produits
+                </a>
+                <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                    Voir les boutiques
+                </a>
+                <a href="{% url 'create_client' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                    Créer un compte client
+                </a>
+            {% else %}
+                <!-- Boutons pour utilisateurs connectés -->
+                {% if user.merchant and user.merchant.shop %}
+                    <!-- Vendeur -->
+                    <a href="{% url 'dashboard' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                        Tableau de bord
+                    </a>
+                    <a href="{% url 'manage_products' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        Gérer mes produits
+                    </a>
+                    <a href="{% url 'manage_shop' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        Ma boutique
+                    </a>
+                {% else %}
+                    <!-- Client -->
+                    <a href="{% url 'product_list' %}" class="inline-block px-8 py-4 text-lg font-semibold text-color-primary bg-color-accent rounded-full btn-custom">
+                        Découvrir les produits
+                    </a>
+                    <a href="{% url 'visit_shops' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        Explorer les boutiques
+                    </a>
+                    <a href="{% url 'client_dashboard' %}" class="inline-block px-8 py-4 text-lg font-semibold text-white border border-white rounded-full hover:bg-white hover:text-color-primary transition-colors duration-300">
+                        Mon compte client
+                    </a>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
 </section>

@@ -5968,3 +5968,574 @@ INFO 2025-11-01 09:48:43,299 base Job "Vérification activité chat (trigger: in
 INFO 2025-11-01 09:48:43,299 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:49:13 GMT)" executed successfully
 INFO 2025-11-01 09:48:48,065 base Scheduler has been shut down
 INFO 2025-11-01 09:48:48,287 base Scheduler has been shut down
+INFO 2025-11-01 09:56:02,642 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-11-01 09:56:02,645 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-11-01 09:56:02,646 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-11-01 09:56:02,646 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-11-01 09:56:02,647 base Scheduler started
+INFO 2025-11-01 09:56:02,648 apps ✅ APScheduler démarré avec succès
+INFO 2025-11-01 09:56:02,649 apps 📋 Tâches planifiées :
+INFO 2025-11-01 09:56:02,650 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-11-01 09:56:02,650 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-11-01 09:56:03,871 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-11-01 09:56:03,872 base Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO 2025-11-01 09:56:03,873 base Added job "Mise à jour statut commerçants" to job store "default"
+INFO 2025-11-01 09:56:03,873 base Added job "Vérification activité chat" to job store "default"
+INFO 2025-11-01 09:56:03,874 base Scheduler started
+INFO 2025-11-01 09:56:03,875 apps ✅ APScheduler démarré avec succès
+INFO 2025-11-01 09:56:03,875 apps 📋 Tâches planifiées :
+INFO 2025-11-01 09:56:03,876 apps    - Mise à jour statut commerçants : toutes les 30 secondes
+INFO 2025-11-01 09:56:03,876 apps    - Vérification activité chat : toutes les minutes
+INFO 2025-11-01 09:56:03,928 autoreload Watching for file changes with StatReloader
+INFO 2025-11-01 09:56:05,177 basehttp "GET /creer-boutique/ HTTP/1.1" 200 15116
+WARNING 2025-11-01 09:56:07,821 log Not Found: /favicon.ico
+INFO 2025-11-01 09:56:18,687 basehttp "GET /deconnexion/ HTTP/1.1" 302 0
+INFO 2025-11-01 09:56:18,736 basehttp "GET / HTTP/1.1" 200 21491
+INFO 2025-11-01 09:56:24,222 basehttp "GET /acceder-boutique/ HTTP/1.1" 200 14414
+INFO 2025-11-01 09:56:32,262 basehttp "POST /acceder-boutique/ HTTP/1.1" 302 0
+INFO 2025-11-01 09:56:32,648 basehttp "GET /tableau-de-bord/ HTTP/1.1" 200 22148
+INFO 2025-11-01 09:56:32,646 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:02 GMT)" (scheduled at 2025-11-01 09:56:32.641451+00:00)
+INFO 2025-11-01 09:56:32,678 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:56:32,679 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:02 GMT)" executed successfully
+INFO 2025-11-01 09:56:33,883 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:03 GMT)" (scheduled at 2025-11-01 09:56:33.871564+00:00)
+INFO 2025-11-01 09:56:33,906 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:56:33,907 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:03 GMT)" executed successfully
+WARNING 2025-11-01 09:56:34,422 log Not Found: /favicon.ico
+INFO 2025-11-01 09:56:51,222 basehttp "GET /tableau-de-bord/boutique/ HTTP/1.1" 200 25202
+INFO 2025-11-01 09:56:52,712 basehttp "GET /media/shop_images/Metallic%20Eagle%20Logo%20Design%20PNG%20Images%2C%20Eagle%2C%20Symbol%2C%20Metal%20PNG%20Transparent%20Background%20-%20Pngtree.jpeg HTTP/1.1" 200 6844
+INFO 2025-11-01 09:57:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:32 GMT)" (scheduled at 2025-11-01 09:57:02.641451+00:00)
+INFO 2025-11-01 09:57:02,652 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:58:02 GMT)" (scheduled at 2025-11-01 09:57:02.645215+00:00)
+INFO 2025-11-01 09:57:02,665 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:57:02,665 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:32 GMT)" executed successfully
+INFO 2025-11-01 09:57:02,698 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:57:02,699 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:58:02 GMT)" executed successfully
+INFO 2025-11-01 09:57:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:33 GMT)" (scheduled at 2025-11-01 09:57:03.871564+00:00)
+INFO 2025-11-01 09:57:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:57:03 GMT)" (scheduled at 2025-11-01 09:57:03.872296+00:00)
+INFO 2025-11-01 09:57:03,891 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:57:03,891 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:57:33 GMT)" executed successfully
+INFO 2025-11-01 09:57:03,897 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:57:03,897 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:58:03 GMT)" executed successfully
+INFO 2025-11-01 09:57:22,122 basehttp "GET / HTTP/1.1" 200 20736
+INFO 2025-11-01 09:57:29,398 basehttp "GET /produits/ HTTP/1.1" 200 30865
+INFO 2025-11-01 09:57:30,009 basehttp "GET /media/product_images/Bake_It_rPIWg9w.jpeg HTTP/1.1" 200 166516
+INFO 2025-11-01 09:57:30,041 basehttp "GET /media/product_images/Bake_It_RxdVvDX.jpeg HTTP/1.1" 200 166516
+INFO 2025-11-01 09:57:30,051 basehttp "GET /media/product_images/D4Fd2E8b_WRoH9ui.jpeg HTTP/1.1" 200 52896
+INFO 2025-11-01 09:57:30,062 basehttp "GET /media/product_images/Bake_It.jpeg HTTP/1.1" 200 166516
+INFO 2025-11-01 09:57:30,096 basehttp "GET /media/product_images/Bake_It_QEZ2Hs9.jpeg HTTP/1.1" 200 166516
+INFO 2025-11-01 09:57:30,118 basehttp "GET /media/product_images/Gemini_Generated_Image_ttzkhottzkhottzk.png HTTP/1.1" 200 1160094
+INFO 2025-11-01 09:57:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:02 GMT)" (scheduled at 2025-11-01 09:57:32.641451+00:00)
+INFO 2025-11-01 09:57:32,653 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:57:32,657 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:02 GMT)" executed successfully
+INFO 2025-11-01 09:57:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:03 GMT)" (scheduled at 2025-11-01 09:57:33.871564+00:00)
+INFO 2025-11-01 09:57:33,881 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:57:33,882 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:03 GMT)" executed successfully
+INFO 2025-11-01 09:57:35,190 basehttp "GET / HTTP/1.1" 200 20736
+INFO 2025-11-01 09:58:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:32 GMT)" (scheduled at 2025-11-01 09:58:02.641451+00:00)
+INFO 2025-11-01 09:58:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:59:02 GMT)" (scheduled at 2025-11-01 09:58:02.645215+00:00)
+INFO 2025-11-01 09:58:02,675 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:58:02,681 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:59:02 GMT)" executed successfully
+INFO 2025-11-01 09:58:02,676 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:58:02,682 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:32 GMT)" executed successfully
+INFO 2025-11-01 09:58:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:33 GMT)" (scheduled at 2025-11-01 09:58:03.871564+00:00)
+INFO 2025-11-01 09:58:03,877 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:59:03 GMT)" (scheduled at 2025-11-01 09:58:03.872296+00:00)
+INFO 2025-11-01 09:58:03,890 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:58:03,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:58:33 GMT)" executed successfully
+INFO 2025-11-01 09:58:03,893 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:58:03,897 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 09:59:03 GMT)" executed successfully
+INFO 2025-11-01 09:58:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:02 GMT)" (scheduled at 2025-11-01 09:58:32.641451+00:00)
+INFO 2025-11-01 09:58:32,649 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:58:32,650 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:02 GMT)" executed successfully
+INFO 2025-11-01 09:58:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:03 GMT)" (scheduled at 2025-11-01 09:58:33.871564+00:00)
+INFO 2025-11-01 09:58:33,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:58:33,880 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:03 GMT)" executed successfully
+INFO 2025-11-01 09:59:02,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:32 GMT)" (scheduled at 2025-11-01 09:59:02.641451+00:00)
+INFO 2025-11-01 09:59:02,652 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:00:02 GMT)" (scheduled at 2025-11-01 09:59:02.645215+00:00)
+INFO 2025-11-01 09:59:02,680 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:59:02,681 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:32 GMT)" executed successfully
+INFO 2025-11-01 09:59:02,685 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:59:02,686 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:00:02 GMT)" executed successfully
+INFO 2025-11-01 09:59:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:33 GMT)" (scheduled at 2025-11-01 09:59:03.871564+00:00)
+INFO 2025-11-01 09:59:03,873 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:00:03 GMT)" (scheduled at 2025-11-01 09:59:03.872296+00:00)
+INFO 2025-11-01 09:59:03,893 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:59:03,901 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 09:59:33 GMT)" executed successfully
+INFO 2025-11-01 09:59:03,901 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 09:59:03,902 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:00:03 GMT)" executed successfully
+INFO 2025-11-01 09:59:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:02 GMT)" (scheduled at 2025-11-01 09:59:32.641451+00:00)
+INFO 2025-11-01 09:59:32,658 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:59:32,662 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:02 GMT)" executed successfully
+INFO 2025-11-01 09:59:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:03 GMT)" (scheduled at 2025-11-01 09:59:33.871564+00:00)
+INFO 2025-11-01 09:59:33,906 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 09:59:33,910 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:03 GMT)" executed successfully
+INFO 2025-11-01 10:00:02,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:32 GMT)" (scheduled at 2025-11-01 10:00:02.641451+00:00)
+INFO 2025-11-01 10:00:02,649 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:01:02 GMT)" (scheduled at 2025-11-01 10:00:02.645215+00:00)
+INFO 2025-11-01 10:00:02,662 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:00:02,678 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:32 GMT)" executed successfully
+INFO 2025-11-01 10:00:02,689 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:00:02,689 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:01:02 GMT)" executed successfully
+INFO 2025-11-01 10:00:03,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:33 GMT)" (scheduled at 2025-11-01 10:00:03.871564+00:00)
+INFO 2025-11-01 10:00:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:01:03 GMT)" (scheduled at 2025-11-01 10:00:03.872296+00:00)
+INFO 2025-11-01 10:00:03,918 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:00:03,919 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:00:33 GMT)" executed successfully
+INFO 2025-11-01 10:00:03,921 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:00:03,921 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:01:03 GMT)" executed successfully
+INFO 2025-11-01 10:00:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:02 GMT)" (scheduled at 2025-11-01 10:00:32.641451+00:00)
+INFO 2025-11-01 10:00:32,652 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:00:32,660 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:02 GMT)" executed successfully
+INFO 2025-11-01 10:00:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:03 GMT)" (scheduled at 2025-11-01 10:00:33.871564+00:00)
+INFO 2025-11-01 10:00:33,896 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:00:33,900 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:03 GMT)" executed successfully
+INFO 2025-11-01 10:01:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:32 GMT)" (scheduled at 2025-11-01 10:01:02.641451+00:00)
+INFO 2025-11-01 10:01:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:02:02 GMT)" (scheduled at 2025-11-01 10:01:02.645215+00:00)
+INFO 2025-11-01 10:01:02,690 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:01:02,693 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:01:02,694 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:02:02 GMT)" executed successfully
+INFO 2025-11-01 10:01:02,696 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:32 GMT)" executed successfully
+INFO 2025-11-01 10:01:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:33 GMT)" (scheduled at 2025-11-01 10:01:03.871564+00:00)
+INFO 2025-11-01 10:01:03,873 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:02:03 GMT)" (scheduled at 2025-11-01 10:01:03.872296+00:00)
+INFO 2025-11-01 10:01:03,884 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:01:03,885 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:02:03 GMT)" executed successfully
+INFO 2025-11-01 10:01:03,889 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:01:03,889 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:01:33 GMT)" executed successfully
+INFO 2025-11-01 10:01:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:02 GMT)" (scheduled at 2025-11-01 10:01:32.641451+00:00)
+INFO 2025-11-01 10:01:32,650 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:01:32,651 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:02 GMT)" executed successfully
+INFO 2025-11-01 10:01:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:03 GMT)" (scheduled at 2025-11-01 10:01:33.871564+00:00)
+INFO 2025-11-01 10:01:33,885 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:01:33,886 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:03 GMT)" executed successfully
+INFO 2025-11-01 10:02:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:32 GMT)" (scheduled at 2025-11-01 10:02:02.641451+00:00)
+INFO 2025-11-01 10:02:02,648 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:03:02 GMT)" (scheduled at 2025-11-01 10:02:02.645215+00:00)
+INFO 2025-11-01 10:02:02,664 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:02:02,665 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:03:02 GMT)" executed successfully
+INFO 2025-11-01 10:02:02,672 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:02:02,673 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:32 GMT)" executed successfully
+INFO 2025-11-01 10:02:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:33 GMT)" (scheduled at 2025-11-01 10:02:03.871564+00:00)
+INFO 2025-11-01 10:02:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:03:03 GMT)" (scheduled at 2025-11-01 10:02:03.872296+00:00)
+INFO 2025-11-01 10:02:03,893 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:02:03,904 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:02:33 GMT)" executed successfully
+INFO 2025-11-01 10:02:03,904 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:02:03,905 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:03:03 GMT)" executed successfully
+INFO 2025-11-01 10:02:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:02 GMT)" (scheduled at 2025-11-01 10:02:32.641451+00:00)
+INFO 2025-11-01 10:02:32,653 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:02:32,654 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:02 GMT)" executed successfully
+INFO 2025-11-01 10:02:33,875 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:03 GMT)" (scheduled at 2025-11-01 10:02:33.871564+00:00)
+INFO 2025-11-01 10:02:33,909 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:02:33,909 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:03 GMT)" executed successfully
+INFO 2025-11-01 10:03:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:32 GMT)" (scheduled at 2025-11-01 10:03:02.641451+00:00)
+INFO 2025-11-01 10:03:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:04:02 GMT)" (scheduled at 2025-11-01 10:03:02.645215+00:00)
+INFO 2025-11-01 10:03:02,798 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:03:02,799 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:04:02 GMT)" executed successfully
+INFO 2025-11-01 10:03:02,807 tasks Statut mis à jour: 0 en ligne, 1 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:03:02,808 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:32 GMT)" executed successfully
+INFO 2025-11-01 10:03:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:33 GMT)" (scheduled at 2025-11-01 10:03:03.871564+00:00)
+INFO 2025-11-01 10:03:03,876 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:04:03 GMT)" (scheduled at 2025-11-01 10:03:03.872296+00:00)
+INFO 2025-11-01 10:03:03,896 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:03:03,896 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:03:33 GMT)" executed successfully
+INFO 2025-11-01 10:03:03,902 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:03:03,902 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:04:03 GMT)" executed successfully
+INFO 2025-11-01 10:03:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:02 GMT)" (scheduled at 2025-11-01 10:03:32.641451+00:00)
+INFO 2025-11-01 10:03:32,648 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:03:32,649 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:02 GMT)" executed successfully
+INFO 2025-11-01 10:03:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:03 GMT)" (scheduled at 2025-11-01 10:03:33.871564+00:00)
+INFO 2025-11-01 10:03:33,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:03:33,884 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:03 GMT)" executed successfully
+INFO 2025-11-01 10:04:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:32 GMT)" (scheduled at 2025-11-01 10:04:02.641451+00:00)
+INFO 2025-11-01 10:04:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:05:02 GMT)" (scheduled at 2025-11-01 10:04:02.645215+00:00)
+INFO 2025-11-01 10:04:02,660 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:04:02,665 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:32 GMT)" executed successfully
+INFO 2025-11-01 10:04:02,665 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:04:02,667 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:05:02 GMT)" executed successfully
+INFO 2025-11-01 10:04:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:33 GMT)" (scheduled at 2025-11-01 10:04:03.871564+00:00)
+INFO 2025-11-01 10:04:03,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:04:03,887 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:05:03 GMT)" (scheduled at 2025-11-01 10:04:03.872296+00:00)
+INFO 2025-11-01 10:04:03,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:04:33 GMT)" executed successfully
+INFO 2025-11-01 10:04:03,951 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:04:03,952 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:05:03 GMT)" executed successfully
+INFO 2025-11-01 10:04:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:02 GMT)" (scheduled at 2025-11-01 10:04:32.641451+00:00)
+INFO 2025-11-01 10:04:32,650 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:04:32,650 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:02 GMT)" executed successfully
+INFO 2025-11-01 10:04:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:03 GMT)" (scheduled at 2025-11-01 10:04:33.871564+00:00)
+INFO 2025-11-01 10:04:33,884 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:04:33,884 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:03 GMT)" executed successfully
+INFO 2025-11-01 10:05:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:32 GMT)" (scheduled at 2025-11-01 10:05:02.641451+00:00)
+INFO 2025-11-01 10:05:02,648 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:06:02 GMT)" (scheduled at 2025-11-01 10:05:02.645215+00:00)
+INFO 2025-11-01 10:05:02,676 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:05:02,686 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:32 GMT)" executed successfully
+INFO 2025-11-01 10:05:02,689 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:05:02,690 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:06:02 GMT)" executed successfully
+INFO 2025-11-01 10:05:03,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:33 GMT)" (scheduled at 2025-11-01 10:05:03.871564+00:00)
+INFO 2025-11-01 10:05:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:06:03 GMT)" (scheduled at 2025-11-01 10:05:03.872296+00:00)
+INFO 2025-11-01 10:05:03,922 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:05:03,926 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:05:33 GMT)" executed successfully
+INFO 2025-11-01 10:05:03,925 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:05:03,928 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:06:03 GMT)" executed successfully
+INFO 2025-11-01 10:05:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:02 GMT)" (scheduled at 2025-11-01 10:05:32.641451+00:00)
+INFO 2025-11-01 10:05:32,671 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:05:32,672 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:02 GMT)" executed successfully
+INFO 2025-11-01 10:05:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:03 GMT)" (scheduled at 2025-11-01 10:05:33.871564+00:00)
+INFO 2025-11-01 10:05:33,892 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:05:33,892 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:03 GMT)" executed successfully
+INFO 2025-11-01 10:06:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:32 GMT)" (scheduled at 2025-11-01 10:06:02.641451+00:00)
+INFO 2025-11-01 10:06:02,653 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:07:02 GMT)" (scheduled at 2025-11-01 10:06:02.645215+00:00)
+INFO 2025-11-01 10:06:02,662 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:06:02,664 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:32 GMT)" executed successfully
+INFO 2025-11-01 10:06:02,673 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:06:02,674 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:07:02 GMT)" executed successfully
+INFO 2025-11-01 10:06:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:33 GMT)" (scheduled at 2025-11-01 10:06:03.871564+00:00)
+INFO 2025-11-01 10:06:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:07:03 GMT)" (scheduled at 2025-11-01 10:06:03.872296+00:00)
+INFO 2025-11-01 10:06:03,882 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:06:03,885 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:07:03 GMT)" executed successfully
+INFO 2025-11-01 10:06:03,889 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:06:03,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:06:33 GMT)" executed successfully
+INFO 2025-11-01 10:06:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:02 GMT)" (scheduled at 2025-11-01 10:06:32.641451+00:00)
+INFO 2025-11-01 10:06:32,659 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:06:32,660 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:02 GMT)" executed successfully
+INFO 2025-11-01 10:06:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:03 GMT)" (scheduled at 2025-11-01 10:06:33.871564+00:00)
+INFO 2025-11-01 10:06:33,898 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:06:33,899 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:03 GMT)" executed successfully
+INFO 2025-11-01 10:07:02,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:32 GMT)" (scheduled at 2025-11-01 10:07:02.641451+00:00)
+INFO 2025-11-01 10:07:02,649 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:08:02 GMT)" (scheduled at 2025-11-01 10:07:02.645215+00:00)
+INFO 2025-11-01 10:07:02,669 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:07:02,684 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:08:02 GMT)" executed successfully
+INFO 2025-11-01 10:07:02,684 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:07:02,686 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:32 GMT)" executed successfully
+INFO 2025-11-01 10:07:03,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:33 GMT)" (scheduled at 2025-11-01 10:07:03.871564+00:00)
+INFO 2025-11-01 10:07:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:08:03 GMT)" (scheduled at 2025-11-01 10:07:03.872296+00:00)
+INFO 2025-11-01 10:07:03,906 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:07:03,907 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:07:33 GMT)" executed successfully
+INFO 2025-11-01 10:07:03,916 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:07:03,922 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:08:03 GMT)" executed successfully
+INFO 2025-11-01 10:07:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:02 GMT)" (scheduled at 2025-11-01 10:07:32.641451+00:00)
+INFO 2025-11-01 10:07:32,647 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:07:32,648 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:02 GMT)" executed successfully
+INFO 2025-11-01 10:07:33,254 basehttp "GET / HTTP/1.1" 200 21473
+INFO 2025-11-01 10:07:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:03 GMT)" (scheduled at 2025-11-01 10:07:33.871564+00:00)
+INFO 2025-11-01 10:07:33,881 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:07:33,882 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:03 GMT)" executed successfully
+WARNING 2025-11-01 10:07:37,525 log Forbidden: /tableau-de-bord-client/
+WARNING 2025-11-01 10:07:37,526 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 403 28
+WARNING 2025-11-01 10:07:42,643 log Forbidden: /tableau-de-bord-client/
+WARNING 2025-11-01 10:07:42,645 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 403 28
+INFO 2025-11-01 10:07:51,823 basehttp "GET /deconnexion/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:07:51,875 basehttp "GET / HTTP/1.1" 200 22548
+INFO 2025-11-01 10:08:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:32 GMT)" (scheduled at 2025-11-01 10:08:02.641451+00:00)
+INFO 2025-11-01 10:08:02,647 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:09:02 GMT)" (scheduled at 2025-11-01 10:08:02.645215+00:00)
+INFO 2025-11-01 10:08:02,669 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:08:02,670 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:32 GMT)" executed successfully
+INFO 2025-11-01 10:08:02,678 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:08:02,679 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:09:02 GMT)" executed successfully
+INFO 2025-11-01 10:08:03,002 basehttp "GET /acceder-boutique/ HTTP/1.1" 200 14414
+INFO 2025-11-01 10:08:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:33 GMT)" (scheduled at 2025-11-01 10:08:03.871564+00:00)
+INFO 2025-11-01 10:08:03,881 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:09:03 GMT)" (scheduled at 2025-11-01 10:08:03.872296+00:00)
+INFO 2025-11-01 10:08:03,899 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:08:03,900 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:08:33 GMT)" executed successfully
+INFO 2025-11-01 10:08:03,904 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:08:03,904 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:09:03 GMT)" executed successfully
+INFO 2025-11-01 10:08:10,890 basehttp "POST /acceder-boutique/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:08:10,960 basehttp "GET /tableau-de-bord/ HTTP/1.1" 200 22148
+INFO 2025-11-01 10:08:14,557 basehttp "GET / HTTP/1.1" 200 21473
+INFO 2025-11-01 10:08:31,701 basehttp "GET /deconnexion/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:08:31,820 basehttp "GET / HTTP/1.1" 200 22548
+INFO 2025-11-01 10:08:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:02 GMT)" (scheduled at 2025-11-01 10:08:32.641451+00:00)
+INFO 2025-11-01 10:08:32,649 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:08:32,650 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:02 GMT)" executed successfully
+INFO 2025-11-01 10:08:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:03 GMT)" (scheduled at 2025-11-01 10:08:33.871564+00:00)
+INFO 2025-11-01 10:08:33,890 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:08:33,890 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:03 GMT)" executed successfully
+INFO 2025-11-01 10:08:36,616 basehttp "GET /acceder-boutique/ HTTP/1.1" 200 14414
+INFO 2025-11-01 10:08:46,292 basehttp "POST /acceder-boutique/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:08:46,338 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 200 7690
+INFO 2025-11-01 10:08:49,477 basehttp "GET / HTTP/1.1" 200 21474
+INFO 2025-11-01 10:08:54,921 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 200 7690
+INFO 2025-11-01 10:08:58,058 basehttp "GET /deconnexion/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:08:58,078 basehttp "GET / HTTP/1.1" 200 22548
+INFO 2025-11-01 10:09:02,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:32 GMT)" (scheduled at 2025-11-01 10:09:02.641451+00:00)
+INFO 2025-11-01 10:09:02,650 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:10:02 GMT)" (scheduled at 2025-11-01 10:09:02.645215+00:00)
+INFO 2025-11-01 10:09:02,665 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:09:02,671 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:32 GMT)" executed successfully
+INFO 2025-11-01 10:09:02,686 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:09:02,687 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:10:02 GMT)" executed successfully
+INFO 2025-11-01 10:09:03,874 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:33 GMT)" (scheduled at 2025-11-01 10:09:03.871564+00:00)
+INFO 2025-11-01 10:09:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:10:03 GMT)" (scheduled at 2025-11-01 10:09:03.872296+00:00)
+INFO 2025-11-01 10:09:03,904 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:09:03,906 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:10:03 GMT)" executed successfully
+INFO 2025-11-01 10:09:03,917 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:09:03,918 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:09:33 GMT)" executed successfully
+INFO 2025-11-01 10:09:32,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:02 GMT)" (scheduled at 2025-11-01 10:09:32.641451+00:00)
+INFO 2025-11-01 10:09:32,666 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:09:32,667 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:02 GMT)" executed successfully
+INFO 2025-11-01 10:09:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:03 GMT)" (scheduled at 2025-11-01 10:09:33.871564+00:00)
+INFO 2025-11-01 10:09:33,894 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:09:33,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:03 GMT)" executed successfully
+INFO 2025-11-01 10:10:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:32 GMT)" (scheduled at 2025-11-01 10:10:02.641451+00:00)
+INFO 2025-11-01 10:10:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:11:02 GMT)" (scheduled at 2025-11-01 10:10:02.645215+00:00)
+INFO 2025-11-01 10:10:02,651 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:10:02,651 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:32 GMT)" executed successfully
+INFO 2025-11-01 10:10:02,656 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:10:02,656 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:11:02 GMT)" executed successfully
+INFO 2025-11-01 10:10:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:33 GMT)" (scheduled at 2025-11-01 10:10:03.871564+00:00)
+INFO 2025-11-01 10:10:03,874 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:11:03 GMT)" (scheduled at 2025-11-01 10:10:03.872296+00:00)
+INFO 2025-11-01 10:10:03,884 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:10:03,885 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:10:33 GMT)" executed successfully
+INFO 2025-11-01 10:10:03,887 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:10:03,887 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:11:03 GMT)" executed successfully
+INFO 2025-11-01 10:10:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:02 GMT)" (scheduled at 2025-11-01 10:10:32.641451+00:00)
+INFO 2025-11-01 10:10:32,652 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:10:32,652 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:02 GMT)" executed successfully
+INFO 2025-11-01 10:10:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:03 GMT)" (scheduled at 2025-11-01 10:10:33.871564+00:00)
+INFO 2025-11-01 10:10:33,883 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:10:33,883 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:03 GMT)" executed successfully
+INFO 2025-11-01 10:11:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:32 GMT)" (scheduled at 2025-11-01 10:11:02.641451+00:00)
+INFO 2025-11-01 10:11:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:12:02 GMT)" (scheduled at 2025-11-01 10:11:02.645215+00:00)
+INFO 2025-11-01 10:11:02,661 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:11:02,662 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:12:02 GMT)" executed successfully
+INFO 2025-11-01 10:11:02,662 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:11:02,667 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:32 GMT)" executed successfully
+INFO 2025-11-01 10:11:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:33 GMT)" (scheduled at 2025-11-01 10:11:03.871564+00:00)
+INFO 2025-11-01 10:11:03,872 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:12:03 GMT)" (scheduled at 2025-11-01 10:11:03.872296+00:00)
+INFO 2025-11-01 10:11:03,905 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:11:03,917 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:11:33 GMT)" executed successfully
+INFO 2025-11-01 10:11:03,933 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:11:03,934 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:12:03 GMT)" executed successfully
+INFO 2025-11-01 10:11:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:02 GMT)" (scheduled at 2025-11-01 10:11:32.641451+00:00)
+INFO 2025-11-01 10:11:32,648 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:11:32,659 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:02 GMT)" executed successfully
+INFO 2025-11-01 10:11:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:03 GMT)" (scheduled at 2025-11-01 10:11:33.871564+00:00)
+INFO 2025-11-01 10:11:33,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:11:33,878 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:03 GMT)" executed successfully
+INFO 2025-11-01 10:12:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:32 GMT)" (scheduled at 2025-11-01 10:12:02.641451+00:00)
+INFO 2025-11-01 10:12:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:13:02 GMT)" (scheduled at 2025-11-01 10:12:02.645215+00:00)
+INFO 2025-11-01 10:12:02,663 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:12:02,673 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:32 GMT)" executed successfully
+INFO 2025-11-01 10:12:02,672 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:12:02,673 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:13:02 GMT)" executed successfully
+INFO 2025-11-01 10:12:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:33 GMT)" (scheduled at 2025-11-01 10:12:03.871564+00:00)
+INFO 2025-11-01 10:12:03,876 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:13:03 GMT)" (scheduled at 2025-11-01 10:12:03.872296+00:00)
+INFO 2025-11-01 10:12:03,896 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:12:03,899 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:12:03,901 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:12:33 GMT)" executed successfully
+INFO 2025-11-01 10:12:03,902 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:13:03 GMT)" executed successfully
+INFO 2025-11-01 10:12:32,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:02 GMT)" (scheduled at 2025-11-01 10:12:32.641451+00:00)
+INFO 2025-11-01 10:12:32,683 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:12:32,685 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:02 GMT)" executed successfully
+INFO 2025-11-01 10:12:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:03 GMT)" (scheduled at 2025-11-01 10:12:33.871564+00:00)
+INFO 2025-11-01 10:12:33,894 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:12:33,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:03 GMT)" executed successfully
+INFO 2025-11-01 10:13:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:32 GMT)" (scheduled at 2025-11-01 10:13:02.641451+00:00)
+INFO 2025-11-01 10:13:02,648 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:14:02 GMT)" (scheduled at 2025-11-01 10:13:02.645215+00:00)
+INFO 2025-11-01 10:13:02,661 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:13:02,666 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:32 GMT)" executed successfully
+INFO 2025-11-01 10:13:02,669 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:13:02,671 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:14:02 GMT)" executed successfully
+INFO 2025-11-01 10:13:03,874 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:33 GMT)" (scheduled at 2025-11-01 10:13:03.871564+00:00)
+INFO 2025-11-01 10:13:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:14:03 GMT)" (scheduled at 2025-11-01 10:13:03.872296+00:00)
+INFO 2025-11-01 10:13:03,915 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:13:03,917 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:13:03,917 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:14:03 GMT)" executed successfully
+INFO 2025-11-01 10:13:03,918 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:13:33 GMT)" executed successfully
+INFO 2025-11-01 10:13:32,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:02 GMT)" (scheduled at 2025-11-01 10:13:32.641451+00:00)
+INFO 2025-11-01 10:13:32,803 tasks Statut mis à jour: 0 en ligne, 1 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:13:32,804 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:02 GMT)" executed successfully
+INFO 2025-11-01 10:13:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:03 GMT)" (scheduled at 2025-11-01 10:13:33.871564+00:00)
+INFO 2025-11-01 10:13:33,899 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:13:33,900 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:03 GMT)" executed successfully
+INFO 2025-11-01 10:14:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:32 GMT)" (scheduled at 2025-11-01 10:14:02.641451+00:00)
+INFO 2025-11-01 10:14:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:15:02 GMT)" (scheduled at 2025-11-01 10:14:02.645215+00:00)
+INFO 2025-11-01 10:14:02,655 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:14:02,661 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:32 GMT)" executed successfully
+INFO 2025-11-01 10:14:02,660 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:14:02,663 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:15:02 GMT)" executed successfully
+INFO 2025-11-01 10:14:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:33 GMT)" (scheduled at 2025-11-01 10:14:03.871564+00:00)
+INFO 2025-11-01 10:14:03,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:14:03,880 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:15:03 GMT)" (scheduled at 2025-11-01 10:14:03.872296+00:00)
+INFO 2025-11-01 10:14:03,881 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:14:33 GMT)" executed successfully
+INFO 2025-11-01 10:14:03,890 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:14:03,891 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:15:03 GMT)" executed successfully
+INFO 2025-11-01 10:14:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:02 GMT)" (scheduled at 2025-11-01 10:14:32.641451+00:00)
+INFO 2025-11-01 10:14:32,650 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:14:32,652 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:02 GMT)" executed successfully
+INFO 2025-11-01 10:14:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:03 GMT)" (scheduled at 2025-11-01 10:14:33.871564+00:00)
+INFO 2025-11-01 10:14:33,894 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:14:33,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:03 GMT)" executed successfully
+INFO 2025-11-01 10:15:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:32 GMT)" (scheduled at 2025-11-01 10:15:02.641451+00:00)
+INFO 2025-11-01 10:15:02,650 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:16:02 GMT)" (scheduled at 2025-11-01 10:15:02.645215+00:00)
+INFO 2025-11-01 10:15:02,672 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:15:02,681 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:32 GMT)" executed successfully
+INFO 2025-11-01 10:15:02,687 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:15:02,688 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:16:02 GMT)" executed successfully
+INFO 2025-11-01 10:15:03,874 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:33 GMT)" (scheduled at 2025-11-01 10:15:03.871564+00:00)
+INFO 2025-11-01 10:15:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:16:03 GMT)" (scheduled at 2025-11-01 10:15:03.872296+00:00)
+INFO 2025-11-01 10:15:03,914 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:15:03,923 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:15:33 GMT)" executed successfully
+INFO 2025-11-01 10:15:03,931 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:15:03,932 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:16:03 GMT)" executed successfully
+INFO 2025-11-01 10:15:32,643 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:02 GMT)" (scheduled at 2025-11-01 10:15:32.641451+00:00)
+INFO 2025-11-01 10:15:32,661 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:15:32,662 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:02 GMT)" executed successfully
+WARNING 2025-11-01 10:15:36,025 base Run time of job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:03 GMT)" was missed by 0:00:02.153660
+INFO 2025-11-01 10:16:03,874 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:33 GMT)" (scheduled at 2025-11-01 10:16:03.871564+00:00)
+INFO 2025-11-01 10:16:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:17:03 GMT)" (scheduled at 2025-11-01 10:16:03.872296+00:00)
+INFO 2025-11-01 10:16:03,894 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:16:03,907 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:33 GMT)" executed successfully
+INFO 2025-11-01 10:16:03,912 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:16:03,913 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:17:03 GMT)" executed successfully
+WARNING 2025-11-01 10:16:04,795 base Run time of job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:16:32 GMT)" was missed by 0:00:02.154169
+WARNING 2025-11-01 10:16:04,797 base Run time of job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:17:02 GMT)" was missed by 0:00:02.151978
+INFO 2025-11-01 10:16:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:02 GMT)" (scheduled at 2025-11-01 10:16:32.641451+00:00)
+INFO 2025-11-01 10:16:32,650 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:16:32,654 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:02 GMT)" executed successfully
+INFO 2025-11-01 10:16:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:03 GMT)" (scheduled at 2025-11-01 10:16:33.871564+00:00)
+INFO 2025-11-01 10:16:33,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:16:33,879 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:03 GMT)" executed successfully
+INFO 2025-11-01 10:16:55,937 basehttp "GET /acceder-boutique/ HTTP/1.1" 200 14414
+INFO 2025-11-01 10:17:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:32 GMT)" (scheduled at 2025-11-01 10:17:02.641451+00:00)
+INFO 2025-11-01 10:17:02,652 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:18:02 GMT)" (scheduled at 2025-11-01 10:17:02.645215+00:00)
+INFO 2025-11-01 10:17:02,658 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:17:02,683 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:32 GMT)" executed successfully
+INFO 2025-11-01 10:17:02,680 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:17:02,684 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:18:02 GMT)" executed successfully
+INFO 2025-11-01 10:17:03,308 basehttp "POST /acceder-boutique/ HTTP/1.1" 302 0
+INFO 2025-11-01 10:17:03,379 basehttp "GET /tableau-de-bord/ HTTP/1.1" 200 22148
+INFO 2025-11-01 10:17:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:33 GMT)" (scheduled at 2025-11-01 10:17:03.871564+00:00)
+INFO 2025-11-01 10:17:03,876 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:18:03 GMT)" (scheduled at 2025-11-01 10:17:03.872296+00:00)
+INFO 2025-11-01 10:17:03,894 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:17:03,895 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:17:33 GMT)" executed successfully
+INFO 2025-11-01 10:17:03,898 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:17:03,899 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:18:03 GMT)" executed successfully
+INFO 2025-11-01 10:17:05,313 basehttp "GET / HTTP/1.1" 200 21683
+WARNING 2025-11-01 10:17:12,053 log Forbidden: /tableau-de-bord-client/
+WARNING 2025-11-01 10:17:12,054 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 403 28
+INFO 2025-11-01 10:17:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:18:02 GMT)" (scheduled at 2025-11-01 10:17:32.641451+00:00)
+INFO 2025-11-01 10:17:32,657 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:17:32,662 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:18:02 GMT)" executed successfully
+INFO 2025-11-01 10:17:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:18:03 GMT)" (scheduled at 2025-11-01 10:17:33.871564+00:00)
+INFO 2025-11-01 10:17:33,882 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:17:33,883 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:18:03 GMT)" executed successfully
+WARNING 2025-11-01 10:21:23,264 log Forbidden: /tableau-de-bord-client/
+WARNING 2025-11-01 10:21:23,265 basehttp "GET /tableau-de-bord-client/ HTTP/1.1" 403 28
+WARNING 2025-11-01 10:21:25,642 base Run time of job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:21:32 GMT)" was missed by 0:00:23.000875
+WARNING 2025-11-01 10:21:25,642 base Run time of job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:22:02 GMT)" was missed by 0:00:22.997408
+WARNING 2025-11-01 10:21:26,872 base Run time of job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:21:33 GMT)" was missed by 0:00:23.000825
+WARNING 2025-11-01 10:21:26,872 base Run time of job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:22:03 GMT)" was missed by 0:00:23.000446
+INFO 2025-11-01 10:21:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:02 GMT)" (scheduled at 2025-11-01 10:21:32.641451+00:00)
+INFO 2025-11-01 10:21:32,652 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:21:32,653 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:02 GMT)" executed successfully
+INFO 2025-11-01 10:21:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:03 GMT)" (scheduled at 2025-11-01 10:21:33.871564+00:00)
+INFO 2025-11-01 10:21:33,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:21:33,882 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:03 GMT)" executed successfully
+INFO 2025-11-01 10:22:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:32 GMT)" (scheduled at 2025-11-01 10:22:02.641451+00:00)
+INFO 2025-11-01 10:22:02,646 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:23:02 GMT)" (scheduled at 2025-11-01 10:22:02.645215+00:00)
+INFO 2025-11-01 10:22:02,662 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:22:02,667 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:23:02 GMT)" executed successfully
+INFO 2025-11-01 10:22:02,666 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:22:02,668 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:32 GMT)" executed successfully
+INFO 2025-11-01 10:22:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:33 GMT)" (scheduled at 2025-11-01 10:22:03.871564+00:00)
+INFO 2025-11-01 10:22:03,876 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:23:03 GMT)" (scheduled at 2025-11-01 10:22:03.872296+00:00)
+INFO 2025-11-01 10:22:03,889 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:22:03,893 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:22:33 GMT)" executed successfully
+INFO 2025-11-01 10:22:03,893 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:22:03,895 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:23:03 GMT)" executed successfully
+INFO 2025-11-01 10:22:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:02 GMT)" (scheduled at 2025-11-01 10:22:32.641451+00:00)
+INFO 2025-11-01 10:22:32,656 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:22:32,659 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:02 GMT)" executed successfully
+INFO 2025-11-01 10:22:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:03 GMT)" (scheduled at 2025-11-01 10:22:33.871564+00:00)
+INFO 2025-11-01 10:22:33,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:22:33,879 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:03 GMT)" executed successfully
+INFO 2025-11-01 10:23:02,049 basehttp "GET /boutiques/ HTTP/1.1" 200 14198
+INFO 2025-11-01 10:23:02,376 basehttp "GET /media/shop_images/Metallic%20Eagle%20Logo%20Design%20PNG%20Images%2C%20Eagle%2C%20Symbol%2C%20Metal%20PNG%20Transparent%20Background%20-%20Pngtree.jpeg HTTP/1.1" 200 6844
+INFO 2025-11-01 10:23:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:32 GMT)" (scheduled at 2025-11-01 10:23:02.641451+00:00)
+INFO 2025-11-01 10:23:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:24:02 GMT)" (scheduled at 2025-11-01 10:23:02.645215+00:00)
+INFO 2025-11-01 10:23:02,662 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:23:02,662 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:32 GMT)" executed successfully
+INFO 2025-11-01 10:23:02,665 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:23:02,665 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:24:02 GMT)" executed successfully
+INFO 2025-11-01 10:23:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:33 GMT)" (scheduled at 2025-11-01 10:23:03.871564+00:00)
+INFO 2025-11-01 10:23:03,873 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:24:03 GMT)" (scheduled at 2025-11-01 10:23:03.872296+00:00)
+INFO 2025-11-01 10:23:03,891 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:23:03,898 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:23:33 GMT)" executed successfully
+INFO 2025-11-01 10:23:03,898 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:23:03,899 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:24:03 GMT)" executed successfully
+INFO 2025-11-01 10:23:07,950 basehttp "GET /tableau-de-bord/ HTTP/1.1" 200 22148
+INFO 2025-11-01 10:23:24,967 basehttp "GET /tableau-de-bord/boutique/ HTTP/1.1" 200 25202
+INFO 2025-11-01 10:23:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:02 GMT)" (scheduled at 2025-11-01 10:23:32.641451+00:00)
+INFO 2025-11-01 10:23:32,649 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:23:32,649 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:02 GMT)" executed successfully
+INFO 2025-11-01 10:23:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:03 GMT)" (scheduled at 2025-11-01 10:23:33.871564+00:00)
+INFO 2025-11-01 10:23:33,878 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:23:33,879 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:03 GMT)" executed successfully
+INFO 2025-11-01 10:24:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:32 GMT)" (scheduled at 2025-11-01 10:24:02.641451+00:00)
+INFO 2025-11-01 10:24:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:25:02 GMT)" (scheduled at 2025-11-01 10:24:02.645215+00:00)
+INFO 2025-11-01 10:24:02,655 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:24:02,667 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:32 GMT)" executed successfully
+INFO 2025-11-01 10:24:02,663 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:24:02,672 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:25:02 GMT)" executed successfully
+INFO 2025-11-01 10:24:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:33 GMT)" (scheduled at 2025-11-01 10:24:03.871564+00:00)
+INFO 2025-11-01 10:24:03,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:24:03,879 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:24:33 GMT)" executed successfully
+INFO 2025-11-01 10:24:03,879 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:25:03 GMT)" (scheduled at 2025-11-01 10:24:03.872296+00:00)
+INFO 2025-11-01 10:24:03,899 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:24:03,899 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:25:03 GMT)" executed successfully
+INFO 2025-11-01 10:24:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:02 GMT)" (scheduled at 2025-11-01 10:24:32.641451+00:00)
+INFO 2025-11-01 10:24:32,649 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:24:32,650 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:02 GMT)" executed successfully
+INFO 2025-11-01 10:24:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:03 GMT)" (scheduled at 2025-11-01 10:24:33.871564+00:00)
+INFO 2025-11-01 10:24:33,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:24:33,887 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:03 GMT)" executed successfully
+INFO 2025-11-01 10:25:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:32 GMT)" (scheduled at 2025-11-01 10:25:02.641451+00:00)
+INFO 2025-11-01 10:25:02,645 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:26:02 GMT)" (scheduled at 2025-11-01 10:25:02.645215+00:00)
+INFO 2025-11-01 10:25:02,662 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:25:02,667 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:32 GMT)" executed successfully
+INFO 2025-11-01 10:25:02,664 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:25:02,669 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:26:02 GMT)" executed successfully
+INFO 2025-11-01 10:25:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:33 GMT)" (scheduled at 2025-11-01 10:25:03.871564+00:00)
+INFO 2025-11-01 10:25:03,875 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:26:03 GMT)" (scheduled at 2025-11-01 10:25:03.872296+00:00)
+INFO 2025-11-01 10:25:03,896 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:25:03,898 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:26:03 GMT)" executed successfully
+INFO 2025-11-01 10:25:03,897 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:25:03,899 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:25:33 GMT)" executed successfully
+INFO 2025-11-01 10:25:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:02 GMT)" (scheduled at 2025-11-01 10:25:32.641451+00:00)
+INFO 2025-11-01 10:25:32,657 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:25:32,659 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:02 GMT)" executed successfully
+INFO 2025-11-01 10:25:33,873 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:03 GMT)" (scheduled at 2025-11-01 10:25:33.871564+00:00)
+INFO 2025-11-01 10:25:33,887 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:25:33,887 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:03 GMT)" executed successfully
+INFO 2025-11-01 10:26:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:32 GMT)" (scheduled at 2025-11-01 10:26:02.641451+00:00)
+INFO 2025-11-01 10:26:02,654 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:27:02 GMT)" (scheduled at 2025-11-01 10:26:02.645215+00:00)
+INFO 2025-11-01 10:26:02,671 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:26:02,672 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:32 GMT)" executed successfully
+INFO 2025-11-01 10:26:02,677 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:26:02,681 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:27:02 GMT)" executed successfully
+INFO 2025-11-01 10:26:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:33 GMT)" (scheduled at 2025-11-01 10:26:03.871564+00:00)
+INFO 2025-11-01 10:26:03,876 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:27:03 GMT)" (scheduled at 2025-11-01 10:26:03.872296+00:00)
+INFO 2025-11-01 10:26:03,910 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:26:03,914 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:26:33 GMT)" executed successfully
+INFO 2025-11-01 10:26:03,914 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:26:03,916 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:27:03 GMT)" executed successfully
+INFO 2025-11-01 10:26:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:02 GMT)" (scheduled at 2025-11-01 10:26:32.641451+00:00)
+INFO 2025-11-01 10:26:32,651 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:26:32,652 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:02 GMT)" executed successfully
+INFO 2025-11-01 10:26:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:03 GMT)" (scheduled at 2025-11-01 10:26:33.871564+00:00)
+INFO 2025-11-01 10:26:33,880 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:26:33,881 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:03 GMT)" executed successfully
+INFO 2025-11-01 10:26:39,463 basehttp "GET / HTTP/1.1" 200 21722
+INFO 2025-11-01 10:26:44,242 basehttp "GET /tableau-de-bord/boutique/ HTTP/1.1" 200 25202
+INFO 2025-11-01 10:27:00,121 basehttp "GET /tableau-de-bord/ HTTP/1.1" 200 22148
+INFO 2025-11-01 10:27:02,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:32 GMT)" (scheduled at 2025-11-01 10:27:02.641451+00:00)
+INFO 2025-11-01 10:27:02,647 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:28:02 GMT)" (scheduled at 2025-11-01 10:27:02.645215+00:00)
+INFO 2025-11-01 10:27:02,658 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:27:02,658 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:32 GMT)" executed successfully
+INFO 2025-11-01 10:27:02,666 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:27:02,667 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:28:02 GMT)" executed successfully
+INFO 2025-11-01 10:27:03,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:33 GMT)" (scheduled at 2025-11-01 10:27:03.871564+00:00)
+INFO 2025-11-01 10:27:03,878 base Running job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:28:03 GMT)" (scheduled at 2025-11-01 10:27:03.872296+00:00)
+INFO 2025-11-01 10:27:03,898 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:27:03,900 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:27:33 GMT)" executed successfully
+INFO 2025-11-01 10:27:03,898 tasks Activité chat vérifiée: 0 commerçants actifs
+INFO 2025-11-01 10:27:03,901 base Job "Vérification activité chat (trigger: interval[0:01:00], next run at: 2025-11-01 10:28:03 GMT)" executed successfully
+INFO 2025-11-01 10:27:32,642 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:28:02 GMT)" (scheduled at 2025-11-01 10:27:32.641451+00:00)
+INFO 2025-11-01 10:27:32,671 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:27:32,672 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:28:02 GMT)" executed successfully
+INFO 2025-11-01 10:27:33,872 base Running job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:28:03 GMT)" (scheduled at 2025-11-01 10:27:33.871564+00:00)
+INFO 2025-11-01 10:27:33,879 tasks Statut mis à jour: 0 en ligne, 0 hors ligne, 0 sessions expirées
+INFO 2025-11-01 10:27:33,881 base Job "Mise à jour statut commerçants (trigger: interval[0:00:30], next run at: 2025-11-01 10:28:03 GMT)" executed successfully
+INFO 2025-11-01 10:27:39,924 base Scheduler has been shut down
+INFO 2025-11-01 10:27:40,215 base Scheduler has been shut down
