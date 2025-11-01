@@ -1,452 +1,792 @@
-<!-- Fichier : shop/templates/manage_shop.html -->
-{% extends 'base_dashboard.html' %}
-{% load static %}
-
-{% block title %}Gérer ma boutique - {{ shop.name }}{% endblock %}
-
-{% block extra_css %}
-<style>
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid var(--color-border);
-        padding-bottom: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .header-content h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 2.5rem;
-        color: var(--color-primary);
-        margin: 0;
-    }
-    
-    .form-container {
-        background-color: #fff;
-        padding: 2rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .form-section {
-        margin-bottom: 2rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #eaeaea;
-    }
-
-    .form-section:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .form-section h2 {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.5rem;
-        color: var(--color-primary);
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--color-accent);
-    }
-
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: var(--color-text);
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #e0e0e0;
-        border-radius: 0.5rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        font-family: inherit;
-    }
-    
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: var(--color-accent);
-        box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.2);
-    }
-    
-    .form-group textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-    
-    .image-preview {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        border: 2px dashed #e0e0e0;
-    }
-    
-    .image-placeholder {
-        width: 150px;
-        height: 150px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-        color: #6c757d;
-    }
-    
-    .file-input-wrapper {
-        position: relative;
-        overflow: hidden;
-        display: inline-block;
-    }
-    
-    .file-input-wrapper input[type="file"] {
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-    }
-    
-    .file-input-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: var(--color-primary);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    
-    .file-input-button:hover {
-        background-color: #1A3B57;
-    }
-    
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .checkbox-group input[type="checkbox"] {
-        width: auto;
-        margin: 0;
-    }
-    
-    .url-preview {
-        background-color: #f8f9fa;
-        padding: 0.75rem;
-        border-radius: 0.375rem;
-        margin-top: 0.5rem;
-        font-family: monospace;
-        word-break: break-all;
-    }
-    
-    .url-preview a {
-        color: var(--color-accent);
-        text-decoration: none;
-    }
-    
-    .url-preview a:hover {
-        text-decoration: underline;
-    }
-    
-    .cta-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background-color: var(--color-primary);
-        color: #fff;
-        padding: 0.75rem 2rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.2s, transform 0.2s;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        margin-top: 1rem;
-    }
-
-    .cta-button:hover {
-        background-color: #1A3B57;
-        transform: translateY(-2px);
-    }
-
-    .share-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: #007BFF;
-        color: #fff;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: bold;
-        text-decoration: none;
-        transition: background-color 0.2s, transform 0.2s;
-        border: none;
-        cursor: pointer;
-    }
-
-    .share-button:hover {
-        background-color: #0056b3;
-        transform: translateY(-2px);
-    }
-    
-    .alert {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        border-left: 4px solid;
-    }
-    
-    .alert-info {
-        background-color: #e8f4fd;
-        border-color: #007BFF;
-        color: #0056b3;
-    }
-    
-    .form-help-text {
-        font-size: 0.875rem;
-        color: #6c757d;
-        margin-top: 0.25rem;
-    }
-    
-    @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            align-items: flex-start;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gérer ma boutique - DEANNA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #0B1C2A;
+            --color-accent: #CFAF70;
+            --color-bg-light: #FAF9F6;
+            --color-text: #2C2C2C;
+            --color-text-secondary: #6C6C6C;
+            --color-border: #1A3B57;
+            --color-success: #28a745;
+            --color-danger: #dc3545;
+            --color-warning: #ffc107;
+            --color-info: #17a2b8;
         }
-        
-        .header-content h1 {
-            font-size: 2rem;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        .form-container {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--color-bg-light) 0%, #f0f2f5 100%);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 1rem;
             padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(11, 28, 42, 0.1);
+            border: 1px solid rgba(11, 28, 42, 0.1);
         }
-    }
-</style>
-{% endblock %}
 
-{% block content %}
-    <div class="header-content">
-        <h1>Gérer ma boutique</h1>
-        <button id="shareButton" class="share-button">
-            <i class="fas fa-share-alt"></i> Partager le lien
-        </button>
-    </div>
-    
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: #1a3b57;
+            transform: translateX(-3px);
+        }
+
+        .header-title h1 {
+            color: var(--color-primary);
+            font-size: 1.75rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            color: var(--color-text-secondary);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .share-button {
+            background: var(--color-success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .share-button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(11, 28, 42, 0.1);
+            border: 1px solid rgba(11, 28, 42, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--color-accent);
+        }
+
+        .section-header i {
+            color: var(--color-accent);
+            font-size: 1.25rem;
+        }
+
+        .section-header h2 {
+            color: var(--color-primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e9ecef;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(207, 175, 112, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* Image Section */
+        .image-section {
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 1rem;
+            border: 3px solid var(--color-accent);
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 8px 25px rgba(11, 28, 42, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .image-placeholder {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 3px dashed #ced4da;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-secondary);
+            margin: 0 auto 1.5rem;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .image-placeholder:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+        }
+
+        .file-input-button {
+            background: var(--color-primary);
+            color: white;
+            padding: 1rem 1.75rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .file-input-button:hover {
+            background: #1a3b57;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(11, 28, 42, 0.2);
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* URL Section */
+        .url-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .url-prefix {
+            color: var(--color-text-secondary);
+            font-weight: 600;
+            white-space: nowrap;
+            background: #f8f9fa;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .url-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .url-preview {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-top: 1rem;
+            border: 1px solid #e9ecef;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .url-preview a {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .url-preview a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 0.75rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-group:hover {
+            border-color: var(--color-accent);
+            background: #fff;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 1.05rem;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            background: linear-gradient(135deg, var(--color-primary) 0%, #1a3b57 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            box-shadow: 0 8px 25px rgba(11, 28, 42, 0.2);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(11, 28, 42, 0.3);
+            background: linear-gradient(135deg, #1a3b57 0%, var(--color-primary) 100%);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--color-success);
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: var(--color-danger);
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #e8f4fd;
+            border-color: var(--color-info);
+            color: #0056b3;
+        }
+
+        /* Help Text */
+        .help-text {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.5rem;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .help-text i {
+            color: var(--color-accent);
+            margin-top: 0.1rem;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+
+            .header {
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+            }
+
+            .header-top {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .back-button {
+                align-self: flex-start;
+            }
+
+            .header-title {
+                text-align: center;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .share-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .url-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .url-input {
+                min-width: 100%;
+            }
+
+            .url-prefix {
+                text-align: center;
+                padding: 0.75rem;
+            }
+
+            .image-preview,
+            .image-placeholder {
+                width: 150px;
+                height: 150px;
+            }
+
+            .file-input-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .checkbox-group {
+                padding: 0.75rem;
+            }
+
+            .submit-button {
+                padding: 1.25rem 1.5rem;
+                font-size: 1rem;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 0.875rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+
+            .main-content {
+                padding: 1.25rem;
+                border-radius: 0.75rem;
+            }
+
+            .image-preview,
+            .image-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .help-text {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <button onclick="history.back()" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour
+                </button>
+                <div class="header-title">
+                    <h1>Gérer ma boutique</h1>
+                    <p>Configurez les paramètres et l'apparence de votre boutique en ligne</p>
+                </div>
+                <button id="shareButton" class="share-button">
+                    <i class="fas fa-share-alt"></i> Partager
+                </button>
             </div>
-        {% endfor %}
-    {% endif %}
-    
-    <div class="form-container">
-        <form method="post" enctype="multipart/form-data" id="shopForm">
-            {% csrf_token %}
-            
-            <div class="form-section">
-                <h2>Informations de la boutique</h2>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <form method="post" enctype="multipart/form-data" id="shopForm">
+                {% csrf_token %}
                 
-                <div class="form-group">
-                    <label>Image actuelle</label>
-                    {% if shop.image %}
-                        <img src="{{ shop.image.url }}" alt="Image de la boutique" class="image-preview" id="currentImage">
-                    {% else %}
-                        <div class="image-placeholder" id="currentImagePlaceholder">
-                            <i class="fas fa-store fa-2x"></i>
-                        </div>
-                    {% endif %}
+                <!-- Section Informations de la boutique -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-store"></i>
+                        <h2>Informations de la boutique</h2>
+                    </div>
                     
-                    <div class="file-input-wrapper">
-                        <button type="button" class="file-input-button">
-                            <i class="fas fa-upload"></i> Changer l'image
-                        </button>
-                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(this)">
+                    <div class="form-group image-section">
+                        <label class="current-image-label">Image actuelle de la boutique</label>
+                        {% if shop.image %}
+                            <img src="{{ shop.image.url }}" alt="Image de la boutique" class="image-preview" id="currentImage">
+                        {% else %}
+                            <div class="image-placeholder" id="currentImagePlaceholder">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="file-input-wrapper">
+                            <button type="button" class="file-input-button">
+                                <i class="fas fa-upload"></i> Changer l'image
+                            </button>
+                            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(this)">
+                        </div>
+                        <div class="help-text">
+                            <i class="fas fa-info-circle"></i> 
+                            Formats acceptés : JPG, PNG, WEBP. Taille maximale : 5MB. Image recommandée : 400x400 pixels.
+                        </div>
                     </div>
-                    <div class="form-help-text">Format recommandé: JPG, PNG ou WEBP. Taille max: 5MB</div>
-                </div>
 
-                <div class="form-group">
-                    <label for="description">Description de la boutique</label>
-                    <textarea id="description" name="description" rows="5" placeholder="Décrivez votre boutique, vos produits et vos valeurs...">{{ shop.description }}</textarea>
-                    <div class="form-help-text">Cette description sera visible par les clients visitant votre boutique.</div>
+                    <div class="form-group">
+                        <label for="description">Description de la boutique</label>
+                        <textarea id="description" name="description" placeholder="Décrivez votre boutique, vos produits, votre histoire et vos valeurs...">{{ shop.description }}</textarea>
+                        <div class="help-text">
+                            <i class="fas fa-lightbulb"></i> 
+                            Cette description sera visible par les clients visitant votre boutique. Soignez votre présentation !
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="form-section">
-                <h2>Paramètres de visibilité</h2>
                 
-                <div class="form-group">
-                    <label for="shareable_link_slug">Identifiant personnalisé</label>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gray-500">
-                            {{ request.scheme }}://{{ request.get_host }}/boutiques/
-                        </span>
-                        <input type="text" id="shareable_link_slug" name="shareable_link_slug" 
-                               value="{{ shop_settings.shareable_link_slug|default:request.user.username }}"
-                               pattern="[a-zA-Z0-9_-]+" 
-                               title="Seules les lettres, chiffres, tirets et underscores sont autorisés">
+                <!-- Section Paramètres de visibilité -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="fas fa-eye"></i>
+                        <h2>Paramètres de visibilité</h2>
                     </div>
-                    <div class="url-preview">
-                        Votre lien: <a href="{{ shop_link }}" target="_blank" id="shopLinkPreview">{{ shop_link }}</a>
+                    
+                    <div class="form-group">
+                        <label for="shareable_link_slug">Identifiant personnalisé de votre boutique</label>
+                        <div class="url-input-group">
+                            <span class="url-prefix">{{ request.scheme }}://{{ request.get_host }}/boutiques/</span>
+                            <input type="text" id="shareable_link_slug" name="shareable_link_slug" 
+                                   value="{{ shop_settings.shareable_link_slug|default:request.user.username }}"
+                                   pattern="[a-zA-Z0-9_-]+"
+                                   class="url-input"
+                                   placeholder="Votre identifiant personnalisé">
+                        </div>
+                        <div class="url-preview">
+                            <strong><i class="fas fa-link"></i> Votre lien public :</strong> 
+                            <a href="{{ shop_link }}" target="_blank" id="shopLinkPreview">{{ shop_link }}</a>
+                        </div>
+                        <div class="help-text">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            Utilisez uniquement des lettres, chiffres, tirets (-) et underscores (_).
+                        </div>
                     </div>
-                    <div class="form-help-text">Cet identifiant sera utilisé dans l'URL de votre boutique. Utilisez uniquement des lettres, chiffres, tirets et underscores.</div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="is_public" name="is_public" {% if shop_settings.is_public %}checked{% endif %}>
+                            <label for="is_public">Rendre ma boutique publique</label>
+                        </div>
+                        <div class="help-text">
+                            {% if shop_settings.is_public %}
+                                <i class="fas fa-check-circle" style="color: var(--color-success);"></i>
+                                Votre boutique est actuellement visible par tous les visiteurs.
+                            {% else %}
+                                <i class="fas fa-lock" style="color: var(--color-danger);"></i>
+                                Votre boutique est actuellement privée. Seul vous pouvez y accéder.
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="is_public" name="is_public" {% if shop_settings.is_public %}checked{% endif %}>
-                        <label for="is_public">Rendre ma boutique publique</label>
-                    </div>
-                    <div class="form-help-text">
-                        Si cette option est cochée, votre boutique sera visible par tous les visiteurs. 
-                        Si elle est décochée, seuls vous pourrez y accéder.
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="cta-button">
-                <i class="fas fa-save"></i> Enregistrer les modifications
-            </button>
-        </form>
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-save"></i> Enregistrer les modifications
+                </button>
+            </form>
+        </div>
     </div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mise à jour en temps réel de l'aperçu du lien
-        const slugInput = document.getElementById('shareable_link_slug');
-        const linkPreview = document.getElementById('shopLinkPreview');
-        
-        if (slugInput && linkPreview) {
-            slugInput.addEventListener('input', function() {
-                const baseUrl = `${window.location.protocol}//${window.location.host}/boutiques/`;
-                linkPreview.textContent = baseUrl + this.value;
-                linkPreview.href = baseUrl + this.value;
-            });
-        }
-        
-        // Partage de la boutique
-        document.getElementById('shareButton').addEventListener('click', () => {
-            const shareableLink = document.getElementById('shareable_link_slug').value;
-            const fullUrl = `${window.location.protocol}//${window.location.host}/boutiques/${shareableLink}`;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mise à jour en temps réel de l'aperçu du lien
+            const slugInput = document.getElementById('shareable_link_slug');
+            const linkPreview = document.getElementById('shopLinkPreview');
             
-            // Vérifie si l'API Web Share est disponible
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Découvrez ma boutique !',
-                    text: 'Visitez ma boutique pour trouver des produits incroyables.',
-                    url: fullUrl
-                }).catch((error) => {
-                    console.log('Erreur de partage', error);
-                    copyToClipboard(fullUrl);
+            if (slugInput && linkPreview) {
+                slugInput.addEventListener('input', function() {
+                    const baseUrl = '{{ request.scheme }}://{{ request.get_host }}/boutiques/';
+                    const newSlug = this.value || '{{ request.user.username }}';
+                    linkPreview.textContent = baseUrl + newSlug;
+                    linkPreview.href = baseUrl + newSlug;
                 });
-            } else {
-                copyToClipboard(fullUrl);
+            }
+            
+            // Partage de la boutique
+            document.getElementById('shareButton').addEventListener('click', function() {
+                const slugInput = document.getElementById('shareable_link_slug');
+                const slugValue = slugInput.value || '{{ request.user.username }}';
+                const fullUrl = '{{ request.scheme }}://{{ request.get_host }}/boutiques/' + slugValue;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Ma boutique DEANNA - {{ shop.merchant.user.username }}',
+                        text: 'Découvrez ma boutique sur DEANNA ! Des produits exceptionnels vous attendent.',
+                        url: fullUrl
+                    }).catch((error) => {
+                        console.log('Erreur de partage', error);
+                        copyToClipboard(fullUrl);
+                    });
+                } else {
+                    copyToClipboard(fullUrl);
+                }
+            });
+            
+            // Fonction pour copier dans le presse-papiers
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('✅ Lien copié dans le presse-papiers !', 'success');
+                }).catch(err => {
+                    showNotification('❌ Erreur lors de la copie du lien', 'error');
+                });
+            }
+            
+            // Fonction pour afficher des notifications
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `alert alert-${type}`;
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '10000';
+                notification.style.maxWidth = '300px';
+                notification.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                notification.innerHTML = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 4000);
             }
         });
         
-        // Fonction pour copier dans le presse-papiers
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('Lien copié dans le presse-papiers !', 'success');
-            }).catch(err => {
-                showNotification('Erreur lors de la copie du lien : ' + err, 'error');
-            });
-        }
-        
-        // Fonction pour afficher des notifications
-        function showNotification(message, type) {
-            // Créer une notification temporaire
-            const notification = document.createElement('div');
-            notification.className = `alert alert-${type}`;
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '1000';
-            notification.style.maxWidth = '300px';
-            
-            document.body.appendChild(notification);
-            
-            // Supprimer après 3 secondes
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-    });
-    
-    // Prévisualisation de l'image
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                // Créer ou mettre à jour l'aperçu d'image
-                let preview = document.getElementById('imagePreview');
-                const placeholder = document.getElementById('currentImagePlaceholder');
-                const currentImage = document.getElementById('currentImage');
+        // Prévisualisation de l'image
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
                 
-                if (!preview) {
-                    preview = document.createElement('img');
-                    preview.id = 'imagePreview';
-                    preview.className = 'image-preview';
-                    
-                    if (placeholder) {
-                        placeholder.parentNode.replaceChild(preview, placeholder);
-                    } else if (currentImage) {
-                        currentImage.parentNode.replaceChild(preview, currentImage);
-                    } else {
-                        input.parentNode.parentNode.insertBefore(preview, input.parentNode);
-                    }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('❌ Le fichier est trop volumineux. Taille maximale : 5MB.');
+                    input.value = '';
+                    return;
                 }
                 
-                preview.src = e.target.result;
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    let preview = document.getElementById('imagePreview');
+                    const placeholder = document.getElementById('currentImagePlaceholder');
+                    const currentImage = document.getElementById('currentImage');
+                    
+                    if (!preview) {
+                        preview = document.createElement('img');
+                        preview.id = 'imagePreview';
+                        preview.className = 'image-preview';
+                        preview.alt = 'Aperçu de la nouvelle image';
+                        
+                        if (placeholder) {
+                            placeholder.replaceWith(preview);
+                        } else if (currentImage) {
+                            currentImage.replaceWith(preview);
+                        }
+                    }
+                    
+                    preview.src = e.target.result;
+                }
+                
+                reader.readAsDataURL(file);
             }
-            
-            reader.readAsDataURL(input.files[0]);
         }
-    }
-    
-    // Validation du formulaire
-    document.getElementById('shopForm').addEventListener('submit', function(e) {
-        const slugInput = document.getElementById('shareable_link_slug');
-        const slugValue = slugInput.value;
-        const slugPattern = /^[a-zA-Z0-9_-]+$/;
         
-        if (!slugPattern.test(slugValue)) {
-            e.preventDefault();
-            alert('L\'identifiant personnalisé ne peut contenir que des lettres, chiffres, tirets et underscores.');
-            slugInput.focus();
-        }
-    });
-</script>
-{% endblock %}
+        // Validation du formulaire
+        document.getElementById('shopForm').addEventListener('submit', function(e) {
+            const slugInput = document.getElementById('shareable_link_slug');
+            const slugValue = slugInput.value;
+            const slugPattern = /^[a-zA-Z0-9_-]+$/;
+            
+            if (slugValue && !slugPattern.test(slugValue)) {
+                e.preventDefault();
+                alert('❌ L\'identifiant personnalisé ne peut contenir que des lettres, chiffres, tirets (-) et underscores (_).');
+                slugInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
