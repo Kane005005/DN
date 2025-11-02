@@ -11,3 +11,5 @@ media/
 .env
 .env.local
 .DS_Store
+
+debug.log
