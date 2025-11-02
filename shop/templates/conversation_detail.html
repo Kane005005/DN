@@ -483,9 +483,13 @@
     <div class="negotiation-wrapper">
         <!-- Sidebar Produit -->
         <div class="product-sidebar">
-            <a href="{% url 'product_detail' product.id %}" class="back-btn">
+            <a href="{% if is_merchant %}{% url 'manage_products' %}{% else %}{% url 'product_detail' product.id %}{% endif %}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
-                Retour au produit
+                {% if is_merchant %}
+                    Retour aux produits
+                {% else %}
+                    Retour au produit
+                {% endif %}
             </a>
 
             <div class="product-image">
@@ -522,19 +526,27 @@
                     <div class="status-dot {% if ai_status.merchant_status.status == 'en_ligne_actif' %}online{% elif ai_status.merchant_status.status == 'en_ligne_inactif' %}away{% else %}offline{% endif %}"></div>
                     <div>
                         <div style="font-weight: 600;">
-                            {% if ai_status.merchant_status.status == 'en_ligne_actif' %}
-                                {{ conversation.merchant.first_name }} est en ligne
-                            {% elif ai_status.merchant_status.status == 'en_ligne_inactif' %}
-                                {{ conversation.merchant.first_name }} est absent
+                            {% if is_merchant %}
+                                Conversation avec {{ conversation.client.username }}
                             {% else %}
-                                {{ conversation.merchant.first_name }} est hors ligne
+                                {% if ai_status.merchant_status.status == 'en_ligne_actif' %}
+                                    {{ conversation.merchant.first_name }} est en ligne
+                                {% elif ai_status.merchant_status.status == 'en_ligne_inactif' %}
+                                    {{ conversation.merchant.first_name }} est absent
+                                {% else %}
+                                    {{ conversation.merchant.first_name }} est hors ligne
+                                {% endif %}
                             {% endif %}
                         </div>
                         <div style="font-size: 0.8rem; color: #CFAF70;">
-                            {% if ai_status.ai_enabled and ai_status.can_use_ai %}
-                                <i class="fas fa-robot"></i> IA de négociation active
+                            {% if is_merchant %}
+                                <i class="fas fa-user"></i> Mode marchand
                             {% else %}
-                                <i class="fas fa-user"></i> Réponses manuelles
+                                {% if ai_status.ai_enabled and ai_status.can_use_ai %}
+                                    <i class="fas fa-robot"></i> IA de négociation active
+                                {% else %}
+                                    <i class="fas fa-user"></i> Réponses manuelles
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -547,16 +559,30 @@
             <div class="chat-header">
                 <div class="chat-partner">
                     <div class="partner-avatar">
-                        {{ conversation.merchant.first_name|first|upper }}{{ conversation.merchant.last_name|first|upper }}
+                        {% if is_merchant %}
+                            {{ conversation.client.username|first|upper }}
+                        {% else %}
+                            {{ conversation.merchant.first_name|first|upper }}{{ conversation.merchant.last_name|first|upper }}
+                        {% endif %}
                     </div>
                     <div class="partner-info">
-                        <h2>{{ conversation.merchant.first_name }} {{ conversation.merchant.last_name }}</h2>
+                        <h2>
+                            {% if is_merchant %}
+                                {{ conversation.client.username }}
+                            {% else %}
+                                {{ conversation.merchant.first_name }} {{ conversation.merchant.last_name }}
+                            {% endif %}
+                        </h2>
                         <div class="partner-status">
-                            Boutique {{ conversation.merchant.shop.description }}
+                            {% if is_merchant %}
+                                Client
+                            {% else %}
+                                Boutique {{ conversation.merchant.shop.description }}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-                {% if ai_status.ai_enabled %}
+                {% if not is_merchant and ai_status.ai_enabled %}
                 <div class="ai-badge">
                     <i class="fas fa-robot"></i> IA Assistée
                 </div>
@@ -573,7 +599,11 @@
                             {% if message.is_ai_response %}
                                 <i class="fas fa-robot"></i>
                             {% else %}
-                                {{ conversation.merchant.first_name|first|upper }}
+                                {% if is_merchant %}
+                                    {{ conversation.client.username|first|upper }}
+                                {% else %}
+                                    {{ conversation.merchant.first_name|first|upper }}
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                     </div>
@@ -586,7 +616,11 @@
                                     {% if message.is_ai_response %}
                                         DEANNA IA
                                     {% else %}
-                                        {{ conversation.merchant.first_name }}
+                                        {% if is_merchant %}
+                                            {{ conversation.client.username }}
+                                        {% else %}
+                                            {{ conversation.merchant.first_name }}
+                                        {% endif %}
                                     {% endif %}
                                 {% endif %}
                             </span>
@@ -595,7 +629,7 @@
                         <div class="message-text">
                             {{ message.text|linebreaksbr }}
                         </div>
-                        {% if "CFA" in message.text and message.sender == request.user %}
+                        {% if "CFA" in message.text and message.sender == request.user and not is_merchant %}
                         <div class="offer-highlight">
                             <i class="fas fa-tag"></i> 
                             <span class="offer-price">
@@ -632,21 +666,36 @@
                                 id="message-input" 
                                 name="message" 
                                 class="message-input" 
-                                placeholder="Tapez votre message... Vous pouvez négocier le prix, poser des questions techniques ou demander des détails sur le produit." 
+                                placeholder="{% if is_merchant %}Répondez au client...{% else %}Tapez votre message... Vous pouvez négocier le prix, poser des questions techniques ou demander des détails sur le produit.{% endif %}" 
                                 rows="1"
                                 required
                             ></textarea>
                             
+                            <!-- Actions rapides différentes selon le type d'utilisateur -->
                             <div class="quick-actions">
-                                <button type="button" class="quick-action-btn" data-text="Quel est votre meilleur prix pour ce produit ?">
-                                    <i class="fas fa-tag"></i> Meilleur prix
-                                </button>
-                                <button type="button" class="quick-action-btn" data-text="Pouvez-vous me donner plus de détails techniques ?">
-                                    <i class="fas fa-cogs"></i> Détails techniques
-                                </button>
-                                <button type="button" class="quick-action-btn" data-text="Quelles sont les conditions de livraison ?">
-                                    <i class="fas fa-truck"></i> Livraison
-                                </button>
+                                {% if is_merchant %}
+                                    <!-- Actions pour les marchands -->
+                                    <button type="button" class="quick-action-btn" data-text="Bonjour, comment puis-je vous aider ?">
+                                        <i class="fas fa-handshake"></i> Accueil
+                                    </button>
+                                    <button type="button" class="quick-action-btn" data-text="Je peux vous proposer une remise de 10% sur ce produit.">
+                                        <i class="fas fa-percentage"></i> Remise 10%
+                                    </button>
+                                    <button type="button" class="quick-action-btn" data-text="La livraison est gratuite pour cette commande.">
+                                        <i class="fas fa-truck"></i> Livraison offerte
+                                    </button>
+                                {% else %}
+                                    <!-- Actions pour les clients -->
+                                    <button type="button" class="quick-action-btn" data-text="Quel est votre meilleur prix pour ce produit ?">
+                                        <i class="fas fa-tag"></i> Meilleur prix
+                                    </button>
+                                    <button type="button" class="quick-action-btn" data-text="Pouvez-vous me donner plus de détails techniques ?">
+                                        <i class="fas fa-cogs"></i> Détails techniques
+                                    </button>
+                                    <button type="button" class="quick-action-btn" data-text="Quelles sont les conditions de livraison ?">
+                                        <i class="fas fa-truck"></i> Livraison
+                                    </button>
+                                {% endif %}
                             </div>
                         </div>
                         <button type="submit" class="send-btn" id="send-btn">
@@ -773,13 +822,15 @@
                 contentDiv.appendChild(headerDiv);
                 contentDiv.appendChild(textDiv);
 
-                // Ajouter le highlight pour les offres
+                // Ajouter le highlight pour les offres (uniquement pour les clients)
+                {% if not is_merchant %}
                 if (isUser && text.includes('CFA')) {
                     const offerDiv = document.createElement('div');
                     offerDiv.className = 'offer-highlight';
                     offerDiv.innerHTML = '<i class="fas fa-tag"></i> <span class="offer-price">Offre envoyée</span>';
                     contentDiv.appendChild(offerDiv);
                 }
+                {% endif %}
 
                 messageDiv.appendChild(avatarDiv);
                 messageDiv.appendChild(contentDiv);

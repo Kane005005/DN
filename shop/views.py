@@ -1308,6 +1308,39 @@ def shop_contact(request, shop_slug):
     }
     return render(request, 'shop/shop_contact.html', context)
 
+def shop_detail_by_slug(request, shop_slug):
+    """Affiche la page d'accueil d'une boutique avec les produits en vedette."""
+    try:
+        # Essayer de trouver la boutique par le slug du lien partageable d'abord
+        shop_settings = ShopSettings.objects.filter(shareable_link_slug=shop_slug).first()
+        if shop_settings:
+            shop = shop_settings.shop
+        else:
+            # Sinon, chercher par le nom d'utilisateur du marchand
+            shop = get_object_or_404(Shop, merchant__user__username=shop_slug)
+        
+        # Vérifier que la boutique est publique
+        if not shop.shopsettings.is_public:
+            return render(request, 'shop/shop_private.html', {'shop': shop})
+            
+        featured_products = Product.objects.filter(shop=shop, stock__gt=0)[:8]
+        categories = Category.objects.filter(products__shop=shop).distinct()
+        
+        context = {
+            'shop': shop,
+            'featured_products': featured_products,
+            'categories': categories,
+            'is_shop_page': True,
+            'is_merchant': is_merchant(request.user),
+            'is_client': is_client(request.user),
+            'user_type': get_user_type(request.user)
+        }
+        return render(request, 'shop/shop_detail.html', context)
+        
+    except Shop.DoesNotExist:
+        # Si la boutique n'existe pas, afficher une page 404 personnalisée
+        return render(request, 'shop/shop_not_found.html', {'shop_slug': shop_slug})
+
 # Création de compte client
 def create_client(request):
     """Crée un nouvel utilisateur et un profil client."""
