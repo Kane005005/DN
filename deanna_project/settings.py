@@ -28,8 +28,9 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = [
-    'deana.pythonanywhere.com',
-    'www.deana.pythonanywhere.com',
+    'Deanna0025.pythonanywhere.com',
+    'www.Deanna0025.pythonanywhere.com',
+    'deanna0025.pythonanywhere.com',
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
